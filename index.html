@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="it"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>HCE · il mio laboratorio</title>
+<meta name="theme-color" content="#1f5a5e">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="HCE">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+.appbar{display:flex;gap:4px;padding:10px 0 2px;max-width:1200px;margin:0 auto;overflow-x:auto}
+.appbar a{font:600 .82rem/1 Inter,system-ui,sans-serif;text-decoration:none;color:var(--muted,#5d6869);padding:9px 12px;border-radius:99px;white-space:nowrap}
+.appbar a[aria-current]{background:var(--accent-soft,#d9e9e7);color:var(--accent,#1f5a5e)}
+.loading{font:15px/1.5 system-ui,sans-serif;padding:40px 16px;text-align:center;color:#5d6869}
+</style>
+<script src="hce.js"></script>
+</head><body>
+<script>HCE.nav("home");</script>
+<style>
+:root{
+ --bg:#f3f0e8;--surface:#fffefa;--sunk:#ece7dc;--fg:#1d2326;--muted:#5d6869;--line:#dcd5c6;--line2:#e8e2d5;
+ --accent:#1f5a5e;--accent-fg:#fffefa;--accent-soft:#d9e9e7;--warn:#98491a;--warn-soft:#f6e3d4;--ok:#4a7a28;--ok-soft:#e1edd3;
+ --c1:#2b6a93;--c2:#5b7f2e;--c3:#8a6a1a;--c4:#7d4f93;--c5:#b04a4a;--shadow:0 1px 2px rgba(30,40,40,.06),0 4px 14px rgba(30,40,40,.05)}
+@media (prefers-color-scheme:dark){:root{
+ --bg:#11181a;--surface:#192326;--sunk:#152022;--fg:#e7ece9;--muted:#9aa9a7;--line:#2c3a3d;--line2:#233033;
+ --accent:#62c1b6;--accent-fg:#0e1a1b;--accent-soft:#1c3938;--warn:#e6a56d;--warn-soft:#3a2b1d;--ok:#9fc66a;--ok-soft:#24331b;
+ --c1:#80b7de;--c2:#9fc66a;--c3:#dcb85a;--c4:#c9a0da;--c5:#e58c8c;--shadow:none;color-scheme:dark}}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15.5px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;
+ padding-block:0 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.page{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1,h2,h3{font-family:Fraunces,Georgia,"Times New Roman",serif;font-weight:600;margin:0;letter-spacing:-.01em;text-wrap:balance}
+h1{font-size:2.1rem;line-height:1.1}h2{font-size:1.3rem}
+p{margin:0}
+header{padding-top:22px;display:flex;flex-direction:column;gap:8px}
+.eyebrow{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.lead{color:var(--muted);max-width:60ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow);min-width:0}
+.go{display:grid;gap:12px}@media(min-width:620px){.go{grid-template-columns:1fr 1fr}}
+.tile{display:flex;flex-direction:column;gap:6px;text-decoration:none;color:var(--fg);border-left:6px solid var(--c)}
+.tile h2{color:var(--fg)}.tile p{color:var(--muted);font-size:.9rem}
+.tile .cta{color:var(--accent);font-weight:700;font-size:.9rem;margin-top:4px}
+.tile.off{opacity:.5;pointer-events:none}
+.btn{border:1px solid var(--line);border-radius:12px;padding:10px 16px;font:inherit;font-weight:600;cursor:pointer;background:transparent;color:var(--fg);min-height:44px;display:inline-flex;align-items:center;gap:6px}
+.btn.pri{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--muted);font-size:.86rem}
+.st{display:flex;gap:10px;align-items:center;font-size:.92rem}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--warn);flex:none}.dot.ok{background:var(--ok)}
+.msg{border-radius:10px;padding:10px 12px;font-size:.9rem}.msg.ok{background:var(--ok-soft)}.msg.err{background:var(--warn-soft);color:var(--warn)}
+details{border-top:1px solid var(--line2);padding-top:10px}summary{cursor:pointer;font-weight:600;min-height:36px}
+ol{margin:6px 0 0;padding-left:20px;display:grid;gap:4px;font-size:.9rem}
+input[type=file]{display:none}
+</style>
+<div class="page">
+<header>
+  <div class="eyebrow">HCE · Human Connection Engineering</div>
+  <h1>HCE · il mio laboratorio</h1>
+  <p class="lead">Studio del corso sulla ruota e protocollo D-P-I per le tue interazioni. Funziona anche offline; i dati restano su questo dispositivo.</p>
+</header>
+
+<div class="card" id="contenuti">
+  <h2>Contenuti del corso</h2>
+  <div class="st"><span class="dot" id="c-dot"></span><span id="c-st">Controllo…</span></div>
+  <p class="muted">Gli appunti del corso non sono nell'app pubblicata: li importi tu dal file privato <b>hce-contenuti.json</b>, una volta per dispositivo, e restano salvati qui. Quando ricevi una versione nuova del file, la importi di nuovo: i tuoi dati non cambiano.</p>
+  <div class="row"><label class="btn pri" for="f-pack">Importa il file dei contenuti</label><input type="file" id="f-pack" accept=".json,application/json"></div>
+  <div id="c-msg"></div>
+</div>
+
+<div class="go">
+  <a class="card tile off" id="t-studio" href="studio.html" style="--c:var(--c1)"><h2>Studio HCE</h2><p>La ruota come indice: 543 moduli, webinar e libri, con gli appunti completi. Segna cosa hai studiato.</p><span class="cta">Apri →</span></a>
+  <a class="card tile off" id="t-dpi" href="protocollo.html" style="--c:var(--c5)"><h2>Protocollo D-P-I</h2><p>Decode, Profile, Influence su un'interazione vera: prima, dopo e storico. Con la mappa degli strumenti.</p><span class="cta">Apri →</span></a>
+</div>
+
+<div class="card">
+  <h2>Backup dei tuoi dati</h2>
+  <p class="muted">Sessioni del protocollo, moduli studiati e livello sugli aspetti. Esporta un file e importalo sull'altro dispositivo (per esempio via OneDrive o iCloud): i dati si uniscono, non si cancellano.</p>
+  <div class="row"><button class="btn pri" id="b-exp">Esporta backup</button><label class="btn" for="f-bk">Importa backup</label><input type="file" id="f-bk" accept=".json,application/json"></div>
+  <div id="b-msg"></div>
+  <p class="muted" id="b-st"></p>
+</div>
+
+<div class="card">
+  <h2>Installa l'app</h2>
+  <details><summary>Su iPad</summary><ol><li>Apri questa pagina con <b>Safari</b>.</li><li>Tocca <b>Condividi</b> (il quadrato con la freccia).</li><li>Scegli <b>Aggiungi alla schermata Home</b>.</li><li>Apri l'app dall'icona e importa il file dei contenuti.</li></ol></details>
+  <details><summary>Su PC Windows</summary><ol><li>Apri questa pagina con <b>Edge</b> o <b>Chrome</b>.</li><li>Nella barra dell'indirizzo premi l'icona <b>Installa</b> (oppure menu → App → Installa questo sito come app).</li><li>Apri l'app dal menu Start e importa il file dei contenuti.</li></ol></details>
+  <p class="muted">Ogni dispositivo ha i suoi dati: per portarli da uno all'altro usa il backup.</p>
+</div>
+<p class="muted" id="ver"></p>
+</div>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+function msg(id,t,ok){$(id).innerHTML='<div class="msg '+(ok?'ok':'err')+'">'+t+'</div>'}
+function status(){HCE.pack().then(function(p){
+  var ok=!!p;$('c-dot').classList.toggle('ok',ok);
+  $('c-st').innerHTML=ok?'Contenuti installati · versione <b>'+p.version+'</b> · '+p.data.mods.length+' moduli':'Contenuti non ancora importati';
+  ['t-studio','t-dpi'].forEach(function(i){$(i).classList.toggle('off',!ok)});
+}).catch(function(){$('c-st').textContent='Questo browser non permette di salvare i contenuti (finestra privata?).'})}
+function bstat(){var n=0,s=0,d=0;try{n=(JSON.parse(localStorage.getItem('dpi_su_di_me_v1')||'[]')||[]).length;var D=JSON.parse(localStorage.getItem('studio_hce_v1')||'{}')||{};Object.keys(D).forEach(function(k){if(D[k]>0)s++})}catch(e){}
+ $('b-st').textContent='Su questo dispositivo: '+n+' sessioni D-P-I, '+s+' moduli studiati.'}
+function readFile(f){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=function(){rej(r.error)};r.readAsText(f)})}
+$('f-pack').addEventListener('change',function(){var f=this.files[0];if(!f)return;msg('c-msg','Importo «'+f.name+'»… può richiedere qualche secondo.',true);
+ readFile(f).then(HCE.importPack).then(function(p){msg('c-msg','Fatto: contenuti versione '+p.version+' installati.',true);status()})
+ .catch(function(e){msg('c-msg','Non riesco a importare: '+(e&&e.message?e.message:'file non valido')+'. Scegli il file hce-contenuti.json che ti ho mandato.')});this.value=''});
+$('b-exp').addEventListener('click',function(){var b=HCE.exportBackup();HCE.save(b.name,b.text).then(function(){msg('b-msg','Backup creato: «'+b.name+'». Salvalo dove lo ritrovi dall\'altro dispositivo.',true)})});
+$('f-bk').addEventListener('change',function(){var f=this.files[0];if(!f)return;
+ readFile(f).then(function(t){var n=HCE.importBackup(t);msg('b-msg','Backup importato: '+n+' elementi aggiunti o aggiornati.',true);bstat()})
+ .catch(function(e){msg('b-msg','Non riesco a importare: '+(e&&e.message?e.message:'file non valido'))});this.value=''});
+$('ver').textContent='App versione 2026-11-10-245dc73a';
+status();bstat();
+})();
+</script>
+
+</body></html>

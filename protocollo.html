@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="it"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Protocollo D-P-I</title>
+<meta name="theme-color" content="#1f5a5e">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="HCE">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+.appbar{display:flex;gap:4px;padding:10px 0 2px;max-width:1200px;margin:0 auto;overflow-x:auto}
+.appbar a{font:600 .82rem/1 Inter,system-ui,sans-serif;text-decoration:none;color:var(--muted,#5d6869);padding:9px 12px;border-radius:99px;white-space:nowrap}
+.appbar a[aria-current]{background:var(--accent-soft,#d9e9e7);color:var(--accent,#1f5a5e)}
+.loading{font:15px/1.5 system-ui,sans-serif;padding:40px 16px;text-align:center;color:#5d6869}
+</style>
+<script src="hce.js"></script>
+</head><body>
+<style>
+:root{
+ --bg:#f4f1ea;--surface:#fffefb;--sunk:#efebe2;--fg:#1c2427;--muted:#5f6b6e;--line:#ddd7c9;--line2:#e9e4d8;
+ --accent:#17565a;--accent-fg:#fffefb;--accent-soft:#dcebe9;
+ --d:#2b6a93;--d-soft:#dce9f2;--p:#7d4f93;--p-soft:#ebdff1;--i:#a85a17;--i-soft:#f6e4d2;
+ --star:#d19a00;--star-soft:#fbf0cf;--warn:#9a4c14;--warn-soft:#f7e6d6;--ok:#4d7a2a;
+ --c1:#2b6a93;--c2:#5b7f2e;--c3:#8a6a1a;--c4:#7d4f93;--c5:#b04a4a;
+ --shadow:0 1px 2px rgba(30,40,40,.06),0 4px 14px rgba(30,40,40,.05);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#121a1c;--surface:#1a2427;--sunk:#162023;--fg:#e8edea;--muted:#9aaaa8;--line:#2d3b3e;--line2:#243033;
+ --accent:#62c1b6;--accent-fg:#0e1a1b;--accent-soft:#1d3a39;
+ --d:#80b7de;--d-soft:#1c3243;--p:#c9a0da;--p-soft:#33293c;--i:#eaa66a;--i-soft:#3b2d1f;
+ --star:#f0c24a;--star-soft:#3a3216;--warn:#e6a56d;--warn-soft:#3a2b1d;--ok:#9fc66a;
+ --c1:#80b7de;--c2:#9fc66a;--c3:#dcb85a;--c4:#c9a0da;--c5:#e58c8c;
+ --shadow:none;color-scheme:dark}}
+:root[data-theme="dark"]{
+ --bg:#121a1c;--surface:#1a2427;--sunk:#162023;--fg:#e8edea;--muted:#9aaaa8;--line:#2d3b3e;--line2:#243033;
+ --accent:#62c1b6;--accent-fg:#0e1a1b;--accent-soft:#1d3a39;
+ --d:#80b7de;--d-soft:#1c3243;--p:#c9a0da;--p-soft:#33293c;--i:#eaa66a;--i-soft:#3b2d1f;
+ --star:#f0c24a;--star-soft:#3a3216;--warn:#e6a56d;--warn-soft:#3a2b1d;--ok:#9fc66a;
+ --c1:#80b7de;--c2:#9fc66a;--c3:#dcb85a;--c4:#c9a0da;--c5:#e58c8c;
+ --shadow:none;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15.5px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+ padding-block:0 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:14px;min-width:0}
+h1,h2,h3{font-family:Fraunces,Georgia,"Times New Roman",serif;font-weight:600;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:2rem;line-height:1.12}h2{font-size:1.3rem}h3{font-size:1.08rem}
+p{margin:0}
+header{padding-top:26px;display:flex;flex-direction:column;gap:10px}
+.eyebrow{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.lead{color:var(--muted);max-width:60ch}
+.flow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:4px}
+.flow span.s{padding:4px 12px;border-radius:99px;font-weight:700;font-size:.78rem;letter-spacing:.06em}
+.s.d{background:var(--d-soft);color:var(--d)}.s.p{background:var(--p-soft);color:var(--p)}.s.i{background:var(--i-soft);color:var(--i)}
+.flow .ar{color:var(--muted)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line2)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.tabs{display:flex;gap:4px;background:var(--sunk);border-radius:12px;padding:4px}
+.tab{flex:1;border:0;background:transparent;color:var(--muted);border-radius:9px;padding:9px 6px;font:inherit;font-size:.86rem;font-weight:600;cursor:pointer;min-height:40px}
+.tab[aria-selected="true"]{background:var(--surface);color:var(--fg);box-shadow:var(--shadow)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow);min-width:0}
+.ph{display:flex;gap:12px;align-items:center}
+.num{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:700;font-size:.9rem;background:var(--accent-soft);color:var(--accent)}
+.d .num{background:var(--d-soft);color:var(--d)}.p .num{background:var(--p-soft);color:var(--p)}.i .num{background:var(--i-soft);color:var(--i)}
+.ph small{display:block;color:var(--muted);font-size:.78rem;font-weight:500}
+.rule{background:var(--warn-soft);border-radius:10px;padding:10px 12px;font-size:.88rem}.rule b{color:var(--warn)}
+.ex{background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:.88rem}.ex b{color:var(--accent)}
+label{font-weight:600;font-size:.9rem;display:block}
+.hint{font-size:.8rem;color:var(--muted);font-weight:400;margin-top:2px}
+textarea,input[type=text],select{width:100%;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);font:inherit;font-size:.93rem;padding:10px 11px;margin-top:6px}
+textarea{min-height:70px;resize:vertical}
+textarea:focus,input:focus,select:focus,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.field{display:flex;flex-direction:column}
+.scale{display:flex;gap:6px;margin-top:6px}
+.scale button{flex:1;min-height:44px;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:10px;font:inherit;font-weight:600;cursor:pointer}
+.scale button[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.btn{border:0;border-radius:12px;padding:12px 20px;font:inherit;font-weight:600;cursor:pointer;background:var(--accent);color:var(--accent-fg);min-height:44px}
+.btn.sec{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.btn.sm{padding:7px 13px;min-height:38px;font-size:.84rem;border-radius:10px}
+.btn.on{background:var(--i-soft);border-color:var(--i);color:var(--fg)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--muted);font-size:.84rem}.sync{font-size:.78rem;color:var(--muted)}
+/* decode */
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tools input{margin:0;flex:1 1 180px}
+.seg{display:flex;background:var(--sunk);border-radius:10px;padding:3px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;color:var(--muted);padding:8px 12px;border-radius:8px;font:inherit;font-size:.82rem;font-weight:600;cursor:pointer;min-height:40px;flex:1 1 auto}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:var(--shadow)}
+.ig{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface)}
+.ig>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 14px;border-left:5px solid var(--c);min-height:48px}
+.ig>summary::-webkit-details-marker{display:none}
+.ig>summary b{font-family:Fraunces,Georgia,serif;font-size:1.02rem;font-weight:600}
+.ig>summary .sy{font-size:.68rem;font-weight:700;letter-spacing:.1em;color:var(--muted)}
+.ig .cnt{margin-left:auto;font-size:.78rem;color:var(--muted);text-align:right}
+.ig .chev{transition:transform .15s;color:var(--muted)}.ig[open] .chev{transform:rotate(90deg)}
+.area{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--muted);padding:10px 14px 2px;border-top:1px solid var(--line2)}
+.var{border-top:1px solid var(--line2)}
+.vh{display:flex;align-items:center;gap:8px;padding:6px 8px 6px 14px;min-height:48px}
+.vt{flex:1;min-width:0;text-align:left;background:none;border:0;font:inherit;color:var(--fg);cursor:pointer;padding:6px 0;display:flex;flex-direction:column}
+.vt .n{font-weight:600;font-size:.92rem;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.vt .c{font-size:.78rem;color:var(--muted);line-height:1.35}
+.tag{font-size:.62rem;font-weight:700;letter-spacing:.06em;padding:1px 7px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none}
+.star{flex:none;width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--muted);font-size:1.2rem;cursor:pointer}
+.star[aria-pressed="true"]{background:var(--star);color:#1d1700;border-color:var(--star)}
+.var.on{background:var(--star-soft)}
+.vb{padding:0 14px 12px;display:none;flex-direction:column;gap:8px}
+.var.open .vb{display:flex}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (max-width:520px){.two{grid-template-columns:1fr}.tab{font-size:.8rem}}
+.two small{font-size:.72rem;color:var(--muted);font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.two textarea{min-height:56px;margin-top:3px;font-size:.9rem}
+.vinfo{font-size:.82rem;color:var(--muted);display:grid;gap:4px;background:var(--sunk);border-radius:10px;padding:9px 11px}
+.vinfo b{color:var(--fg);font-weight:600}
+.lnk{background:none;border:0;padding:4px 0;font:inherit;font-size:.82rem;font-weight:600;color:var(--accent);cursor:pointer;text-align:left;min-height:32px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.chip{border-radius:99px;padding:4px 11px;background:var(--star-soft);color:var(--fg);border:1px solid var(--star);font-size:.8rem;font-weight:600}
+.warnline{font-size:.82rem;color:var(--warn)}
+.hist{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--surface);display:flex;flex-direction:column;gap:8px;min-width:0;box-shadow:var(--shadow)}
+.hist .t{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:1.02rem;overflow-wrap:anywhere}
+.pill{display:inline-block;font-size:.66rem;border-radius:99px;padding:2px 9px;background:var(--accent-soft);color:var(--accent);font-weight:700;letter-spacing:.04em;white-space:nowrap}
+.pill.w{background:var(--warn-soft);color:var(--warn)}
+.pill.a{background:var(--star-soft);color:var(--fg)}
+dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:.88rem}
+dt{color:var(--muted);font-weight:600}dd{margin:0;overflow-wrap:anywhere}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--sunk);border-radius:12px;padding:12px;text-align:center}
+.stat b{display:block;font-family:Fraunces,Georgia,serif;font-size:1.6rem;line-height:1.1}
+.stat span{font-size:.75rem;color:var(--muted)}
+/* mappa */
+.mp-sel{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:560px){.mp-sel{grid-template-columns:1fr}}
+.kv{display:grid;gap:11px;min-width:0}.kv small{display:block;color:var(--muted);font-weight:700;font-size:.7rem;letter-spacing:.07em;text-transform:uppercase}
+.tool{border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:var(--sunk);display:grid;gap:5px;min-width:0}
+.tool .hd{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tool .hd b{font-size:.95rem}
+.tool .g{color:var(--muted);font-size:.78rem}
+.tool .dsc{font-size:.88rem}
+.tool details>summary{cursor:pointer;font-size:.84rem;font-weight:600;color:var(--accent);min-height:36px;display:flex;align-items:center}
+.tool ol{margin:2px 0 4px;padding-left:20px;display:grid;gap:5px;font-size:.87rem}
+.tool .tb{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.fz{font-size:.62rem;font-weight:700;letter-spacing:.06em;padding:1px 7px;border-radius:99px}
+.fz.D{background:var(--d-soft);color:var(--d)}.fz.P{background:var(--p-soft);color:var(--p)}.fz.I{background:var(--i-soft);color:var(--i)}
+.trail{font-size:.82rem;color:var(--muted)}.trail b{color:var(--fg)}
+.qs{background:var(--sunk);border-radius:10px;padding:10px 12px;font-size:.88rem}.qs b{display:block;margin-bottom:4px}
+.qs ol{margin:0;padding-left:20px;display:grid;gap:3px}
+details.q{background:var(--sunk);border-radius:10px;padding:0 12px;font-size:.88rem}
+details.q>summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;align-items:center;gap:6px;list-style:none;color:var(--muted)}
+details.q>summary::-webkit-details-marker{display:none}
+details.q>summary::before{content:"▸";transition:transform .15s}details.q[open]>summary::before{transform:rotate(90deg)}
+details.q ol{margin:0 0 10px;padding-left:20px;display:grid;gap:3px}
+.steps{display:grid;gap:6px;font-size:.88rem}.steps div{border-left:3px solid var(--line);padding-left:10px}
+.arow{display:grid;grid-template-columns:96px 1fr;gap:8px;align-items:center;padding:8px 14px;border-top:1px solid var(--line2)}
+@media(max-width:420px){.arow{grid-template-columns:1fr;gap:4px}}
+.arow .an{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.achips{display:flex;gap:6px;flex-wrap:wrap}
+.ach{border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:99px;padding:6px 11px;font:inherit;font-size:.82rem;font-weight:600;cursor:pointer;min-height:38px;display:inline-flex;gap:6px;align-items:center}
+.ach .n2{font-size:.68rem;color:var(--muted);font-weight:700}
+.kd{width:9px;height:9px;border-radius:50%;background:transparent;border:1.5px solid var(--muted);flex:none;display:inline-block}
+.k1 .kd,.kd.k1{background:var(--star);border-color:var(--star)}.k2 .kd,.kd.k2{background:var(--ok);border-color:var(--ok)}
+.res{display:grid;gap:6px}
+.res button{text-align:left;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:10px;padding:8px 11px;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer;min-height:44px}
+.res small{display:block;color:var(--muted);font-size:.76rem;font-weight:400}
+.tchips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.tchip{border-radius:99px;padding:6px 12px;border:1px dashed var(--muted);background:var(--bg);color:var(--fg);font:inherit;font-size:.82rem;font-weight:600;cursor:pointer;min-height:38px}
+.tchip[aria-pressed="true"]{border-style:solid;border-color:var(--i);background:var(--i-soft)}
+.leg{display:flex;gap:6px 10px;flex-wrap:wrap;align-items:center;font-size:.78rem;color:var(--muted)}
+#kn{display:grid;grid-template-columns:repeat(3,1fr)}
+#kn button{padding:8px 4px;font-size:.8rem}
+.mgrid{display:grid;gap:14px;min-width:0}
+.mcol{min-width:0}
+@media(min-width:980px){body.wide>.wrap{max-width:1200px}.mgrid{grid-template-columns:minmax(0,480px) minmax(0,1fr);align-items:start}.mwheel{position:sticky;top:calc(env(safe-area-inset-top,0px) + 74px)}}
+.mwheel svg{width:100%;height:auto;display:block;max-width:560px;margin:0 auto;touch-action:manipulation}
+.mwheel text{font-family:Inter,system-ui,sans-serif;pointer-events:none;fill:var(--fg)}
+.wi{fill:var(--c);cursor:pointer}.wa{fill:var(--c);fill-opacity:.5;cursor:pointer}
+.wn{fill:var(--surface);stroke:var(--line);stroke-width:.6;cursor:pointer}
+.wn:hover,.wa:hover{fill:var(--c);fill-opacity:.25}.wi:hover{fill-opacity:.85}
+.wn.sel{fill:var(--c);fill-opacity:.45}.wa.sel{fill-opacity:.85}.wi.sel{stroke:var(--fg);stroke-width:2}
+.wn.dim,.wa.dim{opacity:.38}
+.mwheel text.ti{fill:var(--bg);font-weight:700;font-size:10px;letter-spacing:.03em}
+.mwheel text.ta{font-size:6.6px;font-weight:700}
+.mwheel text.tn{font-size:8.6px;font-weight:500}
+.mwheel text.tc{font-family:Fraunces,Georgia,serif;font-size:22px;font-weight:600;text-anchor:middle}
+.mwheel text.tc2{font-size:9px;text-anchor:middle;fill:var(--muted)}
+.wk{pointer-events:none}
+.wcap{text-align:center;font-size:.88rem;min-height:1.4em}
+[hidden]{display:none!important}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">HCE · Human Connection Engineering</div>
+  <h1>Protocollo D-P-I su di me</h1>
+  <p class="lead">Osservo, collego, scelgo. Poi controllo cosa è successo e ricomincio: ogni giro rende la lettura più precisa.</p>
+  <div class="flow"><span class="s d">DECODE</span><span class="ar">→</span><span class="s p">PROFILE</span><span class="ar">→</span><span class="s i">INFLUENCE</span><span class="ar">→</span><span class="muted">di nuovo Decode</span></div>
+</header>
+<nav><div class="tabs" role="tablist">
+  <button class="tab" role="tab" data-t="come" aria-selected="true">Metodo</button>
+  <button class="tab" role="tab" data-t="mappa" aria-selected="false">Mappa</button>
+  <button class="tab" role="tab" data-t="prima" aria-selected="false">Prima</button>
+  <button class="tab" role="tab" data-t="dopo" aria-selected="false">Dopo</button>
+  <button class="tab" role="tab" data-t="storico" aria-selected="false">Storico</button>
+</div></nav>
+
+<div id="v-come" class="wrap">
+  <div class="card d"><div class="ph"><div class="num">1</div><div><h3>Decode · osservo</h3><small>Solo fatti, nessuna interpretazione</small></div></div>
+    <p>Sulla ruota HCE ci sono 75 aspetti: 5 intelligenze × 5 aree × 3 aspetti. Non li compili tutti. Apri quelli che stai davvero osservando, scrivi il fatto su di te e sull'altro e segna con ★ gli 1-3 che pesano di più adesso. I 15 con l'etichetta «libro 5» sono quelli dichiarati nei capitoli 5-9.</p>
+    <div class="qs"><b>Le domande</b><ol><li>Cosa vedo e sento, esattamente?</li><li>Su quali variabili sto guardando adesso?</li><li>Sto già interpretando? Se sì, lo metto da parte.</li><li>Com'è di solito questa persona, e cosa è cambiato?</li></ol></div>
+    <div class="rule"><b>Regola.</b> Scrivi fatti, non spiegazioni. Un solo segnale è un indizio, non una conclusione: conta se si ripete.</div>
+    <div class="ex"><b>Esempio.</b> Fatto: «respiro corto, mani sudate». Non è un fatto: «sono ansioso perché non sono capace».</div></div>
+  <div class="card p"><div class="ph"><div class="num">2</div><div><h3>Profile · collego</h3><small>Almeno due dati insieme</small></div></div>
+    <p>Metti insieme gli aspetti ★ in una sola frase: cosa sta succedendo e cosa pesa di più. Mai da un dato solo, e il contesto viene prima del dettaglio. Scrivi anche quanto sei sicuro e cosa potrebbe smentirti.</p>
+    <div class="qs"><b>Le domande</b><ol><li>Quali dati vanno nella stessa direzione, su canali diversi?</li><li>Come si influenzano tra loro?</li><li>So davvero che effetto hanno queste variabili? Se no, è un'ipotesi.</li><li>⚠ Quale altra spiegazione sarebbe possibile?</li></ol></div>
+    <div class="ex"><b>Esempio.</b> «Respiro corto + mani sudate + pensiero «devo fare bella figura» → vivo l'incontro come un esame.»</div></div>
+  <div class="card i"><div class="ph"><div class="num">3</div><div><h3>Influence · scelgo e prevedo</h3><small>Una sola azione, con un criterio</small></div></div>
+    <p>Scegli una azione (stato, gesto, parole, domanda, ambiente, look), se vuoi con uno strumento HCE, spiega perché e scrivi cosa ti aspetti. Dopo l'interazione confronti previsione e realtà: è così che il profilo migliora.</p>
+    <div class="qs"><b>Le domande</b><ol><li>Che risultato voglio ottenere?</li><li>Quale mossa è la più adatta a questo contesto e a questa persona, e perché?</li><li>Che effetto mi aspetto?</li><li>Mentre agisco, cosa sta cambiando? Insisto o cambio?</li></ol></div></div>
+  <div class="card"><div class="ph"><div class="num">↔</div><div><h3>Come le tre fasi si legano alla ruota</h3><small>Sistema → area → aspetto → strumento</small></div></div>
+    <div class="steps">
+      <div><b>Decode</b> sceglie gli aspetti: nella Mappa trovi, per ognuno, cosa osservare.</div>
+      <div><b>Profile</b> collega aspetti di intelligenze diverse. È ciò che il corso mette nell'area Unity: connessione tra gli aspetti, combinazione, coerenza.</div>
+      <div><b>Influence</b> sceglie lo strumento di un aspetto, o una combinazione di strumenti.</div>
+      <div><b>Dopo</b> verifichi quali strumenti hanno prodotto il risultato e quali no.</div>
+    </div>
+    <p class="muted">Il corso consiglia di tenere il modello sempre a portata di mano e di scrivere ogni strumento accanto al suo aspetto: la scheda Mappa serve a questo.</p></div>
+  <div class="card">
+    <div class="rule"><b>Etica.</b> Usa il protocollo dove serve e a fin di bene; a volte la scelta giusta è non usarlo. In forte stress fermati: questo strumento non sostituisce un professionista.</div>
+    <p class="muted">⚠ = aggiunta mia, non dichiarata dal corso. Le domande guida degli aspetti sono una mia traduzione operativa, non una definizione del corso. Il libro non dice quale variabile sia la più rilevante: il ★ è una tua scelta, di solito su ciò che cambia rispetto alla baseline, è emotivamente significativo o compare in più intelligenze insieme.</p>
+    <div class="row"><button class="btn" id="go-prima">Inizia una sessione</button><button class="btn sec" id="go-mappa0">Apri la Mappa</button></div></div>
+</div>
+
+<div id="v-mappa" hidden class="mgrid">
+ <div class="card mwheel"><div id="wheelsvg"></div><div class="wcap" id="wcap"></div>
+  <p class="muted">Tocca un'intelligenza, un'area o un aspetto per filtrare. È uno schema ridisegnato con la stessa struttura della ruota HCE, non la grafica ufficiale.</p></div>
+ <div class="mcol wrap">
+  <div class="card"><div class="ph"><div class="num">M</div><div><h3>Mappa HCE</h3><small>Sistema → area → aspetto → strumento</small></div></div>
+    <div class="field"><label for="mp-q">Cerca un aspetto o uno strumento</label>
+      <input type="text" id="mp-q" placeholder="Es. RINGS, gesti, frame, colore, regole" autocomplete="off"></div>
+    <div id="mp-res" class="res" hidden></div>
+    <div class="mp-sel">
+      <div><label for="mp-i">Intelligenza</label><select id="mp-i"></select></div>
+      <div><label for="mp-a">Area</label><select id="mp-a" disabled></select></div>
+      <div><label for="mp-s">Aspetto</label><select id="mp-s" disabled></select></div>
+    </div>
+    <div class="leg"><span class="pill">DICHIARATO DAL CORSO</span><span class="pill a">⚠ ASPETTO DEDOTTO</span><span class="pill w">⚠ COLLOCAZIONE MIA</span></div>
+    <p class="muted">«Aspetto dedotto»: il corso indica l'area o l'argomento, l'aspetto preciso l'ho scelto io. Le etichette D · P · I su ogni strumento dicono in quale fase lo userei: sono una mia classificazione.</p>
+  </div>
+  <div id="mp-out" class="wrap"></div>
+  <div id="mp-wheel" class="wrap" style="gap:10px"></div>
+ </div>
+</div>
+
+<div id="v-prima" hidden class="wrap">
+  <div class="card"><div class="field"><label for="p-ctx">Quale interazione?<div class="hint">Una situazione concreta: con chi, dove, per quale scopo.</div></label>
+    <input type="text" id="p-ctx" placeholder="Es. Riunione con un cliente per spiegare il report"></div></div>
+
+  <div class="card d">
+    <div class="ph"><div class="num">1</div><div><h3>Decode</h3><small>Solo fatti · <span id="cnt-fill">0</span> aspetti compilati</small></div></div>
+    <details class="q"><summary>Le domande di questa fase</summary><ol><li>Cosa vedo e sento, esattamente?</li><li>Su quali variabili sto guardando adesso?</li><li>Sto già interpretando? Se sì, lo metto da parte.</li><li>Com'è di solito questa persona, e cosa è cambiato?</li></ol></details>
+    <div class="field"><label for="d-emo">La mia emozione adesso</label>
+      <input type="text" id="d-emo" placeholder="Es. agitazione, curiosità, fretta">
+      <div class="hint">Intensità da 1 a 5</div><div class="scale" id="d-int" role="group" aria-label="Intensità"></div></div>
+    <div class="tools">
+      <input type="text" id="q" placeholder="Cerca un aspetto (es. words, light, empathy)" aria-label="Cerca un aspetto">
+      <div class="seg" id="filt"><button data-f="main" aria-pressed="true">Libro 5 · 15</button><button data-f="all" aria-pressed="false">Tutti · 75</button></div>
+    </div>
+    <div id="vars" class="wrap" style="gap:10px"></div>
+    <div class="warnline" id="starwarn" hidden>Hai più di tre ★: tieni solo quelle che pesano davvero.</div>
+  </div>
+
+  <div class="card p">
+    <div class="ph"><div class="num">2</div><div><h3>Profile</h3><small>Collego i fatti</small></div></div>
+    <details class="q"><summary>Le domande di questa fase</summary><ol><li>Quali dati vanno nella stessa direzione, su canali diversi?</li><li>Come si influenzano tra loro?</li><li>So davvero che effetto hanno queste variabili? Se no, è un'ipotesi.</li><li>⚠ Quale altra spiegazione sarebbe possibile?</li></ol></details>
+    <div><div class="muted">Aspetti ★ che metto insieme</div><div class="chips" id="starchips"></div></div>
+    <div class="field"><label for="p-f">Una frase: cosa sta succedendo e cosa pesa di più?<div class="hint">Almeno due dati insieme. Niente deduzioni «da mentalista».</div></label>
+      <textarea id="p-f" placeholder="Es. Respiro corto + «non devo sbagliare» + attenzione sui miei errori → vivo l'incontro come un esame."></textarea></div>
+    <div class="field"><label for="p-c">Quanto sono sicuro della lettura?</label>
+      <select id="p-c"><option value="">Scegli…</option><option>Bassa</option><option>Media</option><option>Alta</option></select></div>
+    <div class="field"><label for="p-w">Cosa potrebbe smentirla?</label>
+      <input type="text" id="p-w" placeholder="Es. Forse sono solo stanco, non agitato."></div>
+  </div>
+
+  <div class="card i">
+    <div class="ph"><div class="num">3</div><div><h3>Influence</h3><small>Una azione e una previsione</small></div></div>
+    <details class="q"><summary>Le domande di questa fase</summary><ol><li>Che risultato voglio ottenere?</li><li>Quale mossa è la più adatta a questo contesto e a questa persona, e perché?</li><li>Che effetto mi aspetto?</li><li>Mentre agisco, cosa sta cambiando? Insisto o cambio?</li></ol></details>
+    <div class="field"><label for="i-t">Tipo di azione</label>
+      <select id="i-t"><option value="">Scegli…</option><option>Stato</option><option>Gesto o postura</option><option>Parole</option><option>Domanda</option><option>Ambiente</option><option>Look</option></select></div>
+    <div><label id="i-tools-l">Strumento HCE<div class="hint">Facoltativo. Ti propongo quelli degli aspetti ★; gli altri li aggiungi dalla Mappa.</div></label>
+      <div class="tchips" id="i-tools" role="group" aria-labelledby="i-tools-l"></div>
+      <div class="row" style="margin-top:8px"><button class="btn sec sm" id="go-mappa">Scegli dalla Mappa</button></div></div>
+    <div class="field"><label for="i-a">Cosa farò, in concreto?</label>
+      <textarea id="i-a" placeholder="Es. Tre respiri lenti prima di entrare; la prima domanda prima di spiegare."></textarea></div>
+    <div class="field"><label for="i-w">Perché? (criterio logico)</label>
+      <textarea id="i-w" placeholder="Es. Il profilo dice «esame»: rallentare il ritmo lo riduce."></textarea></div>
+    <div class="field"><label for="i-p">Cosa mi aspetto che succeda?<div class="hint">Scrivilo ora: servirà dopo.</div></label>
+      <textarea id="i-p" placeholder="Es. L'altro si rilassa e mi dice cosa gli interessa davvero."></textarea></div>
+  </div>
+  <div class="row"><button class="btn" id="save-prima">Salva sessione</button><button class="btn sec" id="clear-prima">Svuota</button><span class="sync" id="sync1"></span></div>
+</div>
+
+<div id="v-dopo" hidden class="wrap">
+  <div class="card"><div class="field"><label for="a-sel">Quale sessione stai chiudendo?</label><select id="a-sel"></select></div><div id="a-prev" class="muted"></div></div>
+  <div id="a-form" class="wrap" hidden>
+    <div class="card d"><div class="ph"><div class="num">1</div><div><h3>Decode</h3><small>Cosa è successo davvero</small></div></div>
+      <div class="field"><label for="a-f">Solo fatti osservabili, in me e nell'altro</label>
+      <textarea id="a-f" placeholder="Es. Ho parlato piano per cinque minuti, poi ho accelerato a una domanda tecnica. Lui ha guardato il telefono."></textarea></div>
+      <div class="field"><label>La mia emozione, da 1 a 5</label><div class="scale" id="a-int" role="group" aria-label="Intensità dopo"></div></div></div>
+    <div class="card p"><div class="ph"><div class="num">2</div><div><h3>Profile</h3><small>La lettura era giusta?</small></div></div>
+      <div class="field"><label>La previsione si è avverata?</label>
+      <div class="scale" id="a-ok" role="group" aria-label="Previsione"><button data-v="Sì">Sì</button><button data-v="In parte">In parte</button><button data-v="No">No</button></div></div>
+      <div class="field"><label for="a-l">Cosa mi dice di come leggo?<div class="hint">Se è andata diversamente: avevo letto male (profile) o avevo scelto la mossa sbagliata (influence)?</div></label><textarea id="a-l"></textarea></div></div>
+    <div class="card i"><div class="ph"><div class="num">3</div><div><h3>Influence</h3><small>Cosa cambio</small></div></div>
+      <div class="field"><label for="a-n">Una sola cosa da provare la prossima volta</label>
+      <textarea id="a-n" placeholder="Es. Dopo una domanda tecnica, respirare e riformulare prima di rispondere."></textarea></div></div>
+    <div class="row"><button class="btn" id="save-dopo">Chiudi la sessione</button><span class="sync" id="sync2"></span></div>
+  </div>
+</div>
+
+<div id="v-storico" hidden class="wrap">
+  <div class="card" id="st-sum"></div>
+  <div class="card" id="st-tools" hidden></div>
+  <div id="st-list" class="wrap" style="gap:10px"></div>
+  <p class="muted" id="st-sync"></p>
+  <div class="row"><button class="btn sec" id="wipe">Cancella lo storico</button><span id="wipeq" hidden>Sei sicuro? <button class="btn sec" id="wipe-y">Sì</button> <button class="btn sec" id="wipe-n">No</button></span></div>
+</div>
+</div>
+
+<script>HCE.nav("dpi");</script>
+<script>
+HCE.ready(function(PACK){
+var $=function(i){return document.getElementById(i)};
+var V=PACK.vd;
+var UNP=PACK.unp;
+var AREAS=PACK.areas;
+var SYS=PACK.sys;
+var IGS=['Strategica','Comportamentale','Ambientale','Linguistica','Emotiva','Riferimento'];
+var COL={Strategica:'--c1',Comportamentale:'--c2',Ambientale:'--c3',Linguistica:'--c4',Emotiva:'--c5',Riferimento:'--accent'};
+var KEY='dpi_su_di_me_v1',KKEY='dpi_know_v1',DATA=[],KNOW={},ref=null,timer=null,cur={int:0},curA={int:0,ok:''},FILT='main',Q='',SELT=[];
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function lsGet(k,d){try{var r=localStorage.getItem(k);return r?JSON.parse(r):d}catch(e){return d}}
+function lsSave(){try{localStorage.setItem(KEY,JSON.stringify(DATA));localStorage.setItem(KKEY,JSON.stringify(KNOW))}catch(e){}}
+function setSync(t){['sync1','sync2','st-sync'].forEach(function(i){$(i).textContent=t})}
+function persist(){lsSave();if(!ref){setSync('Salvato su questo dispositivo');return}
+ clearTimeout(timer);setSync('Salvataggio…');
+ timer=setTimeout(function(){ref.set({data:JSON.stringify(DATA),know:JSON.stringify(KNOW)}).then(function(){setSync('Salvato')}).catch(function(){setSync('Salvato su questo dispositivo')})},400)}
+function mkScale(id,key,obj){var h='';for(var i=1;i<=5;i++)h+='<button data-n="'+i+'" aria-pressed="false">'+i+'</button>';$(id).innerHTML=h;
+ $(id).addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;obj[key]=+b.dataset.n;paint(id,obj[key])})}
+function paint(id,n){[].forEach.call($(id).children,function(b){b.setAttribute('aria-pressed',+b.dataset.n===n)})}
+mkScale('d-int','int',cur);mkScale('a-int','int',curA);
+[].forEach.call($('a-ok').children,function(x){x.setAttribute('aria-pressed','false')});
+$('a-ok').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;curA.ok=b.dataset.v;[].forEach.call($('a-ok').children,function(x){x.setAttribute('aria-pressed',x===b)})});
+
+/* ---- indici ---- */
+var BYNAME={};V.forEach(function(v){BYNAME[v.name]=v});
+function label(v){return v.asp==='baseline'?'Baseline':v.asp}
+var TN=[],TI={};            // nomi unici degli strumenti e dove stanno
+function addTool(t,where){if(TI[t.n]==null){TI[t.n]=TN.length;TN.push({t:t,w:[]})}if(where)TN[TI[t.n]].w.push(where)}
+V.forEach(function(v){v.t.forEach(function(t){addTool(t,v.name)})});UNP.forEach(function(t){addTool(t,null)});
+function kn(n){return KNOW[n]?KNOW[n].s:0}
+
+/* ---- decode list ---- */
+var STATE={};  // name -> {me,ot,star}
+function st(n){return STATE[n]||(STATE[n]={me:'',ot:'',star:false})}
+function filled(n){var s=STATE[n];return !!(s&&(s.me||s.ot||s.star))}
+function build(){
+ var h='';
+ IGS.forEach(function(ig){
+  var list=V.filter(function(v){return v.i===ig});if(!list.length)return;
+  var shown=list.filter(function(v){
+   var okF=FILT==='all'||v.libro;
+   var q=Q.trim().toLowerCase();
+   var okQ=!q||(v.name+' '+v.cue+' '+(v.libro||'')).toLowerCase().indexOf(q)>-1;
+   return okF&&okQ||filled(v.name)&&okQ});
+  if(!shown.length)return;
+  var nf=list.filter(function(v){return filled(v.name)}).length;
+  h+='<details class="ig" style="--c:var('+COL[ig]+')"'+((Q||ig==='Strategica'||nf)?' open':'')+'><summary><span class="chev">▸</span><b>'+ig+'</b><span class="cnt">'+(nf?nf+' compilati · ':'')+shown.length+' voci</span></summary>';
+  var last='';
+  shown.forEach(function(v){
+   if(v.area!==last){h+='<div class="area">'+esc(v.area)+'</div>';last=v.area}
+   var s=STATE[v.name]||{me:'',ot:'',star:false};
+   h+='<div class="var'+(s.star?' on':'')+((s.me||s.ot)?' open':'')+'" data-n="'+esc(v.name)+'"><div class="vh"><button class="vt" aria-expanded="'+!!(s.me||s.ot)+'"><span class="n">'+esc(label(v))+(v.libro&&v.asp!=='baseline'?'<span class="tag">LIBRO 5 · '+esc(v.libro)+'</span>':'')+((s.me||s.ot)?'<span class="dot"></span>':'')+'</span><span class="c">'+esc(v.cue)+'</span></button><button class="star" aria-pressed="'+!!s.star+'" aria-label="Più rilevante ora: '+esc(v.name)+'">★</button></div>'+
+    '<div class="vb"><div class="vinfo"><span><b>Indicatori.</b> '+esc(v.k[2])+'</span><span><b>Da non concludere.</b> '+esc(v.k[3])+'</span><button class="lnk" data-go="'+esc(v.name)+'">Scheda completa e strumenti nella Mappa →</button></div>'+
+    '<div class="two"><div><small>Su di me</small><textarea data-k="me" rows="2" aria-label="'+esc(v.name)+': su di me">'+esc(s.me)+'</textarea></div><div><small>Sull\'altro</small><textarea data-k="ot" rows="2" aria-label="'+esc(v.name)+': sull\'altro">'+esc(s.ot)+'</textarea></div></div></div></div>';
+  });
+  h+='</details>';
+ });
+ $('vars').innerHTML=h||'<p class="muted">Nessun aspetto corrisponde alla ricerca.</p>';
+ meta();
+}
+function stars(){return V.filter(function(v){return STATE[v.name]&&STATE[v.name].star})}
+function meta(){
+ var on=stars().map(function(v){return v.name});
+ $('starchips').innerHTML=on.length?on.map(function(n){return '<span class="chip">★ '+esc(n)+'</span>'}).join(''):'<span class="muted">Nessuno: segna le ★ nel Decode.</span>';
+ $('starwarn').hidden=on.length<=3;
+ $('cnt-fill').textContent=V.filter(function(v){return filled(v.name)}).length;
+ renderTools();
+}
+/* strumenti proposti in Influence */
+function renderTools(){
+ var seen={},list=[];
+ SELT.forEach(function(n){if(!seen[n]){seen[n]=1;list.push(n)}});
+ stars().forEach(function(v){v.t.forEach(function(t){if(!seen[t.n]){seen[t.n]=1;list.push(t.n)}})});
+ $('i-tools').innerHTML=list.length?list.map(function(n){var on=SELT.indexOf(n)>-1;return '<button class="tchip" data-t="'+TI[n]+'" aria-pressed="'+on+'">'+(on?'✓ ':'+ ')+esc(n)+'</button>'}).join(''):'<span class="muted">Segna una ★ nel Decode oppure scegli uno strumento dalla Mappa.</span>';
+}
+function toggleTool(n){var i=SELT.indexOf(n);if(i>-1)SELT.splice(i,1);else SELT.push(n);renderTools()}
+$('i-tools').addEventListener('click',function(e){var b=e.target.closest('.tchip');if(!b)return;toggleTool(TN[+b.dataset.t].t.n)});
+$('vars').addEventListener('click',function(e){
+ var g=e.target.closest('[data-go]');if(g){mpOpen(g.dataset.go);tab('mappa');return}
+ var v=e.target.closest('.var');if(!v)return;var n=v.dataset.n;
+ if(e.target.closest('.star')){var s=st(n);s.star=!s.star;v.classList.toggle('on',s.star);e.target.closest('.star').setAttribute('aria-pressed',s.star);meta();return}
+ if(e.target.closest('.vt')){v.classList.toggle('open');e.target.closest('.vt').setAttribute('aria-expanded',v.classList.contains('open'))}
+});
+$('vars').addEventListener('input',function(e){
+ var t=e.target;if(t.tagName!=='TEXTAREA')return;var v=t.closest('.var');st(v.dataset.n)[t.dataset.k]=t.value.trim();
+ $('cnt-fill').textContent=V.filter(function(x){return filled(x.name)}).length;
+ var d=v.querySelector('.dot'),f=filled(v.dataset.n)&&(STATE[v.dataset.n].me||STATE[v.dataset.n].ot);
+ if(f&&!d)v.querySelector('.n').insertAdjacentHTML('beforeend','<span class="dot"></span>');if(!f&&d)d.remove();
+});
+$('q').addEventListener('input',function(){Q=this.value;build()});
+$('filt').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;FILT=b.dataset.f;[].forEach.call(this.children,function(x){x.setAttribute('aria-pressed',x===b)});build()});
+
+/* ---- mappa ---- */
+var PILL={D:'<span class="pill">DICHIARATO DAL CORSO</span>',A:'<span class="pill a">⚠ ASPETTO DEDOTTO</span>',W:'<span class="pill w">⚠ COLLOCAZIONE MIA</span>'};
+var FZ={D:'DECODE',P:'PROFILE',I:'INFLUENCE'};
+function toolHtml(t){
+ var on=SELT.indexOf(t.n)>-1,fz='';
+ (t.f||'').split('').forEach(function(c){if(FZ[c])fz+='<span class="fz '+c+'">'+FZ[c]+'</span>'});
+ return '<div class="tool"><div class="hd"><b>'+esc(t.n)+'</b>'+(PILL[t.a]||'')+'</div><span class="g">'+esc(t.c)+(t.w?' · '+esc(t.w):'')+'</span><span class="dsc">'+esc(t.d)+'</span>'+
+  (t.s&&t.s.length?'<details><summary>Come si fa</summary><ol>'+t.s.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ol></details>':'')+
+  '<div class="tb">'+fz+'<button class="btn sec sm'+(on?' on':'')+'" data-use="'+TI[t.n]+'" aria-pressed="'+on+'">'+(on?'✓ Nella sessione':'Usa nella sessione')+'</button></div></div>'}
+function mpInit(){
+ var h='<option value="">Scegli l\'intelligenza</option>';
+ IGS.forEach(function(x){h+='<option value="'+x+'">'+(x==='Riferimento'?'Baseline (riferimento)':x+' · '+SYS[x])+'</option>'});
+ h+='<option value="@unp">Strumenti non collocati</option>';
+ $('mp-i').innerHTML=h;mpAreas()}
+function mpAreas(){
+ var i=$('mp-i').value,s='<option value="">Scegli l\'area</option>',seen={};
+ if(i&&i!=='@unp')V.filter(function(v){return v.i===i}).forEach(function(v){if(!seen[v.area]){seen[v.area]=1;s+='<option>'+esc(v.area)+'</option>'}});
+ $('mp-a').innerHTML=s;$('mp-a').disabled=!(i&&i!=='@unp');mpAsp()}
+function mpAsp(){
+ var i=$('mp-i').value,a=$('mp-a').value,s='<option value="">Scegli l\'aspetto</option>';
+ if(a)V.filter(function(v){return v.i===i&&v.area===a}).forEach(function(v){s+='<option value="'+esc(v.name)+'">'+esc(label(v))+(v.t.length?' · '+v.t.length+(v.t.length===1?' strumento':' strumenti'):'')+'</option>'});
+ $('mp-s').innerHTML=s;$('mp-s').disabled=!a;mpRender()}
+function areaCard(i,a){
+ var list=V.filter(function(v){return v.i===i&&v.area===a});
+ return '<div class="card"><div class="trail"><b>'+esc(i)+'</b>'+(SYS[i]?' · '+SYS[i]:'')+' › <b>'+esc(a)+'</b></div><div><small class="muted">Come la descrive il corso</small><div>'+esc(AREAS[a]||'')+'</div></div><div class="achips">'+list.map(chip).join('')+'</div></div>'}
+function chip(v){return '<button class="ach k'+kn(v.name)+'" data-n="'+esc(v.name)+'"><span class="kd"></span>'+esc(label(v))+(v.t.length?'<span class="n2">'+v.t.length+'</span>':'')+'</button>'}
+function wheel(only){
+ var h='<div class="card"><h3>Tutta la ruota</h3><div class="leg"><span>Il numero accanto a un aspetto dice quanti strumenti del corso ci sono collocati.</span><span><span class="kd"></span> non esplorato</span><span><span class="kd k1"></span> in superficie</span><span><span class="kd k2"></span> lo padroneggio</span></div></div>';
+ IGS.forEach(function(ig){if(ig==='Riferimento'||(only&&ig!==only))return;
+  var list=V.filter(function(v){return v.i===ig}),nt=0,nk=0,last='';
+  list.forEach(function(v){nt+=v.t.length;if(kn(v.name)>=1)nk++});
+  h+='<details class="ig" style="--c:var('+COL[ig]+')"'+(only?' open':'')+'><summary><span class="chev">▸</span><b>'+ig+'</b><span class="sy">'+SYS[ig]+'</span><span class="cnt">'+nt+' strumenti · esplorati '+nk+'/15</span></summary>';
+  list.forEach(function(v){if(v.area!==last){if(last)h+='</div></div>';h+='<div class="arow"><span class="an">'+esc(v.area)+'</span><div class="achips">';last=v.area}h+=chip(v)});
+  h+='</div></div></details>'});
+ return h}
+function mpUnp(){return '<div class="card i"><div class="ph"><div class="num">+</div><div><h3>Strumenti non collocati</h3><small>Nel materiale non c\'è un aspetto a cui legarli</small></div></div><div class="kv">'+UNP.map(toolHtml).join('')+'</div></div>'}
+function aspectHtml(v){
+ var k=v.k,w=String(k[4]).indexOf('⚠')===0,nm=label(v),s=kn(v.name);
+ var h='<div class="row"><button class="btn sec sm" id="mp-back">← Tutta la ruota</button></div>';
+ h+='<div class="card"><div class="trail"><b>'+esc(v.i)+'</b>'+(SYS[v.i]?' · '+SYS[v.i]:'')+' › '+esc(v.area)+' › <b>'+esc(nm)+'</b>'+(v.libro&&v.asp!=='baseline'?' <span class="pill">LIBRO 5 · '+esc(v.libro)+'</span>':'')+'</div>'+
+  '<h2>'+esc(nm)+'</h2><div><small class="muted">Domanda guida</small><div>'+esc(v.cue)+'</div></div>'+
+  (AREAS[v.area]?'<div><small class="muted">L\'area '+esc(v.area)+' secondo il corso</small><div class="muted" style="color:var(--fg)">'+esc(AREAS[v.area])+'</div></div>':'')+
+  (v.asp!=='baseline'?'<div><label id="kn-l">Quanto lo conosco<div class="hint">Autoanalisi proposta dal corso: guardare il modello e segnare cosa padroneggi, cosa conosci in superficie, cosa non hai esplorato.</div></label><div class="seg" id="kn" role="group" aria-labelledby="kn-l" style="margin-top:6px">'+
+   ['Non esplorato','In superficie','Padroneggio'].map(function(t,i){return '<button data-s="'+i+'" aria-pressed="'+(s===i)+'">'+t+'</button>'}).join('')+'</div></div>':'')+'</div>';
+ h+='<div class="card d"><div class="ph"><div class="num">D</div><div><h3>Decode · cosa osservo</h3><small>Solo fatti</small></div></div><div class="kv">'
+  +'<div><small>Criterio · quando conta</small>'+esc(k[0])+'</div>'
+  +'<div><small>Logica di lettura</small>'+esc(k[1])+'</div>'
+  +'<div><small>Indicatori</small>'+esc(k[2])+'</div>'
+  +'<div><small>Da non concludere</small>'+esc(k[3])+'</div>'
+  +'<div><small>Fonte</small>'+(w?'<span class="pill w">⚠ MIA APPLICAZIONE</span> ':'')+esc(String(k[4]).replace(/^⚠\s*/,''))+'</div></div>'
+  +'<div class="row"><button class="btn sec" id="mp-go">Apri in Decode</button></div></div>';
+ h+='<div class="card p"><div class="ph"><div class="num">P</div><div><h3>Profile · come lo collego</h3><small>Domande per questo aspetto</small></div></div><div class="steps"><div>Con quali altri aspetti, di altre intelligenze, va nella stessa direzione?</div><div>So davvero che effetto ha «'+esc(nm)+'» in questa interazione, o è un\'ipotesi?</div></div></div>';
+ h+='<div class="card i"><div class="ph"><div class="num">I</div><div><h3>Influence · strumenti</h3><small>'+(v.t.length?v.t.length+(v.t.length===1?' collegato':' collegati')+' a questo aspetto':'Nessuno collocato nel materiale')+'</small></div></div><div class="kv">'
+  +(v.t.length?v.t.map(toolHtml).join(''):'<p class="muted">Nel materiale che ho letto non c\'è uno strumento collocato su questo aspetto: lo lascio vuoto invece di inventarlo.</p>')
+  +'</div><div class="steps"><div>Che risultato voglio, e quale strumento è il più adatto a questa persona e a questo contesto?</div><div>Che effetto mi aspetto, e cosa mi dice che sto sbagliando?</div></div></div>';
+ return h}
+var WCX=300,WR=[92,136,139,180,183,264],WSPAN={};
+function wp(r,a){return (WCX+r*Math.cos(a)).toFixed(2)+' '+(WCX+r*Math.sin(a)).toFixed(2)}
+function wsec(r0,r1,a0,a1){var l=(a1-a0)>Math.PI?1:0;return 'M'+wp(r1,a0)+'A'+r1+' '+r1+' 0 '+l+' 1 '+wp(r1,a1)+'L'+wp(r0,a1)+'A'+r0+' '+r0+' 0 '+l+' 0 '+wp(r0,a0)+'Z'}
+function warc(r,a0,a1){var m=(a0+a1)/2;return Math.sin(m)>0.05?'M'+wp(r,a1)+'A'+r+' '+r+' 0 0 0 '+wp(r,a0):'M'+wp(r,a0)+'A'+r+' '+r+' 0 0 1 '+wp(r,a1)}
+function wheelSvg(){
+ var W=V.filter(function(v){return v.i!=='Riferimento'}),st=2*Math.PI/W.length,a=-Math.PI/2,h='<svg viewBox="30 30 540 540" role="img" aria-label="Ruota HCE: 5 intelligenze, 25 aree, 75 aspetti. Gli stessi filtri sono nei menu accanto."><defs>',body='',k=0;
+ IGS.forEach(function(ig){var L=W.filter(function(v){return v.i===ig});if(!L.length)return;
+  var a0=a,a1=a+st*L.length,c='style="--c:var('+COL[ig]+')"';WSPAN[ig]=[a0,a1];
+  h+='<path id="wpi'+k+'" d="'+warc((WR[0]+WR[1])/2-4*(Math.sin((a0+a1)/2)>0.05?-1:1),a0,a1)+'"/>';
+  body+='<path class="wi" '+c+' data-w="i" data-v="'+ig+'" d="'+wsec(WR[0],WR[1],a0+.004,a1-.004)+'"/><text class="ti" text-anchor="middle"><textPath href="#wpi'+k+'" startOffset="50%">'+ig.toUpperCase()+'</textPath></text>';
+  var areas=[];L.forEach(function(v){if(areas.indexOf(v.area)<0)areas.push(v.area)});
+  areas.forEach(function(ar,j){var b0=a0+j*3*st,b1=b0+3*st,id='wpa'+k+'_'+j;
+   h+='<path id="'+id+'" d="'+warc((WR[2]+WR[3])/2-2.4*(Math.sin((b0+b1)/2)>0.05?-1:1),b0,b1)+'"/>';
+   body+='<path class="wa" '+c+' data-w="a" data-v="'+esc(ar)+'" data-i="'+ig+'" d="'+wsec(WR[2],WR[3],b0+.003,b1-.003)+'"/><text class="ta" text-anchor="middle"><textPath href="#'+id+'" startOffset="50%">'+esc(ar)+'</textPath></text>'});
+  L.forEach(function(v,j){var b0=a0+j*st,b1=b0+st,m=(b0+b1)/2,deg=m*180/Math.PI,left=Math.cos(m)<0;
+   body+='<path class="wn" '+c+' data-w="n" data-v="'+esc(v.name)+'" data-a="'+esc(v.area)+'" d="'+wsec(WR[4],WR[5],b0,b1)+'"/>'+
+    '<text class="tn" dominant-baseline="central" '+(left?'text-anchor="end" x="'+(WCX-WR[4]-5)+'" y="'+WCX+'" transform="rotate('+(deg+180).toFixed(2)+' '+WCX+' '+WCX+')"':'x="'+(WCX+WR[4]+5)+'" y="'+WCX+'" transform="rotate('+deg.toFixed(2)+' '+WCX+' '+WCX+')"')+'>'+esc(v.asp)+'</text>'+
+    '<path class="wk" data-k="'+esc(v.name)+'" fill="none" stroke-width="3" d="M'+wp(WR[5]+3,b0+.01)+'A'+(WR[5]+3)+' '+(WR[5]+3)+' 0 0 1 '+wp(WR[5]+3,b1-.01)+'"/>'});
+  a=a1;k++});
+ return h+'</defs>'+body+'<text class="tc" x="300" y="306">HCE</text></svg>'}
+function wheelSync(){
+ var i=$('mp-i').value,ar=$('mp-a').value,n=$('mp-s').value,box=$('wheelsvg');
+ [].forEach.call(box.querySelectorAll('.wi'),function(p){p.classList.toggle('sel',p.dataset.v===i)});
+ [].forEach.call(box.querySelectorAll('.wa'),function(p){p.classList.toggle('sel',p.dataset.i===i&&p.dataset.v===ar);p.classList.toggle('dim',!!i&&i!=='@unp'&&p.dataset.i!==i)});
+ [].forEach.call(box.querySelectorAll('.wn'),function(p){var v=BYNAME[p.dataset.v];p.classList.toggle('sel',p.dataset.v===n);p.classList.toggle('dim',!!i&&i!=='@unp'&&(v.i!==i||(!!ar&&v.area!==ar)))});
+ [].forEach.call(box.querySelectorAll('.wk'),function(p){var s=kn(p.dataset.k);p.setAttribute('stroke',s===2?'var(--ok)':s===1?'var(--star)':'none')});
+ var svg=box.querySelector('svg'),vb='30 30 540 540';
+ if(WSPAN[i]&&window.innerWidth<980){var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9,q,r,x,y;
+  for(q=0;q<=24;q++){var an=WSPAN[i][0]+(WSPAN[i][1]-WSPAN[i][0])*q/24;[WR[0],WR[5]+4].forEach(function(r){x=WCX+r*Math.cos(an);y=WCX+r*Math.sin(an);x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y)})}
+  vb=(x0-8).toFixed(0)+' '+(y0-8).toFixed(0)+' '+(x1-x0+16).toFixed(0)+' '+(y1-y0+16).toFixed(0)}
+ if(svg)svg.setAttribute('viewBox',vb);
+ var v=BYNAME[n];$('wcap').innerHTML=v?'<b>'+esc(v.i)+'</b> › '+esc(v.area)+' › <b>'+esc(label(v))+'</b>':(i&&i!=='@unp'?'<b>'+esc(i)+' · '+SYS[i]+'</b>'+(ar?' › '+esc(ar):'')+' <span class="muted">· tocca di nuovo l\'intelligenza per tornare alla ruota intera</span>':'<span class="muted">Nessun filtro</span>')}
+function mpRender(){
+ var i=$('mp-i').value,a=$('mp-a').value,n=$('mp-s').value,v=BYNAME[n],out='';
+ if(i==='@unp')out=mpUnp();else if(v)out=aspectHtml(v);else if(a)out=areaCard(i,a);
+ $('mp-out').innerHTML=out;
+ $('mp-wheel').hidden=!!(v||i==='@unp');
+ if(!$('mp-wheel').hidden)$('mp-wheel').innerHTML=wheel(i&&i!=='@unp'?i:'');
+ wheelSync();
+}
+function mpOpen(n){var v=BYNAME[n];if(!v)return;$('mp-i').value=v.i;mpAreas();$('mp-a').value=v.area;mpAsp();$('mp-s').value=v.name;mpRender();
+ $('mp-q').value='';$('mp-res').hidden=true;var o=$('mp-out');if(o.scrollIntoView&&!$('v-mappa').hidden)o.scrollIntoView({block:'start'})}
+function mpHome(){$('mp-i').value='';mpAreas();window.scrollTo(0,0)}
+$('wheelsvg').innerHTML=wheelSvg();
+$('wheelsvg').addEventListener('click',function(e){var p=e.target.closest('[data-w]');if(!p)return;var w=p.dataset.w,v=p.dataset.v;
+ if(w==='n'){if($('mp-s').value===v){$('mp-s').value='';mpRender()}else{mpOpen(v);if(window.innerWidth<980)$('mp-out').scrollIntoView({block:'start'})}return}
+ if(w==='i'){$('mp-i').value=$('mp-i').value===v?'':v;mpAreas();return}
+ if(w==='a'){var same=$('mp-i').value===p.dataset.i&&$('mp-a').value===v&&!$('mp-s').value;$('mp-i').value=p.dataset.i;mpAreas();if(!same){$('mp-a').value=v;mpAsp()}}});
+$('mp-i').addEventListener('change',mpAreas);$('mp-a').addEventListener('change',mpAsp);$('mp-s').addEventListener('change',mpRender);
+$('v-mappa').addEventListener('click',function(e){
+ var c=e.target.closest('.ach');if(c){mpOpen(c.dataset.n);return}
+ var u=e.target.closest('[data-use]');if(u){toggleTool(TN[+u.dataset.use].t.n);var on=SELT.indexOf(TN[+u.dataset.use].t.n)>-1;u.classList.toggle('on',on);u.setAttribute('aria-pressed',on);u.textContent=on?'✓ Nella sessione':'Usa nella sessione';return}
+ var r=e.target.closest('[data-r]');if(r){if(r.dataset.r==='@unp'){$('mp-i').value='@unp';mpAreas();$('mp-q').value='';$('mp-res').hidden=true}else mpOpen(r.dataset.r);return}
+ if(e.target.id==='mp-back'){mpHome();return}
+ if(e.target.id==='mp-go'){var v=BYNAME[$('mp-s').value];if(!v)return;FILT='all';Q=v.name;$('q').value=Q;[].forEach.call($('filt').children,function(x){x.setAttribute('aria-pressed',x.dataset.f==='all')});build();tab('prima');return}
+ var k=e.target.closest('#kn button');if(k){var n=$('mp-s').value;KNOW[n]={s:+k.dataset.s,t:Date.now()};[].forEach.call($('kn').children,function(x){x.setAttribute('aria-pressed',x===k)});persist()}
+});
+$('mp-q').addEventListener('input',function(){
+ var q=this.value.trim().toLowerCase(),box=$('mp-res');if(q.length<2){box.hidden=true;box.innerHTML='';return}
+ var h='',n=0;
+ V.forEach(function(v){if(n<14&&(v.name+' '+v.i+' '+v.cue+' '+(v.libro||'')).toLowerCase().indexOf(q)>-1){h+='<button data-r="'+esc(v.name)+'">'+esc(label(v))+'<small>Aspetto · '+esc(v.i)+' › '+esc(v.area)+'</small></button>';n++}});
+ TN.forEach(function(x){if(n<14&&(x.t.n+' '+x.t.d+' '+x.t.c+' '+x.t.s.join(' ')).toLowerCase().indexOf(q)>-1){var w=x.w[0];h+='<button data-r="'+esc(w||'@unp')+'">'+esc(x.t.n)+'<small>Strumento · '+(w?esc(x.w.join(', ')):'non collocato')+' · '+esc(x.t.c)+'</small></button>';n++}});
+ box.innerHTML=h||'<p class="muted">Niente con questo nome. Prova una parola più corta.</p>';box.hidden=false});
+mpInit();
+
+function readVars(){var o={};Object.keys(STATE).forEach(function(k){var s=STATE[k];if(s.me||s.ot||s.star)o[k]={me:s.me,ot:s.ot,star:!!s.star}});return o}
+function tab(t){[].forEach.call(document.querySelectorAll('.tab'),function(b){b.setAttribute('aria-selected',b.dataset.t===t)});
+ ['come','mappa','prima','dopo','storico'].forEach(function(x){$('v-'+x).hidden=x!==t});document.body.classList.toggle('wide',t==='mappa');
+ if(t==='dopo')fillSel();if(t==='storico')renderHist();if(t==='mappa')mpRender();window.scrollTo(0,0)}
+document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(b)tab(b.dataset.t)});
+$('go-prima').addEventListener('click',function(){tab('prima')});
+$('go-mappa0').addEventListener('click',function(){tab('mappa')});
+$('go-mappa').addEventListener('click',function(){tab('mappa')});
+var IDS=['p-ctx','d-emo','p-f','p-c','p-w','i-t','i-a','i-w','i-p'];
+function clearPrima(){IDS.forEach(function(i){$(i).value=''});cur.int=0;paint('d-int',0);STATE={};SELT=[];build()}
+$('clear-prima').addEventListener('click',clearPrima);
+$('save-prima').addEventListener('click',function(){
+ if(!$('p-ctx').value.trim()){$('p-ctx').focus();setSync('Scrivi prima quale interazione');return}
+ var s={id:String(Date.now()),date:new Date().toISOString().slice(0,10),ctx:$('p-ctx').value.trim(),
+  d:{emo:$('d-emo').value,int:cur.int,vars:readVars()},p:{f:$('p-f').value,c:$('p-c').value,w:$('p-w').value},
+  i:{t:$('i-t').value,a:$('i-a').value,why:$('i-w').value,p:$('i-p').value,tools:SELT.slice()},after:null};
+ DATA.unshift(s);persist();clearPrima();tab('storico')});
+function tl(s){return s.i&&s.i.tools&&s.i.tools.length?s.i.tools:[]}
+function open_(){return DATA.filter(function(s){return !s.after})}
+function fillSel(){var o=open_(),h='';if(!o.length)h='<option value="">Nessuna sessione aperta</option>';else o.forEach(function(s){h+='<option value="'+s.id+'">'+esc(s.date+' · '+s.ctx)+'</option>'});$('a-sel').innerHTML=h;showPrev()}
+function showPrev(){var s=DATA.filter(function(x){return x.id===$('a-sel').value})[0];$('a-form').hidden=!s;
+ $('a-prev').innerHTML=s?'<b>Avevi previsto:</b> '+esc(s.i.p||'—')+'<br><b>Avevi scelto:</b> '+esc((s.i.t?s.i.t+' — ':'')+(s.i.a||'—'))+(tl(s).length?'<br><b>Strumenti:</b> '+esc(tl(s).join(', ')):''):'Prima compila la scheda «Prima», poi torna qui a fine interazione.'}
+$('a-sel').addEventListener('change',showPrev);
+$('save-dopo').addEventListener('click',function(){var s=DATA.filter(function(x){return x.id===$('a-sel').value})[0];if(!s)return;
+ s.after={f:$('a-f').value,int:curA.int,ok:curA.ok,l:$('a-l').value,n:$('a-n').value,date:new Date().toISOString().slice(0,10)};
+ ['a-f','a-l','a-n'].forEach(function(i){$(i).value=''});curA.int=0;curA.ok='';paint('a-int',0);
+ [].forEach.call($('a-ok').children,function(x){x.setAttribute('aria-pressed','false')});persist();tab('storico')});
+function renderHist(){
+ var done=DATA.filter(function(s){return s.after}),ok=done.filter(function(s){return s.after.ok==='Sì'}).length,part=done.filter(function(s){return s.after.ok==='In parte'}).length;
+ $('st-sum').innerHTML='<h3>Il tuo andamento</h3><div class="stats"><div class="stat"><b>'+DATA.length+'</b><span>sessioni</span></div><div class="stat"><b>'+done.length+'</b><span>chiuse</span></div><div class="stat"><b>'+(done.length?Math.round(ok/done.length*100)+'%':'—')+'</b><span>previsioni «Sì»</span></div></div>'+
+  (done.length?'<p class="muted">'+ok+' sì, '+part+' in parte, '+(done.length-ok-part)+' no. Se la quota sale nel tempo, il tuo profile sta migliorando.</p>':'<p class="muted">Chiudi qualche sessione con «Dopo»: il confronto previsione-realtà è ciò che ti fa migliorare.</p>');
+ var ts={},names=[];DATA.forEach(function(s){tl(s).forEach(function(n){if(!ts[n]){ts[n]={u:0,c:0,ok:0};names.push(n)}ts[n].u++;if(s.after){ts[n].c++;if(s.after.ok==='Sì')ts[n].ok++}})});
+ $('st-tools').hidden=!names.length;
+ if(names.length){names.sort(function(a,b){return ts[b].u-ts[a].u});
+  $('st-tools').innerHTML='<h3>Strumenti usati</h3><dl>'+names.map(function(n){var x=ts[n];return '<dt>'+esc(n)+'</dt><dd>'+x.u+(x.u===1?' volta':' volte')+(x.c?' · previsione «Sì» '+x.ok+' su '+x.c+(x.c===1?' chiusa':' chiuse'):' · nessuna sessione chiusa')+'</dd>'}).join('')+'</dl><p class="muted">Con poche sessioni è solo un promemoria: uno strumento può aver funzionato per altri motivi.</p>'}
+ var h='';DATA.forEach(function(s){var sv=[];if(s.d&&s.d.vars)Object.keys(s.d.vars).forEach(function(k){if(s.d.vars[k].star)sv.push(k)});
+  h+='<div class="hist"><div class="row"><span class="pill'+(s.after?'':' w')+'">'+(s.after?'CHIUSA':'APERTA')+'</span><span class="muted">'+esc(s.date)+'</span></div><div class="t">'+esc(s.ctx)+'</div><dl>'+
+   '<dt>Decode</dt><dd>'+esc(s.d.emo||'')+(s.d.int?' ('+s.d.int+'/5)':'')+(sv.length?' · ★ '+esc(sv.join(', ')):'')+'</dd>'+
+   '<dt>Profile</dt><dd>'+esc(s.p.f||'—')+(s.p.c?' ('+esc(s.p.c)+')':'')+'</dd>'+
+   '<dt>Influence</dt><dd>'+esc((s.i.t?s.i.t+': ':'')+(s.i.a||''))+'</dd>'+(tl(s).length?'<dt>Strumenti</dt><dd>'+esc(tl(s).join(', '))+'</dd>':'')+'<dt>Previsione</dt><dd>'+esc(s.i.p||'—')+'</dd>'+
+   (s.after?'<dt>Esito</dt><dd>'+esc(s.after.ok||'—')+'</dd><dt>Appreso</dt><dd>'+esc(s.after.l||'—')+'</dd><dt>Prossima volta</dt><dd>'+esc(s.after.n||'—')+'</dd>':'')+'</dl></div>'});
+ $('st-list').innerHTML=h||'<p class="muted">Ancora nessuna sessione.</p>'}
+$('wipe').addEventListener('click',function(){$('wipeq').hidden=false});
+$('wipe-n').addEventListener('click',function(){$('wipeq').hidden=true});
+$('wipe-y').addEventListener('click',function(){DATA=[];$('wipeq').hidden=true;persist();renderHist()});
+function merge(txt){try{var R=JSON.parse(txt),seen={};DATA.forEach(function(s){seen[s.id]=1});R.forEach(function(s){if(!seen[s.id])DATA.push(s)});DATA.sort(function(a,b){return b.id>a.id?1:-1})}catch(e){}}
+function mergeKnow(txt){try{var R=JSON.parse(txt);Object.keys(R).forEach(function(k){var a=KNOW[k],b=R[k];if(b&&typeof b.s==='number'&&(!a||(b.t||0)>(a.t||0)))KNOW[k]=b})}catch(e){}}
+DATA=lsGet(KEY,[]);if(!Array.isArray(DATA))DATA=[];KNOW=lsGet(KKEY,{})||{};
+setSync('Salvato su questo dispositivo');build();mpRender();
+(async function(){try{
+ if(!window.claude||!claude.use)return;
+ var db=await claude.use('db'),user=await claude.use('user');if(!db||!user)return;
+ var id=await user.id();if(!id)return;
+ var r=db.collection('data/users/'+id).doc('dpi_sessions'),snap=await r.get();
+ if(snap.exists){var d=snap.data();if(d&&d.data)merge(d.data);if(d&&d.know)mergeKnow(d.know)}
+ ref=r;lsSave();await r.set({data:JSON.stringify(DATA),know:JSON.stringify(KNOW)});setSync('Salvato');
+ if(!$('v-storico').hidden)renderHist();if(!$('v-mappa').hidden)mpRender();
+}catch(e){}})();
+});
+</script>
+
+</body></html>
