@@ -109,19 +109,48 @@ var HCE = (function () {
   }
 
   /* barra di navigazione comune */
+  var ICON = {
+    home: '<path d="M3 11 12 4l9 7v9H3z"/><path d="M9 20v-6h6v6"/>',
+    studio: '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M8 7h7"/>',
+    dpi: '<path d="M4 6h16M4 12h10M4 18h7"/><circle cx="18" cy="17" r="3"/>'
+  };
   function nav(cur) {
-    var items = [['index.html', 'Home', 'home'], ['studio.html', 'Studio', 'studio'], ['protocollo.html', 'Protocollo D-P-I', 'dpi']];
+    var items = [['index.html', 'Percorso', 'home'], ['studio.html', 'Studio', 'studio'], ['protocollo.html', 'D-P-I', 'dpi']];
+    document.body.classList.add(cur);
     var bar = document.createElement('div');
     bar.className = 'appbar';
+    bar.setAttribute('role', 'navigation'); bar.setAttribute('aria-label', 'Sezioni');
     bar.innerHTML = items.map(function (i) {
-      return '<a href="' + i[0] + '"' + (i[2] === cur ? ' aria-current="page"' : '') + '>' + i[1] + '</a>';
+      return '<a href="' + i[0] + '"' + (i[2] === cur ? ' aria-current="page"' : '') + '><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICON[i[2]] + '</svg>' + i[1] + '</a>';
     }).join('');
-    document.body.insertBefore(bar, document.body.firstChild);
+    document.body.appendChild(bar);
+  }
+
+  /* gioco: XP, serie di giorni, obiettivo del giorno */
+  var GOAL = { mods: 2, sess: 1 };
+  function dayKey(ts) { var d = new Date(ts); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+  function stats() {
+    var done = J(lsGet('studio_hce_v1'), {}) || {}, ses = J(lsGet('dpi_su_di_me_v1'), []) || [];
+    var days = {}, today = dayKey(Date.now()), tm = 0, tsx = 0, nm = 0, xp = 0;
+    Object.keys(done).forEach(function (k) {
+      var t = done[k]; if (!(t > 0)) return; nm++; xp += 10;
+      if (t > 1e12) { days[dayKey(t)] = 1; if (dayKey(t) === today) tm++; }
+    });
+    ses.forEach(function (s) {
+      var t = +s.id; xp += 30 + (s.after ? 10 : 0);
+      if (t > 1e12) { days[dayKey(t)] = 1; if (dayKey(t) === today) tsx++; }
+    });
+    var streak = 0, d = new Date();
+    if (!days[dayKey(d)]) d.setDate(d.getDate() - 1);
+    while (days[dayKey(d)]) { streak++; d.setDate(d.getDate() - 1); }
+    var goal = Math.min(tm, GOAL.mods) + Math.min(tsx, GOAL.sess);
+    return { xp: xp, streak: streak, today: !!days[today], mods: nm, sessions: ses.length, done: done,
+      goal: goal, goalMax: GOAL.mods + GOAL.sess, todayMods: tm, todaySess: tsx };
   }
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
   }
   if (navigator.storage && navigator.storage.persist) { navigator.storage.persist().catch(function () {}); }
 
-  return { get: get, pack: pack, ready: ready, importPack: importPack, exportBackup: exportBackup, importBackup: importBackup, save: save, nav: nav, USER_KEYS: USER_KEYS };
+  return { get: get, pack: pack, ready: ready, importPack: importPack, exportBackup: exportBackup, importBackup: importBackup, save: save, nav: nav, stats: stats, USER_KEYS: USER_KEYS };
 })();

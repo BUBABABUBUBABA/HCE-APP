@@ -11,7 +11,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="HCE">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap">
 <style>
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0}img{max-width:100%}[hidden]{display:none!important}
@@ -607,4 +607,73 @@ setSync('Salvato su questo dispositivo');build();mpRender();
 });
 </script>
 
+<style>
+/* Tema "gioco": colori, caratteri arrotondati, pulsanti in rilievo. Caricato dopo gli stili di ogni pagina. */
+:root{
+ --bg:#F7F8FC;--surface:#FFFFFF;--sunk:#F1F3F9;--fg:#1B2240;--muted:#5A6385;--line:#E3E7F0;--line2:#EDF0F6;
+ --accent:#2F6BFF;--accent-dk:#1E4FD6;--accent-fg:#FFFFFF;--accent-soft:#EAF0FF;
+ --star:#F5A524;--star-dk:#C98408;--star-soft:#FFF4DE;--warn:#C2410C;--warn-soft:#FFEDE3;
+ --ok:#12805A;--ok-bg:#1FB37A;--ok-dk:#138A5C;--ok-soft:#E3F7EE;--fire:#FF8A3D;
+ --c1:#2F6BFF;--c2:#16A06B;--c3:#E08E0B;--c4:#8B5CF6;--c5:#EF5350;
+ --d:#2F6BFF;--d-soft:#EAF0FF;--p:#8B5CF6;--p-soft:#F3EEFF;--i:#E8590C;--i-soft:#FFEDE3;
+ --shadow:none;--lift:0 3px 0 var(--line);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#0F1426;--surface:#182038;--sunk:#131A30;--fg:#EEF1FA;--muted:#A3ACC9;--line:#2A3459;--line2:#222B4A;
+ --accent:#6F97FF;--accent-dk:#3F66D6;--accent-fg:#0B1020;--accent-soft:#1D2A52;
+ --star:#FFC247;--star-dk:#B88310;--star-soft:#3A2F14;--warn:#FF9B6A;--warn-soft:#3B2318;
+ --ok:#4FD69C;--ok-bg:#2FBF83;--ok-dk:#1B7F56;--ok-soft:#14352A;--fire:#FF9D5C;
+ --c1:#7EA2FF;--c2:#4FD69C;--c3:#FFC247;--c4:#B69CFF;--c5:#FF8A80;
+ --d:#7EA2FF;--d-soft:#1D2A52;--p:#B69CFF;--p-soft:#2A2350;--i:#FF9B6A;--i-soft:#3B2318;
+ --shadow:none;--lift:0 3px 0 var(--line);color-scheme:dark}}
+:root[data-theme="dark"]{
+ --bg:#0F1426;--surface:#182038;--sunk:#131A30;--fg:#EEF1FA;--muted:#A3ACC9;--line:#2A3459;--line2:#222B4A;
+ --accent:#6F97FF;--accent-dk:#3F66D6;--accent-fg:#0B1020;--accent-soft:#1D2A52;
+ --star:#FFC247;--star-dk:#B88310;--star-soft:#3A2F14;--warn:#FF9B6A;--warn-soft:#3B2318;
+ --ok:#4FD69C;--ok-bg:#2FBF83;--ok-dk:#1B7F56;--ok-soft:#14352A;--fire:#FF9D5C;
+ --c1:#7EA2FF;--c2:#4FD69C;--c3:#FFC247;--c4:#B69CFF;--c5:#FF8A80;
+ --d:#7EA2FF;--d-soft:#1D2A52;--p:#B69CFF;--p-soft:#2A2350;--i:#FF9B6A;--i-soft:#3B2318;
+ --shadow:none;--lift:0 3px 0 var(--line);color-scheme:dark}
+
+html body,html body *:not(svg):not(svg *):not(code):not(pre){font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif}
+html body svg text{font-family:Nunito,system-ui,sans-serif!important}
+body{background:var(--bg);color:var(--fg);padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))!important}
+h1,h2,h3{font-weight:900!important;letter-spacing:-.01em}
+h1{font-size:1.9rem}
+.eyebrow,.ph,.area{font-weight:800!important}
+
+/* schede */
+.card,.hist,.mod,details.lv,.ig{border:2px solid var(--line)!important;border-radius:20px!important;box-shadow:var(--lift)!important}
+.mod.done{background:var(--ok-soft)!important;border-color:var(--ok-bg)!important;box-shadow:0 3px 0 var(--ok-bg)!important}
+
+/* pulsanti in rilievo */
+.btn{border-radius:14px!important;font-weight:800!important;letter-spacing:.02em;border:2px solid var(--line)!important;box-shadow:0 4px 0 var(--line);transition:transform .06s,box-shadow .06s}
+.btn.pri,.dpi .btn:not(.sec):not(.on){background:var(--accent)!important;color:var(--accent-fg)!important;border-color:var(--accent)!important;box-shadow:0 4px 0 var(--accent-dk)}
+.btn:active,.chk:active,.star:active,.ch:active,.scale button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.btn.pri:active{box-shadow:0 1px 0 var(--accent-dk)}
+.chk,.star{border:2px solid var(--line)!important;border-radius:14px!important;box-shadow:0 3px 0 var(--line)}
+.chk[aria-pressed="true"]{background:var(--ok-bg)!important;border-color:var(--ok-bg)!important;color:#fff!important;box-shadow:0 3px 0 var(--ok-dk)}
+.star[aria-pressed="true"]{background:var(--star)!important;border-color:var(--star)!important;box-shadow:0 3px 0 var(--star-dk)}
+.scale button,.ch{border:2px solid var(--line)!important;border-radius:14px!important;font-weight:800!important;box-shadow:0 3px 0 var(--line)}
+.ch{border-radius:99px!important}
+.scale button[aria-pressed="true"]{background:var(--accent)!important;border-color:var(--accent)!important;color:var(--accent-fg)!important;box-shadow:0 3px 0 var(--accent-dk)}
+
+/* schede (tabs) */
+.tabs,.seg{background:var(--sunk)!important;border-radius:16px!important;padding:5px!important}
+.tab,.seg button{font-weight:800!important;border-radius:12px!important}
+.tab[aria-selected="true"],.seg button[aria-pressed="true"]{background:var(--accent)!important;color:var(--accent-fg)!important;box-shadow:0 3px 0 var(--accent-dk)!important}
+
+/* campi */
+textarea,input[type=text],input[type=search],select{border:2px solid var(--line)!important;border-radius:14px!important;background:var(--sunk)!important;font-weight:600}
+textarea:focus,input:focus,select:focus{outline:none!important;border-color:var(--accent)!important}
+.pill,.tag{font-weight:800!important}
+.bar{height:10px!important;border-radius:99px}.bar i{background:var(--ok-bg)!important;border-radius:99px}
+
+/* barra di navigazione in basso */
+.appbar{position:fixed!important;left:0;right:0;bottom:0;top:auto!important;z-index:15;max-width:none!important;margin:0!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px!important;
+ background:var(--surface);border-top:2px solid var(--line);padding:8px max(10px,env(safe-area-inset-left,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-right,0px))!important}
+.appbar a{display:flex!important;flex-direction:column;align-items:center;gap:2px;padding:6px 0!important;border-radius:14px!important;font-weight:800!important;font-size:.76rem!important;color:var(--muted)!important;background:none!important;max-width:160px;width:100%;justify-self:center}
+.appbar a svg{width:26px;height:26px}
+.appbar a[aria-current]{color:var(--accent)!important;background:var(--accent-soft)!important}
+</style>
 </body></html>
