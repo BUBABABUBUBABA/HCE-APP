@@ -1,5 +1,5 @@
 /* Service worker: tiene l'app disponibile offline. I contenuti del corso stanno in IndexedDB, non qui. */
-var CACHE = 'hce-app-2026-11-10-245dc73a';
+var CACHE = 'hce-app-2026-11-10-fde61ac3';
 var FILES = ["./", "index.html", "studio.html", "protocollo.html", "hce.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png", "icons/apple-touch-icon.png"];
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(FILES); }).then(function () { return self.skipWaiting(); }));
@@ -15,8 +15,8 @@ self.addEventListener('fetch', function (e) {
   var url = new URL(req.url);
   if (url.origin === location.origin) {
     // prima la rete (così vedi subito gli aggiornamenti), se offline la copia salvata
-    e.respondWith(fetch(req).then(function (r) {
-      if (r && r.ok) { var cp = r.clone(); caches.open(CACHE).then(function (c) { c.put(req, cp); }); }
+    e.respondWith(fetch(req, { credentials: 'include' }).then(function (r) {
+      if (r && r.ok && !r.redirected) { var cp = r.clone(); caches.open(CACHE).then(function (c) { c.put(req, cp); }); }
       return r;
     }).catch(function () { return caches.match(req, { ignoreSearch: true }).then(function (m) { return m || caches.match('./index.html'); }); }));
   } else if (/fonts\.(googleapis|gstatic)\.com$/.test(url.hostname)) {
