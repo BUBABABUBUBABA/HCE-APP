@@ -243,7 +243,7 @@ function show(t){document.querySelectorAll('.tab').forEach(function(b){b.setAttr
   ['matrice','casi','mix','sostanze','procedura','regole'].forEach(function(x){$('v-'+x).hidden=x!==t});window.scrollTo(0,0)}
 document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(b)show(b.dataset.t)});
 renderMat();
-var h0=(location.hash||'').slice(1);if(['casi','mix','sostanze','procedura','regole'].indexOf(h0)>=0)show(h0);
+var h0=(location.hash||'').slice(1);if(h0.indexOf('m=')===0){var mq=h0.slice(2).split(',');if(MX[+mq[0]]&&MX[+mq[1]]){FROM=+mq[0];TO=+mq[1];renderMat()}}else if(['casi','mix','sostanze','procedura','regole'].indexOf(h0)>=0)show(h0);
 });
 </script>
 

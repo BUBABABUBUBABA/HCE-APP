@@ -1,6 +1,6 @@
 /* Service worker: tiene l'app disponibile offline. I contenuti del corso stanno in IndexedDB, non qui. */
-var CACHE = 'hce-app-2026-11-11-7cb0553c';
-var FILES = ["./", "index.html", "percorso.html", "studio.html", "protocollo.html", "e3.html", "mib.html", "hce.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png", "icons/apple-touch-icon.png"];
+var CACHE = 'hce-app-2026-11-11-6908f48c';
+var FILES = ["./", "index.html", "percorso.html", "studio.html", "protocollo.html", "e3.html", "mib.html", "prep.html", "strumenti.html", "hce.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png", "icons/apple-touch-icon.png"];
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(FILES); }).then(function () { return self.skipWaiting(); }));
 });
