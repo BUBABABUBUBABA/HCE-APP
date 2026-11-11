@@ -1,7 +1,7 @@
 /* HCE app: database locale, pacchetto contenuti, backup, barra di navigazione */
 var HCE = (function () {
   var DBN = 'hce-app', DBV = 1, dbp = null;
-  var USER_KEYS = ['dpi_su_di_me_v1', 'dpi_know_v1', 'studio_hce_v1'];
+  var USER_KEYS = ['dpi_su_di_me_v1', 'dpi_know_v1', 'studio_hce_v1', 'e3_plans_v1'];
 
   function open() {
     if (dbp) return dbp;
@@ -48,7 +48,7 @@ var HCE = (function () {
   function importPack(text) {
     var p = JSON.parse(text);
     if (!p || p.app !== 'hce-contenuti') throw new Error('Questo non è il file dei contenuti HCE.');
-    var pack = { version: p.version, vs: p.vs, vd: p.vd, data: p.data, areas: p.areas, sys: p.sys, toolnames: p.toolnames, unp: p.unp, books: p.books };
+    var pack = { version: p.version, vs: p.vs, vd: p.vd, data: p.data, areas: p.areas, sys: p.sys, toolnames: p.toolnames, unp: p.unp, books: p.books, e3: p.e3 };
     return clear('appunti')
       .then(function () { return putAll('appunti', p.appunti); })
       .then(function () { return putAll('meta', { pack: pack, cerca: p.cerca }); })
@@ -92,6 +92,14 @@ var HCE = (function () {
     var da = J(lsGet('studio_hce_v1'), {}), db = J(b.data['studio_hce_v1'], {});
     Object.keys(db).forEach(function (k) { if (Math.abs(db[k] || 0) > Math.abs(da[k] || 0)) { da[k] = db[k]; n++; } });
     lsSet('studio_hce_v1', JSON.stringify(da));
+    // preparazioni E3: unione per id
+    var pa = J(lsGet('e3_plans_v1'), []), pb = J(b.data['e3_plans_v1'], []);
+    if (Array.isArray(pb)) {
+      var ps = {}; pa.forEach(function (x) { ps[x.id] = 1; });
+      pb.forEach(function (x) { if (x && !ps[x.id]) { pa.push(x); n++; } });
+      pa.sort(function (x, y) { return +y.id - +x.id; });
+      lsSet('e3_plans_v1', JSON.stringify(pa));
+    }
     return n;
   }
   function save(name, text) {
@@ -112,10 +120,11 @@ var HCE = (function () {
   var ICON = {
     home: '<path d="M3 11 12 4l9 7v9H3z"/><path d="M9 20v-6h6v6"/>',
     studio: '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M8 7h7"/>',
-    dpi: '<path d="M4 6h16M4 12h10M4 18h7"/><circle cx="18" cy="17" r="3"/>'
+    dpi: '<path d="M4 6h16M4 12h10M4 18h7"/><circle cx="18" cy="17" r="3"/>',
+    e3: '<path d="M5 6h6M5 12h6M5 18h6"/><path d="M15 5h4v4M15 19h4v-4M19 9l-4 3 4 3"/>'
   };
   function nav(cur) {
-    var items = [['index.html', 'Percorso', 'home'], ['studio.html', 'Studio', 'studio'], ['protocollo.html', 'D-P-I', 'dpi']];
+    var items = [['index.html', 'Percorso', 'home'], ['studio.html', 'Studio', 'studio'], ['e3.html', 'E³', 'e3'], ['protocollo.html', 'D-P-I', 'dpi']];
     document.body.classList.add(cur);
     var bar = document.createElement('div');
     bar.className = 'appbar';
@@ -140,11 +149,13 @@ var HCE = (function () {
       var t = +s.id; xp += 30 + (s.after ? 10 : 0);
       if (t > 1e12) { days[dayKey(t)] = 1; if (dayKey(t) === today) tsx++; }
     });
+    var plans = J(lsGet('e3_plans_v1'), []) || [];
+    plans.forEach(function (x) { var t = +x.id; xp += 20; if (t > 1e12) days[dayKey(t)] = 1; });
     var streak = 0, d = new Date();
     if (!days[dayKey(d)]) d.setDate(d.getDate() - 1);
     while (days[dayKey(d)]) { streak++; d.setDate(d.getDate() - 1); }
     var goal = Math.min(tm, GOAL.mods) + Math.min(tsx, GOAL.sess);
-    return { xp: xp, streak: streak, today: !!days[today], mods: nm, sessions: ses.length, done: done,
+    return { xp: xp, streak: streak, today: !!days[today], mods: nm, sessions: ses.length, plans: plans.length, done: done,
       goal: goal, goalMax: GOAL.mods + GOAL.sess, todayMods: tm, todaySess: tsx };
   }
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {

@@ -50,7 +50,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .big.w{background:var(--surface);color:var(--accent);box-shadow:0 4px 0 rgba(0,0,0,.18)}
 .big.g{background:var(--ok-bg);color:#fff;box-shadow:0 4px 0 var(--ok-dk)}
 .big:active{transform:translateY(3px);box-shadow:none}
-.quick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.quick{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .qk{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:var(--fg);background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:14px;box-shadow:0 3px 0 var(--line)}
 .qk:active{transform:translateY(2px);box-shadow:none}
 .qk .ic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--c-soft);color:var(--c);margin-bottom:4px}
@@ -113,6 +113,7 @@ input[type=file]{display:none}
 
     <div class="quick">
       <a class="qk" href="protocollo.html" style="--c:var(--c5);--c-soft:var(--warn-soft)"><span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h7"/><circle cx="18" cy="17" r="3"/></svg></span><b>Sessione D-P-I</b><span id="q-dpi">Su un'interazione vera</span></a>
+      <a class="qk" href="e3.html" style="--c:var(--c3);--c-soft:var(--star-soft)"><span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 6h6M5 12h6M5 18h6"/><path d="M15 5h4v4M15 19h4v-4M19 9l-4 3 4 3"/></svg></span><b>Algoritmo E³</b><span id="q-e3">27 strumenti · prepara</span></a>
       <a class="qk" href="studio.html" style="--c:var(--c1);--c-soft:var(--accent-soft)"><span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/></svg></span><b>Ruota HCE</b><span id="q-mods">Moduli per aspetto</span></a>
     </div>
   </div>
@@ -179,6 +180,7 @@ function draw(p){
     $('h-go').href='studio.html#m='+next.id;$('h-go').textContent=n?'CONTINUA':'INIZIA';}
   else{$('h-eb').textContent='Percorso completato';$('h-t').textContent='Hai studiato tutti i moduli';$('h-s').textContent='Ripassa dalla ruota o allenati con il D-P-I.';$('h-go').href='studio.html';$('h-go').textContent='RIPASSA'}
   $('q-dpi').textContent=S.sessions?S.sessions+(S.sessions===1?' sessione fatta':' sessioni fatte'):'Su un\'interazione vera';
+  $('q-e3').textContent=S.plans?S.plans+(S.plans===1?' interazione preparata':' interazioni preparate'):'27 strumenti · prepara';
   $('q-mods').textContent=S.mods+' di '+D.mods.length+' moduli studiati';
   // percorso
   var html='',lastP='',k=0,curSet=false;
@@ -207,7 +209,7 @@ $('f-bk').addEventListener('change',function(){var f=this.files[0];if(!f)return;
  readFile(f).then(function(t){var n=HCE.importBackup(t);msg('b-msg','Backup importato: '+n+' elementi aggiunti o aggiornati.',true);bstat();status()})
  .catch(function(e){msg('b-msg','Non riesco a importare: '+esc(e&&e.message?e.message:'file non valido'))});this.value=''});
 if(location.hash==='#contenuti')$('contenuti').open=true;
-$('ver').textContent='App versione 2026-11-10-de28e01d';
+$('ver').textContent='App versione 2026-11-11-d482ab8d';
 status();bstat();
 window.addEventListener('pageshow',function(e){if(e.persisted){status();bstat()}});
 })();
@@ -276,7 +278,7 @@ textarea:focus,input:focus,select:focus{outline:none!important;border-color:var(
 .bar{height:10px!important;border-radius:99px}.bar i{background:var(--ok-bg)!important;border-radius:99px}
 
 /* barra di navigazione in basso */
-.appbar{position:fixed!important;left:0;right:0;bottom:0;top:auto!important;z-index:15;max-width:none!important;margin:0!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px!important;
+.appbar{position:fixed!important;left:0;right:0;bottom:0;top:auto!important;z-index:15;max-width:none!important;margin:0!important;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px!important;
  background:var(--surface);border-top:2px solid var(--line);padding:8px max(10px,env(safe-area-inset-left,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-right,0px))!important}
 .appbar a{display:flex!important;flex-direction:column;align-items:center;gap:2px;padding:6px 0!important;border-radius:14px!important;font-weight:800!important;font-size:.76rem!important;color:var(--muted)!important;background:none!important;max-width:160px;width:100%;justify-self:center}
 .appbar a svg{width:26px;height:26px}
