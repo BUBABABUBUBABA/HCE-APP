@@ -166,14 +166,13 @@ input[type=file]{display:none}
 
 <div class="card">
   <h2>Impostazioni</h2>
-  <details class="set" id="contenuti"><summary>Contenuti del corso</summary>
-    <div style="display:flex;flex-direction:column;gap:10px;padding-top:6px">
-      <p class="muted" id="c-st">Controllo…</p>
-      <p class="muted">Quando ricevi una versione nuova di <b>hce-contenuti.json</b>, importala qui: i tuoi progressi non cambiano.</p>
-      <div class="row"><label class="btn pri" for="f-pack">Importa il file dei contenuti</label></div>
-      <div id="c-msg"></div>
-    </div>
-  </details>
+  <div id="contenuti" style="display:flex;flex-direction:column;gap:10px;border-top:2px solid var(--line2);padding-top:12px">
+    <b>Contenuti del corso</b>
+    <p class="muted" id="c-st">Controllo…</p>
+    <div class="row"><label class="btn pri" for="f-pack">Importa il file dei contenuti</label></div>
+    <p class="muted">Quando ricevi una versione nuova di <b>hce-contenuti.json</b>, importala qui: i tuoi progressi non cambiano.</p>
+    <div id="c-msg"></div>
+  </div>
   <details class="set"><summary>Backup dei tuoi dati</summary>
     <div style="display:flex;flex-direction:column;gap:10px;padding-top:6px">
       <p class="muted">Sessioni, moduli studiati e livello sugli aspetti. Esporta un file e importalo sull'altro dispositivo: i dati si uniscono, non si cancellano.</p>
@@ -264,8 +263,8 @@ $('b-exp').addEventListener('click',function(){var b=HCE.exportBackup();HCE.save
 $('f-bk').addEventListener('change',function(){var f=this.files[0];if(!f)return;
  readFile(f).then(function(t){var n=HCE.importBackup(t);msg('b-msg','Backup importato: '+n+' elementi aggiunti o aggiornati.',true);bstat();status()})
  .catch(function(e){msg('b-msg','Non riesco a importare: '+esc(e&&e.message?e.message:'file non valido'))});this.value=''});
-if(location.hash==='#contenuti')$('contenuti').open=true;
-$('ver').textContent='App versione 2026-11-11-117da860';
+if(location.hash==='#contenuti')setTimeout(function(){$('contenuti').scrollIntoView({block:'center'})},300);
+$('ver').textContent='App versione 2026-11-11-b8701698';
 status();bstat();
 window.addEventListener('pageshow',function(e){if(e.persisted){status();bstat()}});
 })();

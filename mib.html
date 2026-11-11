@@ -139,11 +139,12 @@ a.src{color:var(--accent)}
   <section id="v-procedura" hidden style="display:flex;flex-direction:column;gap:10px"></section>
   <section id="v-regole" hidden style="display:flex;flex-direction:column;gap:12px"></section>
 </div>
+<div class="row" style="justify-content:center;margin-top:10px"><button class="btn" id="upd-imp">Aggiorna i contenuti (importa il file)</button></div><div id="upd-msg"></div>
 </div>
 <div class="sh-bg" id="sh" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t"></div></div>
 <script>
 HCE.ready(function(PACK){
-var M=PACK.mib,$=function(i){return document.getElementById(i)};
+var M=PACK.mib,$=function(i){return document.getElementById(i)};HCE.pickButton($('upd-imp'),$('upd-msg'));
 if(!M){$('old').hidden=false;HCE.pickButton($('old-imp'),$('old-msg'));return}
 $('app').hidden=false;
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
