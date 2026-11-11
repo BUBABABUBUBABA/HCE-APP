@@ -184,8 +184,8 @@ var HCE = (function () {
     mib: '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 3v18"/>'
   };
   function nav(cur) {
-    var items = [['index.html', 'Home', 'home'], ['percorso.html', 'Percorso', 'percorso'], ['prep.html', 'Prepara', 'prep'], ['strumenti.html', 'Strumenti', 'tools'], ['protocollo.html', 'D-P-I', 'dpi']];
-    var on = cur === 'studio' ? 'percorso' : (cur === 'e3' || cur === 'mib' || cur === 'tool') ? 'tools' : cur;
+    var items = [['index.html', 'Home', 'home'], ['percorso.html', 'Percorso', 'percorso'], ['prep.html', 'Prepara', 'prep'], ['strumenti.html', 'Strumenti', 'tools']];
+    var on = cur === 'studio' ? 'percorso' : (cur === 'e3' || cur === 'mib' || cur === 'tool' || cur === 'dpi') ? 'tools' : cur;
     document.body.classList.add(cur);
     var bar = document.createElement('div');
     bar.className = 'appbar';
