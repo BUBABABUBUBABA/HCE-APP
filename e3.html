@@ -222,7 +222,7 @@ function renderPrep(){
         (s.tool?'<button class="info" data-tool="'+esc(s.tool)+'">Come si usa?</button>':'')+'</div>'+
         (s.tool?'<textarea data-txt="'+a.k+'" placeholder="La tua frase con '+esc(s.tool)+'">'+esc(s.text||'')+'</textarea>':'')+'</div>'})});
   h+='<h3 style="margin-top:8px">Il tuo copione</h3><div class="script" id="p-scr">'+scriptHtml()+'</div>'+
-   '<div class="row"><button class="btn pri" id="p-save">'+(FORM.id?'Salva modifiche':'Salva')+'</button><button class="btn" id="p-new">Nuova</button></div><div id="p-msg"></div></div>';
+   '<div class="row stick"><button class="btn pri" id="p-save">'+(FORM.id?'Salva modifiche':'Salva')+'</button><button class="btn" id="p-new">Nuova</button></div><div id="p-msg"></div></div>';
   h+='<div class="card"><h2>Preparate</h2>'+(plans.length?plans.map(function(x){var n=Object.keys(x.steps||{}).filter(function(k){return x.steps[k].tool}).length;
      return '<div class="plan"><div class="tx"><b>'+esc(x.sit||'Senza titolo')+'</b><span>'+new Date(+x.id).toLocaleDateString('it-IT')+' · '+n+' strumenti'+(x.goal?' · '+esc(x.goal):'')+'</span></div><button class="btn" data-open="'+x.id+'">Apri</button><button class="btn" data-del="'+x.id+'" aria-label="Elimina">✕</button></div>'}).join(''):'<p class="muted">Nessuna ancora. Ogni preparazione salvata vale 20 XP.</p>')+'</div>';
   $('v-prepara').innerHTML=h;
@@ -338,5 +338,12 @@ input[type=range]{min-height:32px}
 select,input[type=text],input[type=search]{min-width:0;max-width:100%}
 .wrap .wrap{margin-left:0!important;margin-right:0!important;align-self:stretch;min-width:0}
 .wrap .wrap summary{flex-wrap:wrap}.wrap .wrap summary>*{min-width:0}
+
+/* pulsanti comodi anche per dita grandi e mani meno ferme */
+button,.btn,a.btn,label.btn,summary,select,input[type=text],input[type=search],input[type=date],.appbar a{min-height:44px}
+button:not(.st):not(.tl):not(.tick){min-width:44px}
+.mx td button{min-height:44px}
+.row.stick{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:6;background:var(--surface);padding:8px 0;border-top:2px solid var(--line2)}
+.mc,.opts button,.chips button,.ch{min-height:44px!important}
 </style>
 </body></html>

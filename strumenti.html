@@ -155,5 +155,12 @@ input[type=range]{min-height:32px}
 select,input[type=text],input[type=search]{min-width:0;max-width:100%}
 .wrap .wrap{margin-left:0!important;margin-right:0!important;align-self:stretch;min-width:0}
 .wrap .wrap summary{flex-wrap:wrap}.wrap .wrap summary>*{min-width:0}
+
+/* pulsanti comodi anche per dita grandi e mani meno ferme */
+button,.btn,a.btn,label.btn,summary,select,input[type=text],input[type=search],input[type=date],.appbar a{min-height:44px}
+button:not(.st):not(.tl):not(.tick){min-width:44px}
+.mx td button{min-height:44px}
+.row.stick{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:6;background:var(--surface);padding:8px 0;border-top:2px solid var(--line2)}
+.mc,.opts button,.chips button,.ch{min-height:44px!important}
 </style>
 </body></html>

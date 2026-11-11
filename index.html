@@ -111,6 +111,7 @@ input[type=file]{display:none}
 .gsteps li{counter-increment:g;display:grid;grid-template-columns:34px minmax(0,1fr);column-gap:10px}
 .gsteps li::before{content:counter(g);grid-row:1/3;width:34px;height:34px;border-radius:11px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:900}
 .gsteps li b{font-weight:900}.gsteps li span{color:var(--muted);font-weight:600;line-height:1.4}
+.gear{display:inline-flex;align-items:center;gap:6px;min-height:44px;min-width:44px;justify-content:center;color:var(--muted);text-decoration:none;font-weight:800;font-size:.86rem}.gear span{display:none}@media (min-width:600px){.gear span{display:inline}}
 .lblrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
 .seg2{display:flex;gap:6px;flex-wrap:wrap}.seg2 button{font:inherit;font-weight:800;font-size:.86rem;padding:8px 12px;min-height:44px;border:2px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);cursor:pointer}
 .seg2 button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
@@ -129,6 +130,7 @@ input[type=file]{display:none}
 <div class="top">
   <div class="logo" aria-hidden="true">HCE</div>
   <div class="cnt">
+    <a class="gear" href="#impostazioni" aria-label="Impostazioni"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Impostazioni</span></a>
     <span class="fire" id="s-fire" title="Giorni di fila"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c1 4 5 6 5 11a5 5 0 0 1-10 0c0-2 1-3.5 2-4.5 0 2 1 3 2 3 0-3-1-6 1-9.5z"/></svg><b id="s-streak">0</b><span class="sr" style="position:absolute;left:-9999px">giorni di fila</span></span>
     <span class="xp" title="Punti esperienza"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><b id="s-xp">0</b> XP</span>
   </div>
@@ -141,6 +143,7 @@ input[type=file]{display:none}
   <p class="muted">Per iniziare serve il file dei contenuti, che si chiama <b>hce-contenuti.json</b>. Tocca il pulsante qui sotto e sceglilo: lo fai una volta sola su questo dispositivo.</p>
   <label class="big g" for="f-pack">IMPORTA I CONTENUTI</label>
   <div id="w-msg" style="width:100%"></div>
+  <div class="lblrow" style="width:100%;justify-content:center"><span class="muted">Leggi male? Ingrandisci il testo:</span><div class="seg2" data-uifont><button data-v="100">Normale</button><button data-v="115">Grande</button><button data-v="130">Molto grande</button></div></div>
 </div>
 
 <div class="card welcome" id="upd" hidden><h2>Contenuti da aggiornare</h2><p class="muted">Gli strumenti nuovi sono nella versione nuova di <b>hce-contenuti.json</b>. Importala: i tuoi progressi restano.</p><label class="big g" for="f-pack">IMPORTA IL FILE NUOVO</label><div id="u-msg" style="width:100%"></div></div>
@@ -155,6 +158,7 @@ input[type=file]{display:none}
     <a class="task" id="t3" href="#tod"><span class="ck"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></span><span class="tx"><b>Prova lo strumento del giorno</b><span id="t3-s">In una conversazione di oggi</span></span><span class="go">›</span></a>
   </div>
 
+  <div class="note-bk" id="bk-nudge" hidden></div>
   <details class="card guide" id="guide">
     <summary><b>Come funziona l'app</b><span class="muted">Da dove parto, in 4 passi</span></summary>
     <ol class="gsteps">
@@ -186,7 +190,7 @@ input[type=file]{display:none}
   </div>
 </div>
 
-<div class="card">
+<div class="card" id="impostazioni">
   <h2>Impostazioni</h2>
   <div id="contenuti" style="display:flex;flex-direction:column;gap:10px;border-top:2px solid var(--line2);padding-top:12px">
     <b>Contenuti del corso</b>
@@ -200,7 +204,6 @@ input[type=file]{display:none}
     <div class="lblrow"><span class="muted">Grandezza del testo</span><div class="seg2" id="ui-font" role="group" aria-label="Grandezza del testo"><button data-v="100">Normale</button><button data-v="115">Grande</button><button data-v="130">Molto grande</button></div></div>
     <div class="lblrow"><span class="muted">Tema</span><div class="seg2" id="ui-theme" role="group" aria-label="Tema"><button data-v="auto">Automatico</button><button data-v="light">Chiaro</button><button data-v="dark">Scuro</button></div></div>
   </div>
-  <div class="note-bk" id="bk-nudge" hidden></div>
   <details class="set" id="set-bk"><summary>Backup dei tuoi dati</summary>
     <div style="display:flex;flex-direction:column;gap:10px;padding-top:6px">
       <p class="muted">Tutto quello che fai nell'app (moduli studiati, sessioni, obiettivi, abitudini, allenamenti) resta solo su questo dispositivo. Esporta un file ogni tanto per non perderlo, e importalo sull'altro dispositivo per ritrovarlo lì: i dati si uniscono, non si cancellano.</p>
@@ -294,13 +297,13 @@ $('f-bk').addEventListener('change',function(){var f=this.files[0];if(!f)return;
  readFile(f).then(function(t){var n=HCE.importBackup(t);msg('b-msg','Backup importato: '+n+' elementi aggiunti o aggiornati.',true);bstat();status()})
  .catch(function(e){msg('b-msg','Non riesco a importare: '+esc(e&&e.message?e.message:'file non valido'))});this.value=''});
 if(location.hash==='#contenuti')setTimeout(function(){$('contenuti').scrollIntoView({block:'center'})},300);
-function uiDraw(){var u=HCE.ui.get();[['ui-font',u.font],['ui-theme',u.theme]].forEach(function(p){Array.prototype.forEach.call($(p[0]).children,function(b){b.setAttribute('aria-pressed',b.dataset.v===p[1]?'true':'false')})});
+function uiDraw(){var u=HCE.ui.get();Array.prototype.forEach.call(document.querySelectorAll('[data-uifont] button'),function(b){b.setAttribute('aria-pressed',b.dataset.v===u.font?'true':'false')});[['ui-font',u.font],['ui-theme',u.theme]].forEach(function(p){Array.prototype.forEach.call($(p[0]).children,function(b){b.setAttribute('aria-pressed',b.dataset.v===p[1]?'true':'false')})});
  var S=HCE.stats(),days=u.lastBackup?Math.floor((Date.now()-u.lastBackup)/864e5):-1,n=$('bk-nudge');
  if(S.xp>=100&&(days<0||days>=14)){n.hidden=false;n.innerHTML='<b>'+(days<0?'Non hai ancora fatto un backup.':'Ultimo backup '+days+' giorni fa.')+'</b> I tuoi dati sono solo su questo dispositivo: se cancelli i dati del browser li perdi. <button class="btn" id="bk-go">Fai il backup ora</button>'}else n.hidden=true}
 ['ui-font','ui-theme'].forEach(function(id){$(id).addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;HCE.ui.set(id==='ui-font'?'font':'theme',b.dataset.v);uiDraw()})});
-document.addEventListener('click',function(e){if(e.target.id==='bk-go'){$('set-bk').open=true;$('b-exp').click()}});
+document.addEventListener('click',function(e){var b;if(e.target.id==='bk-go'){$('set-bk').open=true;$('b-exp').click()}if(b=e.target.closest('[data-uifont] button')){HCE.ui.set('font',b.dataset.v);uiDraw()}});
 uiDraw();
-$('ver').textContent='App versione 2026-11-11f-d24acfc6';
+$('ver').textContent='App versione 2026-11-11f-09f0e49e';
 status();bstat();
 window.addEventListener('pageshow',function(e){if(e.persisted){status();bstat()}});
 })();
@@ -396,5 +399,12 @@ input[type=range]{min-height:32px}
 select,input[type=text],input[type=search]{min-width:0;max-width:100%}
 .wrap .wrap{margin-left:0!important;margin-right:0!important;align-self:stretch;min-width:0}
 .wrap .wrap summary{flex-wrap:wrap}.wrap .wrap summary>*{min-width:0}
+
+/* pulsanti comodi anche per dita grandi e mani meno ferme */
+button,.btn,a.btn,label.btn,summary,select,input[type=text],input[type=search],input[type=date],.appbar a{min-height:44px}
+button:not(.st):not(.tl):not(.tick){min-width:44px}
+.mx td button{min-height:44px}
+.row.stick{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:6;background:var(--surface);padding:8px 0;border-top:2px solid var(--line2)}
+.mc,.opts button,.chips button,.ch{min-height:44px!important}
 </style>
 </body></html>

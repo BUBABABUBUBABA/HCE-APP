@@ -349,7 +349,7 @@ function openReader(id){var m=modById(id);if(!m)return;RID=id;var L=LEV[m.l],ms=
  var head='<div class="trail"><b>'+esc(L.p)+'</b>'+(L.p!==L.n?' › '+esc(L.n):'')+' · modulo '+esc(m.num)+'</div><h1 id="r-t">'+esc(m.t)+'</h1>'+(m.g.length?'<div class="chips">'+m.g.map(function(g){return chipA(g[0])}).join('')+'</div>':'');
  var nav='<div class="rnav">'+(pv?'<button class="btn" data-read="'+pv.id+'"><small>← Precedente</small>'+esc(pv.t)+'</button>':'<span></span>')+(nx?'<button class="btn" data-read="'+nx.id+'"><small>Successivo →</small>'+esc(nx.t)+'</button>':'<span></span>')+'</div>';
  $('r-in').innerHTML=head+(EXD[id]?'<button class="btn" data-exjump="1" style="margin:10px 0 0;font-size:.86rem">Vai a «Esercitati» ↓</button>':'')+'<div class="doc" id="r-doc"><p class="muted">Carico gli appunti…</p></div><div id="r-ex"></div>'+nav;exRender(id);
- getLevel(m.l).then(function(j){if(RID!==id)return;$('r-doc').innerHTML=j[id]||'<p class="muted">Appunti non trovati.</p>'}).catch(function(){if(RID===id)$('r-doc').innerHTML='<p class="muted">Non riesco a caricare gli appunti adesso. Riprova tra poco.</p>'});
+ getLevel(m.l).then(function(j){if(RID!==id)return;$('r-doc').innerHTML=j[id]||'<p class="muted">Appunti non trovati.</p>';exDoc()}).catch(function(){if(RID===id)$('r-doc').innerHTML='<p class="muted">Non riesco a caricare gli appunti adesso. Riprova tra poco.</p>'});
  $('r-pos').textContent=(ix+1)+'/'+ms.length;$('r-list').hidden=true;$('r-ix').setAttribute('aria-expanded','false');
  $('r-list').innerHTML='<div class="rxh">'+esc(L.n)+' · '+ms.filter(function(x){return isD(x.id)}).length+'/'+ms.length+' studiati</div>'+ms.map(function(x){return '<button class="rx'+(isD(x.id)?' d':'')+'" data-read="'+x.id+'"'+(x.id===id?' aria-current="true"':'')+'><span class="n">'+(isD(x.id)?'✓':esc(x.num))+'</span><span class="t">'+esc(x.t)+'</span></button>'}).join('');
  $('r-x').focus()}
@@ -451,6 +451,19 @@ document.addEventListener('input',function(e){var t=e.target;if(!t.closest||!t.c
   else if(t.dataset.exo){st.org=st.org||{};st.org[t.dataset.exo]=t.value;exSave(id,st)}
   else if(t.dataset.exn!=null&&st.done&&st.done[t.dataset.exn]){st.done[t.dataset.exn].note=t.value;exSave(id,st)}});
 document.addEventListener('change',function(e){var t=e.target;if(t.dataset&&t.dataset.exf==='mirror'&&t.closest('#r-ex')){var st=exSt(EXID);st.mirror=t.checked;exSave(EXID,st)}});
+/* Lettura essenziale: solo sintesi e schema visivo; il resto lo fa «Esercitati». La scelta resta salvata. */
+var KEEP=/concetto in sintesi|schema visivo|da ricordare/i;
+function exDoc(){var d=$('r-doc');if(!d)return;var kids=Array.prototype.slice.call(d.children),cur=null,keep=false,has=false;
+  kids.forEach(function(k){if(k.tagName==='H2'){keep=KEEP.test(k.textContent);if(/concetto in sintesi/i.test(k.textContent))has=true}k.setAttribute('data-ess',keep?'1':'0')});
+  if(!has)return;
+  var mode=(function(){try{return localStorage.getItem('ui_read')||'full'}catch(e){return 'full'}})();
+  var bar=document.createElement('div');bar.className='readbar';bar.innerHTML='<span>Lettura</span><button data-read-mode="ess">Essenziale</button><button data-read-mode="full">Completa</button>';
+  d.insertBefore(bar,d.firstChild);exMode(mode)}
+function exMode(m){var d=$('r-doc');if(!d)return;d.classList.toggle('ess',m==='ess');Array.prototype.forEach.call(d.querySelectorAll('[data-read-mode]'),function(b){b.setAttribute('aria-pressed',b.dataset.readMode===m?'true':'false')});
+  var w=0;Array.prototype.forEach.call(d.children,function(k){if(m!=='ess'||k.getAttribute('data-ess')==='1')w+=(k.innerText||'').split(/\s+/).length});
+  var bar=d.querySelector('.readbar');if(bar){var s=bar.querySelector('small')||bar.appendChild(document.createElement('small'));s.textContent='circa '+Math.max(1,Math.round(w/200))+' min'}}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-read-mode]');if(!b)return;try{localStorage.setItem('ui_read',b.dataset.readMode)}catch(x){}exMode(b.dataset.readMode)});
+(function(){var s=document.createElement('style');s.textContent='.readbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0 14px}.readbar span{font-weight:800;color:var(--muted);font-size:.86rem;margin-right:4px}.readbar small{color:var(--muted);font-weight:700;margin-left:6px}.readbar button{font:inherit;font-weight:800;font-size:.86rem;padding:8px 12px;border:2px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);cursor:pointer}.readbar button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}#r-doc.ess>[data-ess="0"]{display:none}';document.head.appendChild(s)})();
 
 function closeReader(){$('reader').hidden=true;document.body.classList.remove('noscroll');RID='';if(!$('v-ruota').hidden)wheelSync()}
 $('r-x').addEventListener('click',closeReader);
@@ -585,5 +598,12 @@ input[type=range]{min-height:32px}
 select,input[type=text],input[type=search]{min-width:0;max-width:100%}
 .wrap .wrap{margin-left:0!important;margin-right:0!important;align-self:stretch;min-width:0}
 .wrap .wrap summary{flex-wrap:wrap}.wrap .wrap summary>*{min-width:0}
+
+/* pulsanti comodi anche per dita grandi e mani meno ferme */
+button,.btn,a.btn,label.btn,summary,select,input[type=text],input[type=search],input[type=date],.appbar a{min-height:44px}
+button:not(.st):not(.tl):not(.tick){min-width:44px}
+.mx td button{min-height:44px}
+.row.stick{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:6;background:var(--surface);padding:8px 0;border-top:2px solid var(--line2)}
+.mc,.opts button,.chips button,.ch{min-height:44px!important}
 </style>
 </body></html>

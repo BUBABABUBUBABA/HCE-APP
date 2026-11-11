@@ -167,7 +167,7 @@ function chips(id,sel){return '<div class="chips" id="'+id+'">'+MX.map(function(
 function renderMat(){
   var a=MX[FROM],b=MX[TO],same=FROM===TO,d=M.D[String(FROM+1)],p=M.P[String(TO+1)];
   var h='<div class="card"><div class="lbl">1 · In che mix è adesso?</div>'+chips('c-from',FROM)+
-   '<div class="lbl" style="margin-top:4px">2 · In che mix ti serve per il tuo obiettivo?</div>'+chips('c-to',TO)+'</div>';
+   '<div class="lbl" style="margin-top:4px">2 · In che mix ti serve per il tuo obiettivo?</div>'+chips('c-to',TO)+'<div class="row"><button class="btn" data-mlog="1">✓ Usata in un\'interazione vera</button></div><div id="m-msg0"></div></div>';
   h+='<div class="res" style="--a:'+mv(a.k)+';--b:'+mv(b.k)+';--a-s:'+ms(a.k)+';--b-s:'+ms(b.k)+'"><div class="res-h"><div class="pair"><span>'+esc(a.n)+'</span><i>→</i><span>'+esc(b.n)+'</span></div><div class="code">'+(same?'⇅ P'+(TO+1):'D'+(FROM+1)+' + P'+(TO+1))+'</div></div>';
   if(same){h+='<div class="stp" style="--sc:'+mv(b.k)+'"><div class="stp-h"><span class="n">⇅</span><b>È già nel mix che ti serve</b></div><p class="why">Salta il depotenziamento: verifica e, se è davvero lì, potenzialo con P'+(TO+1)+'.</p></div>';
     h+='<div class="stp" style="--sc:'+mv(b.k)+'"><div class="stp-h"><span class="n">P'+(TO+1)+'</span><b>'+esc(p.t)+'</b></div><div class="blk">'+block(p)+'</div></div>'}
@@ -186,6 +186,7 @@ $('v-matrice').addEventListener('click',function(e){var b;
   if(b=e.target.closest('#c-from .mc')){FROM=+b.dataset.i;renderMat();return}
   if(b=e.target.closest('#c-to .mc')){TO=+b.dataset.i;renderMat();var r=document.querySelector('.res');if(r)r.scrollIntoView({behavior:'smooth',block:'start'});return}
   if(b=e.target.closest('[data-cell]')){var q=b.dataset.cell.split(',');FROM=+q[0];TO=+q[1];renderMat();window.scrollTo({top:0,behavior:'smooth'});return}
+  if(e.target.closest&&e.target.closest('[data-mlog]')){var l0=HCE.lsJ(LOG,[]);l0.unshift({id:String(Date.now()),from:MX[FROM].k,to:MX[TO].k});HCE.lsPut(LOG,l0);$('m-msg0').innerHTML='<div class="msg">Registrata · +15 XP</div>';return}
   if(e.target.id==='m-log'){var l=HCE.lsJ(LOG,[]);l.unshift({id:String(Date.now()),from:MX[FROM].k,to:MX[TO].k});HCE.lsPut(LOG,l);$('m-msg').innerHTML='<div class="msg">Registrata · +15 XP</div>'}
 });
 
@@ -337,5 +338,12 @@ input[type=range]{min-height:32px}
 select,input[type=text],input[type=search]{min-width:0;max-width:100%}
 .wrap .wrap{margin-left:0!important;margin-right:0!important;align-self:stretch;min-width:0}
 .wrap .wrap summary{flex-wrap:wrap}.wrap .wrap summary>*{min-width:0}
+
+/* pulsanti comodi anche per dita grandi e mani meno ferme */
+button,.btn,a.btn,label.btn,summary,select,input[type=text],input[type=search],input[type=date],.appbar a{min-height:44px}
+button:not(.st):not(.tl):not(.tick){min-width:44px}
+.mx td button{min-height:44px}
+.row.stick{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:6;background:var(--surface);padding:8px 0;border-top:2px solid var(--line2)}
+.mc,.opts button,.chips button,.ch{min-height:44px!important}
 </style>
 </body></html>

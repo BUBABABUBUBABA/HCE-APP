@@ -227,12 +227,12 @@ function renderFocus(){var h='';
      '<div class="card"><div class="lbl">Se arriva una distrazione</div><div class="steps">'+FZ.steps.slice(3).map(function(s,i){return '<div class="stp"><b>'+(i+4)+'</b><span><strong>'+esc(s.n)+'</strong> · '+esc(s.d)+'</span></div>'}).join('')+'</div></div>';
     $('v-focus').innerHTML=h;return}
   var fs=G('io_focus_v1',[]),tm=fs.filter(function(x){return HCE.dayKey(+x.id)===today}).reduce(function(a,x){return a+(x.min||0)},0);
-  h+='<div class="card"><h3>Sessione di focus</h3><p>'+esc(FZ.intro)+'</p><div class="steps">'+FZ.steps.map(function(s,i){return '<div class="stp"><b>'+(i+1)+'</b><span><strong>'+esc(s.n)+'</strong> · '+esc(s.d)+'</span></div>'}).join('')+'</div>'+ml(FZ.m)+'</div>';
-  h+='<div class="card"><label class="f">0 · Svuota la testa<textarea id="f-empty" placeholder="Le cose in sospeso, una per riga">'+esc(FR.empty)+'</textarea></label><p class="tip">'+esc(FZ.empty)+'</p>'+ml(FZ.empty_m)+
+  var howF='<details class="ph"><summary><span class="L">?</span><span><b>Come funziona</b><small>I 5 passaggi del focus</small></span><span class="chev">›</span></summary><div class="pb"><p>'+esc(FZ.intro)+'</p><div class="steps">'+FZ.steps.map(function(s,i){return '<div class="stp"><b>'+(i+1)+'</b><span><strong>'+esc(s.n)+'</strong> · '+esc(s.d)+'</span></div>'}).join('')+'</div>'+ml(FZ.m)+'</div></details>';
+  h+='<div class="card"><h3>Sessione di focus</h3><label class="f">0 · Svuota la testa<textarea id="f-empty" placeholder="Le cose in sospeso, una per riga">'+esc(FR.empty)+'</textarea></label><p class="tip">'+esc(FZ.empty)+'</p>'+ml(FZ.empty_m)+
    '<label class="f">Su cosa resto<input type="text" id="f-obj" value="'+esc(FR.obj)+'" placeholder="Es. il capitolo 3"></label>'+
    '<div class="lbl">Per quanto (tempo preciso)</div><div class="chips">'+FZ.durations.map(function(d){return '<button class="ch" data-fmin="'+d+'" aria-pressed="'+(FR.min===d)+'">'+d+' min</button>'}).join('')+'</div><p class="tip">'+esc(FZ.dur_tip)+'</p>'+
    '<label class="f">La frase rituale, da dire ad alta voce<input type="text" id="f-rit" value="'+esc(FR.ritual||('Per '+FR.min+' minuti resto in focus'+(FR.obj?' su '+FR.obj:'')))+'"></label>'+
-   '<p class="tip">Alla fine senti un breve suono (e una vibrazione, se il telefono la permette).</p><div class="row"><button class="btn io" id="f-go">Respira e inizia</button></div><div id="f-msg"></div></div>';
+   '<p class="tip">Alla fine senti un breve suono (e una vibrazione, se il telefono la permette).</p><div class="row"><button class="btn io" id="f-go">Respira e inizia</button></div><div id="f-msg"></div></div>'+howF;
   h+='<div class="card"><h3>Oggi: '+tm+' minuti</h3>'+(fs.length?fs.slice(0,6).map(function(x){return '<div class="item"><div class="tx"><b>'+esc(x.obj||'Focus')+' · '+x.min+' min</b><span>'+new Date(+x.id).toLocaleString('it-IT',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})+' · distrazioni: '+(x.distr||0)+(x.notes&&x.notes.length?' · annotate: '+esc(x.notes.join(', ')):'')+'</span></div></div>'}).join(''):'<p class="muted">Nessuna sessione ancora.</p>')+'</div>';
   h+='<div class="card"><h3>I cinque fattori</h3><p class="tip">'+esc(FZ.factors_d)+'</p><div class="chips">'+FZ.factors.map(function(f){return '<span class="ch" style="cursor:default">'+esc(f)+'</span>'}).join('')+'</div>'+ml(FZ.factors_m)+'</div>';
   $('v-focus').innerHTML=h}
@@ -422,5 +422,12 @@ input[type=range]{min-height:32px}
 select,input[type=text],input[type=search]{min-width:0;max-width:100%}
 .wrap .wrap{margin-left:0!important;margin-right:0!important;align-self:stretch;min-width:0}
 .wrap .wrap summary{flex-wrap:wrap}.wrap .wrap summary>*{min-width:0}
+
+/* pulsanti comodi anche per dita grandi e mani meno ferme */
+button,.btn,a.btn,label.btn,summary,select,input[type=text],input[type=search],input[type=date],.appbar a{min-height:44px}
+button:not(.st):not(.tl):not(.tick){min-width:44px}
+.mx td button{min-height:44px}
+.row.stick{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:6;background:var(--surface);padding:8px 0;border-top:2px solid var(--line2)}
+.mc,.opts button,.chips button,.ch{min-height:44px!important}
 </style>
 </body></html>

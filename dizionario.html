@@ -95,6 +95,7 @@ label.f{display:flex;flex-direction:column;gap:6px;font-weight:800;font-size:.92
     <input type="search" id="q" placeholder="Cerca: «bivio», «Forer», «frame»…" aria-label="Cerca nel dizionario" autocomplete="off">
     <div class="tabs">
       <button class="tab" data-t="met" aria-selected="true">Metafore</button>
+      <button class="tab" data-t="mie" aria-selected="false">Le mie</button>
       <button class="tab" data-t="bias" aria-selected="false">Bias</button>
       <button class="tab" data-t="chim" aria-selected="false">Chimica</button>
       <button class="tab" data-t="conc" aria-selected="false">Concetti</button>
@@ -103,6 +104,7 @@ label.f{display:flex;flex-direction:column;gap:6px;font-weight:800;font-size:.92
   </nav>
   <section id="v-res" hidden style="display:flex;flex-direction:column;gap:8px"></section>
   <section id="v-met" style="display:flex;flex-direction:column;gap:12px"></section>
+  <section id="v-mie" hidden style="display:flex;flex-direction:column;gap:12px"></section>
   <section id="v-bias" hidden style="display:flex;flex-direction:column;gap:12px"></section>
   <section id="v-chim" hidden style="display:flex;flex-direction:column;gap:12px"></section>
   <section id="v-conc" hidden style="display:flex;flex-direction:column;gap:12px"></section>
@@ -134,7 +136,7 @@ function renderMet(){
   var h='<div class="filters">'+[['all','Tutte'],['ancestrale','Ancestrali'],['moderna','Moderne']].map(function(f){return '<button class="fb" data-mf="'+f[0]+'" aria-pressed="'+(mf===f[0])+'">'+f[1]+'</button>'}).join('')+'</div>';
   h+=Z.met.filter(function(c){return mf==='all'||c.g===mf}).map(function(c){return metCard(c)}).join('');
   h+='<div class="card"><h3>Come usarle</h3>'+Z.metrules.map(function(r){return '<div class="rule"><b>'+esc(r[0])+'</b><span>'+esc(r[1])+'</span><div>'+ml(r[2])+'</div></div>'}).join('')+'</div>'+
-     myCard()+'<p class="note">'+esc(Z.metmore||'')+'</p><p class="note">Le 10 categorie sono raggruppamenti pratici del corso, non una classificazione scientifica: la stessa espressione può stare in più categorie, conta il frame prevalente. Gli effetti ormonali attribuiti alle singole metafore sono ipotesi del corso.</p>';
+     '<p class="note">Hai sentito una metafora in una conversazione vera? Segnala nella scheda «Le mie».</p><p class="note">'+esc(Z.metmore||'')+'</p><p class="note">Le 10 categorie sono raggruppamenti pratici del corso, non una classificazione scientifica: la stessa espressione può stare in più categorie, conta il frame prevalente. Gli effetti ormonali attribuiti alle singole metafore sono ipotesi del corso.</p>';
   $('v-met').innerHTML=h}
 
 // LE MIE ESPRESSIONI (op17: costruisci il tuo elenco personale)
@@ -155,9 +157,10 @@ document.addEventListener('input',function(e){var t=e.target;if(t.id==='my-t')MY
 document.addEventListener('change',function(e){if(e.target.id==='my-c')MYD.cat=e.target.value});
 document.addEventListener('click',function(e){var b,t=e.target;
   if(t.id==='my-s'){if(!MYD.txt.trim()||!MYD.cat){$('my-msg').innerHTML='<div class="note">Scrivi l\'espressione e scegli la categoria.</div>';return}
-    var a=HCE.lsJ(MYK,[]);a.unshift({id:String(Date.now()),txt:MYD.txt.trim(),cat:MYD.cat,who:MYD.who.trim()});HCE.lsPut(MYK,a);MYD={txt:'',cat:MYD.cat,who:MYD.who};renderMet();
+    var a=HCE.lsJ(MYK,[]);a.unshift({id:String(Date.now()),txt:MYD.txt.trim(),cat:MYD.cat,who:MYD.who.trim()});HCE.lsPut(MYK,a);MYD={txt:'',cat:MYD.cat,who:MYD.who};renderMine();
     $('my-msg').innerHTML='<div class="ok-msg">Aggiunta</div>';return}
-  if(b=t.closest('[data-mydel]')){if(b.textContent!=='Elimina?'){b.textContent='Elimina?';return}HCE.lsPut(MYK,HCE.lsJ(MYK,[]).filter(function(x){return x.id!==b.dataset.mydel}));renderMet()}});
+  if(b=t.closest('[data-mydel]')){if(b.textContent!=='Elimina?'){b.textContent='Elimina?';return}HCE.lsPut(MYK,HCE.lsJ(MYK,[]).filter(function(x){return x.id!==b.dataset.mydel}));renderMine()}});
+function renderMine(){$('v-mie').innerHTML=myCard()}
 
 // BIAS
 var bf='all';
@@ -244,10 +247,10 @@ document.addEventListener('click',function(e){var b;
   if(b=e.target.closest('[data-mf]')){mf=b.dataset.mf;renderMet()}
   if(b=e.target.closest('[data-bf]')){bf=b.dataset.bf;renderBias()}});
 function show(t,keep){document.querySelectorAll('.tab').forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===t?'true':'false')});
-  ['met','bias','chim','conc','gl'].forEach(function(x){$('v-'+x).hidden=x!==t});if(!keep)window.scrollTo(0,0)}
+  ['met','mie','bias','chim','conc','gl'].forEach(function(x){$('v-'+x).hidden=x!==t});if(!keep)window.scrollTo(0,0)}
 document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(b)show(b.dataset.t)});
-renderMet();renderBias();renderChim();renderConc();renderGl();
-var h0=(location.hash||'').slice(1);if(['bias','chim','conc','gl','mie'].indexOf(h0)>=0){if(h0==='mie'){show('met');setTimeout(function(){$('mine').scrollIntoView()},50)}else show(h0)}
+renderMet();renderMine();renderBias();renderChim();renderConc();renderGl();
+var h0=(location.hash||'').slice(1);if(['bias','chim','conc','gl','mie'].indexOf(h0)>=0)show(h0);
 });
 </script>
 
@@ -341,5 +344,12 @@ input[type=range]{min-height:32px}
 select,input[type=text],input[type=search]{min-width:0;max-width:100%}
 .wrap .wrap{margin-left:0!important;margin-right:0!important;align-self:stretch;min-width:0}
 .wrap .wrap summary{flex-wrap:wrap}.wrap .wrap summary>*{min-width:0}
+
+/* pulsanti comodi anche per dita grandi e mani meno ferme */
+button,.btn,a.btn,label.btn,summary,select,input[type=text],input[type=search],input[type=date],.appbar a{min-height:44px}
+button:not(.st):not(.tl):not(.tick){min-width:44px}
+.mx td button{min-height:44px}
+.row.stick{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:6;background:var(--surface);padding:8px 0;border-top:2px solid var(--line2)}
+.mc,.opts button,.chips button,.ch{min-height:44px!important}
 </style>
 </body></html>

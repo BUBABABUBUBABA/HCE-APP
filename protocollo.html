@@ -198,7 +198,7 @@ details.q ol{margin:0 0 10px;padding-left:20px;display:grid;gap:3px}
   <div class="eyebrow">HCE · Human Connection Engineering</div>
   <h1>Protocollo D-P-I</h1>
   <p class="lead">Osservo, collego, scelgo. Poi controllo cosa è successo e ricomincio: ogni giro rende la lettura più precisa.</p>
-  <div class="flow"><span class="s d">DECODE</span><span class="ar">→</span><span class="s p">PROFILE</span><span class="ar">→</span><span class="s i">INFLUENCE</span><span class="ar">→</span><span class="muted">di nuovo Decode</span></div>
+  <div class="row"><button class="btn pri" id="go-prima-top" onclick="document.getElementById('go-prima').click()">Inizia una sessione</button></div><div class="flow"><span class="s d">DECODE</span><span class="ar">→</span><span class="s p">PROFILE</span><span class="ar">→</span><span class="s i">INFLUENCE</span><span class="ar">→</span><span class="muted">di nuovo Decode</span></div>
 </header>
 <nav><div class="tabs" role="tablist">
   <button class="tab" role="tab" data-t="come" aria-selected="true">Metodo</button>
@@ -301,7 +301,7 @@ details.q ol{margin:0 0 10px;padding-left:20px;display:grid;gap:3px}
     <div class="field"><label for="i-p">Cosa mi aspetto che succeda?<div class="hint">Scrivilo ora: servirà dopo.</div></label>
       <textarea id="i-p" placeholder="Es. L'altro si rilassa e mi dice cosa gli interessa davvero."></textarea></div>
   </div>
-  <div class="row"><button class="btn" id="save-prima">Salva sessione</button><button class="btn sec" id="clear-prima">Svuota</button><span class="sync" id="sync1"></span></div>
+  <div class="row stick"><button class="btn pri" id="save-prima">Salva sessione</button><button class="btn sec" id="clear-prima">Svuota</button><span class="sync" id="sync1"></span></div>
 </div>
 
 <div id="v-dopo" hidden class="wrap">
@@ -697,5 +697,12 @@ input[type=range]{min-height:32px}
 select,input[type=text],input[type=search]{min-width:0;max-width:100%}
 .wrap .wrap{margin-left:0!important;margin-right:0!important;align-self:stretch;min-width:0}
 .wrap .wrap summary{flex-wrap:wrap}.wrap .wrap summary>*{min-width:0}
+
+/* pulsanti comodi anche per dita grandi e mani meno ferme */
+button,.btn,a.btn,label.btn,summary,select,input[type=text],input[type=search],input[type=date],.appbar a{min-height:44px}
+button:not(.st):not(.tl):not(.tick){min-width:44px}
+.mx td button{min-height:44px}
+.row.stick{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:6;background:var(--surface);padding:8px 0;border-top:2px solid var(--line2)}
+.mc,.opts button,.chips button,.ch{min-height:44px!important}
 </style>
 </body></html>
