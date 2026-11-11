@@ -57,7 +57,7 @@ textarea{min-height:60px;resize:vertical}
 .msg{border-radius:12px;padding:9px 12px;font-weight:800;font-size:.88rem;background:var(--ok-soft);color:var(--ok)}
 .hero{border-radius:22px;padding:16px;background:var(--io);color:var(--onp);display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 0 rgba(0,0,0,.18)}
 .hero b{font-size:1.3rem;font-weight:900}.hero .st{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.hero .st div{background:rgba(255,255,255,.18);border-radius:14px;padding:8px;text-align:center}.hero .st b{display:block;font-size:1.3rem}.hero .st span{font-size:.74rem;font-weight:800}
+.hero .st div{background:rgba(0,0,0,.2);border-radius:14px;padding:8px;text-align:center}.hero .st b{display:block;font-size:1.3rem}.hero .st span{font-size:.74rem;font-weight:800}
 .item{display:flex;gap:10px;align-items:center;border:2px solid var(--line);border-radius:16px;padding:10px 12px;background:var(--surface)}
 .item .tx{flex:1;min-width:0}.item .tx b{display:block;font-weight:900;overflow-wrap:anywhere}.item .tx span{font-size:.8rem;color:var(--muted);font-weight:700}
 .tick{flex:none;width:46px;height:46px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--muted);font:inherit;font-weight:900;font-size:1.2rem;cursor:pointer}
@@ -137,7 +137,9 @@ function renderOggi(){if(!CK)CK=ckGet();var C=Z.check,all=G('io_check_v1',{}),hs
   // check-in
   h+='<div class="card"><h3>Check-in</h3><p class="tip">'+esc(C.intro)+'</p>'+
    '<div class="lbl">In che mix sono adesso?</div><div class="chips">'+MX.map(function(m,i){return '<button class="ch" data-ck="now" data-v="'+i+'" aria-pressed="'+(String(CK.now)===String(i))+'">'+esc(m.n)+'</button>'}).join('')+'</div>'+
+   (CK.now!==''&&MX[CK.now]?'<p class="tip"><b>'+esc(MX[CK.now].n)+'</b>'+(MX[CK.now].levels&&MX[CK.now].levels.length?' ('+esc(MX[CK.now].levels.join(' → '))+')':'')+': salgono '+esc(MX[CK.now].plus.join(' e '))+'.</p>':'<p class="tip">Non sai cosa sono i mix? Sono i 7 stati della matrice IBM: li trovi spiegati in Strumenti.</p>')+
    '<div class="lbl">Di che mix ho bisogno oggi?</div><div class="chips">'+MX.map(function(m,i){return '<button class="ch" data-ck="need" data-v="'+i+'" aria-pressed="'+(String(CK.need)===String(i))+'">'+esc(m.n)+'</button>'}).join('')+'</div>'+
+   (CK.need!==''&&MX[CK.need]&&MX[CK.need].use&&MX[CK.need].use[0]?'<p class="tip"><b>'+esc(MX[CK.need].n)+'</b> serve: '+esc(MX[CK.need].use[0].charAt(0).toLowerCase()+MX[CK.need].use[0].slice(1))+'</p>':'')+
    (CK.now!==''&&CK.need!==''&&CK.now!==CK.need?'<a class="src" href="mib.html#m='+CK.now+','+CK.need+'">↗ Matrice IBM: da '+esc(MX[CK.now].n)+' a '+esc(MX[CK.need].n)+'</a>':'')+
    '<div class="lbl">Questo stato mi aiuta?</div><div class="chips">'+[['si','Sì'],['parte','In parte'],['no','No']].map(function(o){return '<button class="ch" data-ck="help" data-v="'+o[0]+'" aria-pressed="'+(CK.help===o[0])+'">'+o[1]+'</button>'}).join('')+'</div>'+
    '<label class="f">Cosa provo, con la parola più precisa che trovo<input type="text" data-ckt="emo" value="'+esc(CK.emo)+'" placeholder="Es. impaziente, sollevato, inquieto"></label><p class="tip">'+esc(C.emo_tip)+'</p>'+
@@ -173,7 +175,7 @@ function renderObiettivi(){var h='';
   h+='<div class="row"><button class="btn" id="g-back">← Obiettivi</button></div><div class="card"><label class="f">Obiettivo<input type="text" data-gt="t" value="'+esc(g.t)+'"></label><div class="bar"><i style="width:'+(n/5*100)+'%"></i></div><p class="muted">'+(next?'Prossima fase: '+next.n+' ('+next.it+')':'Tutte le fasi completate. Dopo Hold, si rilancia: nuovo obiettivo.')+'</p></div>';
   h+=R.phases.map(function(p){var dn=(g.done||{})[p.k];return '<details class="ph'+(dn?' dn':'')+'"'+(next===p?' open':'')+'><summary><span class="L">'+(dn?'✓':p.k)+'</span><span><b>'+esc(p.n)+'</b><small>'+esc(p.it)+(dn?' · fatta il '+new Date(dn).toLocaleDateString('it-IT'):'')+'</small></span><span class="chev">›</span></summary><div class="pb">'+
     '<p style="line-height:1.5;font-weight:600">'+esc(p.d)+'</p>'+
-    p.tools.map(function(t){return '<div class="tool"><b>'+esc(t.n)+'</b><span class="tip">'+esc(t.d)+'</span><textarea data-gf="'+p.k+'.'+t.k+'" placeholder="'+esc(t.p)+'">'+esc((g.f||{})[p.k+'.'+t.k]||'')+'</textarea></div>'}).join('')+
+    p.tools.map(function(t){return '<div class="tool"><b>'+esc(t.n)+'</b><span class="tip">'+esc(t.d)+'</span><textarea data-gf="'+p.k+'.'+t.k+'" aria-label="'+esc(t.n)+'" placeholder="'+esc(t.p)+'">'+esc((g.f||{})[p.k+'.'+t.k]||'')+'</textarea></div>'}).join('')+
     '<div class="row"><button class="btn'+(dn?'':' io')+'" data-gdone="'+p.k+'">'+(dn?'Riapri la fase':(p.k==='C'?'Ho celebrato · +30 XP':'Fase completata · +10 XP'))+'</button></div>'+ml(p.m)+'</div></details>'}).join('');
   h+='<div class="row"><button class="btn" id="g-del">Elimina obiettivo</button></div><div id="g-msg"></div>';
   $('v-obiettivi').innerHTML=h}
@@ -202,7 +204,7 @@ function renderAbitudini(){var h='';
     $('v-abitudini').innerHTML=h;return}
   var x=HE,steps=x.type==='old'?HB.old.concat(HB['new'].filter(function(s){return s.k!=='idea'})):HB['new'];
   h+='<div class="row"><button class="btn" id="h-back">← Abitudini</button></div><div class="card">'+(x.type==='old'?'<label class="f">Abitudine da sostituire<input type="text" data-ht="t" value="'+esc(x.t)+'" placeholder="Es. controllare il telefono appena sveglio"></label>':'<p class="muted">Compila i cinque passaggi: l\'idea chiara diventa il nome dell\'abitudine.</p>')+'</div>';
-  h+=steps.map(function(s,i){return '<details class="ph"'+(i<1?' open':'')+'><summary><span class="L">'+(i+1)+'</span><span><b>'+esc(s.n)+'</b></span><span class="chev">›</span></summary><div class="pb"><p class="tip">'+esc(s.d)+'</p><textarea data-hf="'+s.k+'" placeholder="'+esc(s.ph)+'">'+esc((x.f||{})[s.k]||'')+'</textarea>'+ml(s.m)+'</div></details>'}).join('');
+  h+=steps.map(function(s,i){return '<details class="ph"'+(i<1?' open':'')+'><summary><span class="L">'+(i+1)+'</span><span><b>'+esc(s.n)+'</b></span><span class="chev">›</span></summary><div class="pb"><p class="tip">'+esc(s.d)+'</p><textarea data-hf="'+s.k+'" aria-label="'+esc(s.n)+'" placeholder="'+esc(s.ph)+'">'+esc((x.f||{})[s.k]||'')+'</textarea>'+ml(s.m)+'</div></details>'}).join('');
   h+='<div class="row"><button class="btn io" id="h-done">Salva</button><button class="btn" id="h-arch">'+(x.arch?'Riattiva':'Archivia')+'</button><button class="btn" id="h-del">Elimina</button></div><div id="h-msg"></div>';
   $('v-abitudini').innerHTML=h}
 $('v-abitudini').addEventListener('click',function(e){var b,t=e.target;
@@ -230,17 +232,19 @@ function renderFocus(){var h='';
    '<label class="f">Su cosa resto<input type="text" id="f-obj" value="'+esc(FR.obj)+'" placeholder="Es. il capitolo 3"></label>'+
    '<div class="lbl">Per quanto (tempo preciso)</div><div class="chips">'+FZ.durations.map(function(d){return '<button class="ch" data-fmin="'+d+'" aria-pressed="'+(FR.min===d)+'">'+d+' min</button>'}).join('')+'</div><p class="tip">'+esc(FZ.dur_tip)+'</p>'+
    '<label class="f">La frase rituale, da dire ad alta voce<input type="text" id="f-rit" value="'+esc(FR.ritual||('Per '+FR.min+' minuti resto in focus'+(FR.obj?' su '+FR.obj:'')))+'"></label>'+
-   '<div class="row"><button class="btn io" id="f-go">Respira e inizia</button></div><div id="f-msg"></div></div>';
+   '<p class="tip">Alla fine senti un breve suono (e una vibrazione, se il telefono la permette).</p><div class="row"><button class="btn io" id="f-go">Respira e inizia</button></div><div id="f-msg"></div></div>';
   h+='<div class="card"><h3>Oggi: '+tm+' minuti</h3>'+(fs.length?fs.slice(0,6).map(function(x){return '<div class="item"><div class="tx"><b>'+esc(x.obj||'Focus')+' · '+x.min+' min</b><span>'+new Date(+x.id).toLocaleString('it-IT',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})+' · distrazioni: '+(x.distr||0)+(x.notes&&x.notes.length?' · annotate: '+esc(x.notes.join(', ')):'')+'</span></div></div>'}).join(''):'<p class="muted">Nessuna sessione ancora.</p>')+'</div>';
   h+='<div class="card"><h3>I cinque fattori</h3><p class="tip">'+esc(FZ.factors_d)+'</p><div class="chips">'+FZ.factors.map(function(f){return '<span class="ch" style="cursor:default">'+esc(f)+'</span>'}).join('')+'</div>'+ml(FZ.factors_m)+'</div>';
   $('v-focus').innerHTML=h}
 function tickF(){if(!RUN)return;var left=RUN.end-Date.now();if(left<=0){finishFocus(true);return}var el=$('f-t');if(el){var mm=Math.floor(left/60000),ss=Math.floor(left%60000/1000);el.textContent=mm+':'+('0'+ss).slice(-2)}}
-function finishFocus(full){clearInterval(TICK);var min=Math.max(1,Math.round((Math.min(Date.now(),RUN.end)-RUN.start)/60000));
+function beep(){try{if(navigator.vibrate)navigator.vibrate([200,120,200])}catch(e){}try{if(!AC)return;[0,.35,.7].forEach(function(d){var o=AC.createOscillator(),g=AC.createGain();o.frequency.value=880;g.gain.setValueAtTime(.001,AC.currentTime+d);g.gain.exponentialRampToValueAtTime(.25,AC.currentTime+d+.02);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d+.28);o.connect(g);g.connect(AC.destination);o.start(AC.currentTime+d);o.stop(AC.currentTime+d+.3)})}catch(e){}}
+var AC=null;
+function finishFocus(full){clearInterval(TICK);if(full)beep();var min=Math.max(1,Math.round((Math.min(Date.now(),RUN.end)-RUN.start)/60000));
   var a=G('io_focus_v1',[]);a.unshift({id:String(RUN.start),min:min,obj:RUN.obj,distr:RUN.distr,notes:RUN.notes,full:!!full,u:Date.now()});P('io_focus_v1',a.slice(0,500));
   try{sessionStorage.removeItem('io_run')}catch(e){}try{WL&&WL.release()}catch(e){}RUN=null;renderFocus();renderOggi();flash('f-msg',(full?'Sessione completata: ':'Sessione salvata: ')+min+' min · +10 XP. '+FZ.pause)}
 $('v-focus').addEventListener('click',function(e){var b,t=e.target;
   if(b=t.closest('[data-fmin]')){FR.min=+b.dataset.fmin;FR.ritual='';renderFocus();return}
-  if(t.id==='f-go'){FR.ritual=$('f-rit').value;var s=Date.now();RUN={start:s,end:s+FR.min*60000,obj:FR.obj,ritual:FR.ritual,distr:0,notes:[]};try{sessionStorage.setItem('io_run',JSON.stringify(RUN))}catch(x){}
+  if(t.id==='f-go'){FR.ritual=$('f-rit').value;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(x){}var s=Date.now();RUN={start:s,end:s+FR.min*60000,obj:FR.obj,ritual:FR.ritual,distr:0,notes:[]};try{sessionStorage.setItem('io_run',JSON.stringify(RUN))}catch(x){}
     try{navigator.wakeLock&&navigator.wakeLock.request('screen').then(function(w){WL=w}).catch(function(){})}catch(x){}
     FR.empty='';renderFocus();clearInterval(TICK);TICK=setInterval(tickF,1000);window.scrollTo(0,0);return}
   if(t.id==='f-dis'){RUN.distr++;$('f-dis').textContent='Distrazione ('+RUN.distr+')';$('f-dbox').hidden=false;$('f-dn').focus();try{sessionStorage.setItem('io_run',JSON.stringify(RUN))}catch(x){}return}
@@ -253,7 +257,7 @@ try{var rr=JSON.parse(sessionStorage.getItem('io_run')||'null');if(rr&&rr.end){R
 var EM=Z.emo,EP={f:{},name:'',int:5};
 function renderEmozioni(){var list=G('io_emo_v1',[]),tr=G('io_trig_v1',[]);
   var h='<div class="card"><h3>Un episodio in 7 fasi</h3><p>'+esc(EM.intro)+'</p>'+ml(EM.m)+'</div>';
-  h+=EM.phases.map(function(p,i){return '<details class="ph"'+(i?'':' open')+'><summary><span class="L">'+(i+1)+'</span><span><b>'+esc(p.n)+'</b><small>'+esc(p.q)+'</small></span><span class="chev">›</span></summary><div class="pb"><p class="tip">'+esc(p.d)+'</p><textarea data-ef="'+i+'" placeholder="'+esc(p.q)+'">'+esc(EP.f[i]||'')+'</textarea>'+ml(p.m)+'</div></details>'}).join('');
+  h+=EM.phases.map(function(p,i){return '<details class="ph"'+(i?'':' open')+'><summary><span class="L">'+(i+1)+'</span><span><b>'+esc(p.n)+'</b><small>'+esc(p.q)+'</small></span><span class="chev">›</span></summary><div class="pb"><p class="tip">'+esc(p.d)+'</p><textarea data-ef="'+i+'" aria-label="'+esc(p.n)+'" placeholder="'+esc(p.q)+'">'+esc(EP.f[i]||'')+'</textarea>'+ml(p.m)+'</div></details>'}).join('');
   h+='<div class="card"><label class="f">Il nome dell\'emozione<input type="text" data-et="name" value="'+esc(EP.name)+'"></label><label class="f"><span>Intensità al picco: <b id="ep-int">'+EP.int+'</b>/10</span><input type="range" min="0" max="10" data-et="int" value="'+EP.int+'"></label><div class="row"><button class="btn io" id="ep-save">Salva l\'episodio · +15 XP</button></div><div id="ep-msg"></div><p class="tip">Scrivere completa il processo: crea distanza (pe23).</p></div>';
   if(list.length)h+='<div class="card"><h3>I miei episodi</h3>'+list.slice(0,20).map(function(x){return '<details class="ph"><summary><span class="L">'+(x.int!=null?x.int:'·')+'</span><span><b>'+esc(x.name||'Episodio')+'</b><small>'+new Date(+x.id).toLocaleDateString('it-IT')+(x.f&&x.f[1]?' · '+esc(x.f[1]).slice(0,60):'')+'</small></span><span class="chev">›</span></summary><div class="pb">'+EM.phases.map(function(p,i){return x.f&&x.f[i]?'<div class="tool"><b>'+esc(p.n)+'</b><span>'+esc(x.f[i])+'</span></div>':''}).join('')+'<div class="row"><button class="btn" data-epdel="'+x.id+'">Elimina</button></div></div></details>'}).join('')+'</div>';
   var T=EM.trig;
@@ -332,11 +336,11 @@ if(RUN)show('focus');else if(R_[h0])show(h0);else renderOggi();
 /* Tema "gioco": colori, caratteri arrotondati, pulsanti in rilievo. Caricato dopo gli stili di ogni pagina. */
 :root{
  --bg:#F7F8FC;--surface:#FFFFFF;--sunk:#F1F3F9;--fg:#1B2240;--muted:#5A6385;--line:#E3E7F0;--line2:#EDF0F6;
- --accent:#2F6BFF;--accent-dk:#1E4FD6;--accent-fg:#FFFFFF;--accent-soft:#EAF0FF;
+ --accent:#2459E0;--accent-dk:#1B46B8;--accent-fg:#FFFFFF;--accent-soft:#EAF0FF;
  --star:#F5A524;--star-dk:#C98408;--star-soft:#FFF4DE;--warn:#C2410C;--warn-soft:#FFEDE3;
  --ok:#12805A;--ok-bg:#1FB37A;--ok-dk:#138A5C;--ok-soft:#E3F7EE;--fire:#FF8A3D;
- --c1:#2F6BFF;--c2:#16A06B;--c3:#E08E0B;--c4:#8B5CF6;--c5:#EF5350;
- --d:#2F6BFF;--d-soft:#EAF0FF;--p:#8B5CF6;--p-soft:#F3EEFF;--i:#E8590C;--i-soft:#FFEDE3;
+ --c1:#2459E0;--c2:#12805A;--c3:#9A6400;--c4:#7C3AED;--c5:#D32F2F;
+ --d:#2459E0;--d-soft:#EAF0FF;--p:#7C3AED;--p-soft:#F3EEFF;--i:#C2410C;--i-soft:#FFEDE3;
  --shadow:none;--lift:0 3px 0 var(--line);
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
@@ -396,5 +400,27 @@ textarea:focus,input:focus,select:focus{outline:none!important;border-color:var(
 .appbar a{display:flex!important;flex-direction:column;align-items:center;gap:2px;padding:6px 0!important;border-radius:14px!important;font-weight:800!important;font-size:.76rem!important;color:var(--muted)!important;background:none!important;max-width:160px;width:100%;justify-self:center}
 .appbar a svg{width:26px;height:26px}
 .appbar a[aria-current]{color:var(--accent)!important;background:var(--accent-soft)!important}
+
+/* ---------- Accessibilità: contrasto, dimensioni minime del testo e dei pulsanti ---------- */
+:root{--q-orange:#C2410C;--q-teal:#0B7C87;--q-blue:#2459E0;--q-pink:#C2255C;--q-green:#237A36;--q-purple:#7C3AED;--q-red:#C92A2A;--q-amber:#9A6400;--q-gray:#495057;--q-violet:#862E9C;--q-sky:#1971C2;--q-on:#FFFFFF;--xp-fg:#8A5A00}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--q-orange:#FFA94D;--q-teal:#5FD3DE;--q-blue:#8AAEFF;--q-pink:#FF8FB3;--q-green:#7EDC8F;--q-purple:#B69CFF;--q-red:#FF8787;--q-amber:#FFC247;--q-gray:#C1C7D0;--q-violet:#E0A3F5;--q-sky:#74C0FC;--q-on:#0B1020;--xp-fg:#FFC247}}
+:root[data-theme="dark"]{--q-orange:#FFA94D;--q-teal:#5FD3DE;--q-blue:#8AAEFF;--q-pink:#FF8FB3;--q-green:#7EDC8F;--q-purple:#B69CFF;--q-red:#FF8787;--q-amber:#FFC247;--q-gray:#C1C7D0;--q-violet:#E0A3F5;--q-sky:#74C0FC;--q-on:#0B1020;--xp-fg:#FFC247}
+html body .cnt .xp{color:var(--xp-fg)!important}
+.pill,.tag,.eyebrow,.lbl,.an,.area,.sy,.pl,.ph-tag,.crumb,body.studio div.ph,.mx th,.bub small,.sub small,.grp,.qtp,.rxh{font-size:.75rem!important}
+.src{min-height:36px;padding:7px 12px!important;align-items:center;font-size:.8rem!important}
+.ch,.fb{min-height:44px}
+a.chip,.lnk{display:inline-flex!important;align-items:center;min-height:36px}
+input[type=range]{min-height:32px}
+.dbt button,.mx td button{min-height:38px}
+:focus-visible{outline:3px solid var(--accent)!important;outline-offset:2px}
+.appbar a{font-size:clamp(12px,3.3vw,max(12px,.76rem))!important;white-space:nowrap}
+.tabs{overflow-x:auto;scrollbar-width:none;max-width:100%}.tabs::-webkit-scrollbar{display:none}.tabs .tab{flex-shrink:0}
+.ph>div{min-width:0}.ph h3,.ph small{overflow-wrap:anywhere}
+@media (max-width:979px){.mgrid{grid-template-columns:minmax(0,1fr)!important}}
+.mgrid>*{min-width:0}.stats,#kn{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.mgrid>*{margin-left:0!important;margin-right:0!important;width:auto;max-width:100%}
+select,input[type=text],input[type=search]{min-width:0;max-width:100%}
+.wrap .wrap{margin-left:0!important;margin-right:0!important;align-self:stretch;min-width:0}
+.wrap .wrap summary{flex-wrap:wrap}.wrap .wrap summary>*{min-width:0}
 </style>
 </body></html>

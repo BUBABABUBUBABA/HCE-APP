@@ -105,9 +105,19 @@ input[type=file]{display:none}
 .wk div{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.74rem;font-weight:900;color:var(--muted)}
 .wk i{width:34px;height:34px;border-radius:50%;background:var(--line2);display:grid;place-items:center;color:#fff;font-style:normal}
 .wk .on i{background:var(--fire)}.wk .td i{outline:3px solid var(--accent);outline-offset:2px}.wk .fut i{opacity:.45}
+.guide summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-height:44px;justify-content:center}.guide summary::-webkit-details-marker{display:none}
+.guide summary b{font-size:1.1rem;font-weight:900}.guide summary::after{content:"Apri";align-self:flex-start;font-weight:800;color:var(--accent);font-size:.86rem}.guide[open] summary::after{content:"Chiudi"}
+.gsteps{margin:10px 0 0;padding:0;list-style:none;counter-reset:g;display:flex;flex-direction:column;gap:10px}
+.gsteps li{counter-increment:g;display:grid;grid-template-columns:34px minmax(0,1fr);column-gap:10px}
+.gsteps li::before{content:counter(g);grid-row:1/3;width:34px;height:34px;border-radius:11px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:900}
+.gsteps li b{font-weight:900}.gsteps li span{color:var(--muted);font-weight:600;line-height:1.4}
+.lblrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.seg2{display:flex;gap:6px;flex-wrap:wrap}.seg2 button{font:inherit;font-weight:800;font-size:.86rem;padding:8px 12px;min-height:44px;border:2px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);cursor:pointer}
+.seg2 button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.note-bk{background:var(--star-soft);border-radius:14px;padding:12px;line-height:1.45;font-weight:600;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
 .tot{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .tot div{background:var(--sunk);border-radius:14px;padding:8px 4px;text-align:center;display:flex;flex-direction:column}
-.tot b{font-size:1.2rem;font-weight:900}.tot span{font-size:.7rem;font-weight:800;color:var(--muted)}
+.tot b{font-size:1.2rem;font-weight:900}.tot span{font-size:.75rem;font-weight:800;color:var(--muted)}
 .la{display:flex;gap:10px;align-items:center;text-decoration:none;color:var(--fg);border-top:2px solid var(--line2);padding-top:10px}
 .la:first-of-type{border-top:0;padding-top:0}
 .la .ic{flex:none;width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:var(--c-soft);color:var(--c);font-weight:900}
@@ -127,7 +137,8 @@ input[type=file]{display:none}
 <div class="card welcome" id="welcome" hidden>
   <div class="em"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v3h16v-3"/></svg></div>
   <h2>Benvenuto nel tuo laboratorio HCE</h2>
-  <p class="muted">Per iniziare importa il file dei contenuti <b>hce-contenuti.json</b>. Lo fai una volta su questo dispositivo, poi resta salvato qui.</p>
+  <p class="muted">Questa app ti aiuta a studiare il metodo HCE e ad allenarlo nelle conversazioni vere.</p>
+  <p class="muted">Per iniziare serve il file dei contenuti, che si chiama <b>hce-contenuti.json</b>. Tocca il pulsante qui sotto e sceglilo: lo fai una volta sola su questo dispositivo.</p>
   <label class="big g" for="f-pack">IMPORTA I CONTENUTI</label>
   <div id="w-msg" style="width:100%"></div>
 </div>
@@ -143,6 +154,17 @@ input[type=file]{display:none}
     <a class="task" id="t2" href="prep.html#nuova"><span class="ck"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></span><span class="tx"><b>Allenati su un'interazione vera</b><span>Prepara un'interazione, usa D-P-I, E³, IBM o fai un giro in Palestra</span></span><span class="go">›</span></a>
     <a class="task" id="t3" href="#tod"><span class="ck"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></span><span class="tx"><b>Prova lo strumento del giorno</b><span id="t3-s">In una conversazione di oggi</span></span><span class="go">›</span></a>
   </div>
+
+  <details class="card guide" id="guide">
+    <summary><b>Come funziona l'app</b><span class="muted">Da dove parto, in 4 passi</span></summary>
+    <ol class="gsteps">
+      <li><b>Percorso</b><span>Studia un modulo alla volta: sono brevi. In fondo trovi «Esercitati», per fissarlo subito.</span></li>
+      <li><b>Prepara</b><span>Hai una conversazione importante? Qui la prepari passo passo, e dopo segni com'è andata.</span></li>
+      <li><b>Strumenti</b><span>Le schede da consultare e la Palestra per allenarti con le domande. Se trovi una parola che non conosci, cercala nel Dizionario.</span></li>
+      <li><b>Io</b><span>Due minuti al giorno su di te: come stai, obiettivi, abitudini.</span></li>
+    </ol>
+    <p class="muted">I numeri in alto sono i giorni di fila in cui hai usato l'app e i punti (XP) che guadagni facendo le attività.</p>
+  </details>
 
   <div class="tod" id="tod"></div>
 
@@ -173,9 +195,15 @@ input[type=file]{display:none}
     <p class="muted">Quando ricevi una versione nuova di <b>hce-contenuti.json</b>, importala qui: i tuoi progressi non cambiano.</p>
     <div id="c-msg"></div>
   </div>
-  <details class="set"><summary>Backup dei tuoi dati</summary>
+  <div style="display:flex;flex-direction:column;gap:10px;border-top:2px solid var(--line2);padding-top:12px">
+    <b>Aspetto</b>
+    <div class="lblrow"><span class="muted">Grandezza del testo</span><div class="seg2" id="ui-font" role="group" aria-label="Grandezza del testo"><button data-v="100">Normale</button><button data-v="115">Grande</button><button data-v="130">Molto grande</button></div></div>
+    <div class="lblrow"><span class="muted">Tema</span><div class="seg2" id="ui-theme" role="group" aria-label="Tema"><button data-v="auto">Automatico</button><button data-v="light">Chiaro</button><button data-v="dark">Scuro</button></div></div>
+  </div>
+  <div class="note-bk" id="bk-nudge" hidden></div>
+  <details class="set" id="set-bk"><summary>Backup dei tuoi dati</summary>
     <div style="display:flex;flex-direction:column;gap:10px;padding-top:6px">
-      <p class="muted">Sessioni, moduli studiati e livello sugli aspetti. Esporta un file e importalo sull'altro dispositivo: i dati si uniscono, non si cancellano.</p>
+      <p class="muted">Tutto quello che fai nell'app (moduli studiati, sessioni, obiettivi, abitudini, allenamenti) resta solo su questo dispositivo. Esporta un file ogni tanto per non perderlo, e importalo sull'altro dispositivo per ritrovarlo lì: i dati si uniscono, non si cancellano.</p>
       <div class="row"><button class="btn pri" id="b-exp">Esporta backup</button><label class="btn" for="f-bk">Importa backup</label><input type="file" id="f-bk"></div>
       <div id="b-msg"></div>
       <p class="muted" id="b-st"></p>
@@ -260,13 +288,19 @@ function bstat(){var S=HCE.stats();$('b-st').textContent='Su questo dispositivo:
 function readFile(f){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=function(){rej(r.error)};r.readAsText(f)})}
 $('f-pack').addEventListener('change',function(){var f=this.files[0];if(!f)return;var tgt=!$('welcome').hidden?'w-msg':!$('upd').hidden?'u-msg':'c-msg';msg(tgt,'Importo «'+esc(f.name)+'»… può richiedere qualche secondo.',true);
  readFile(f).then(HCE.importPack).then(function(p){msg(tgt,'Fatto: contenuti versione '+esc(p.version)+' installati.',true);status()})
- .catch(function(e){msg(tgt,'Non riesco a importare: '+esc(e&&e.message?e.message:'file non valido')+'. Scegli il file hce-contenuti.json.')});this.value=''});
-$('b-exp').addEventListener('click',function(){var b=HCE.exportBackup();HCE.save(b.name,b.text).then(function(){msg('b-msg','Backup creato: «'+esc(b.name)+'». Salvalo dove lo ritrovi dall\'altro dispositivo.',true)})});
+ .catch(function(e){msg(tgt,'Non riesco a importare: '+esc(e&&e.message?e.message:'file non valido')+'. Il file giusto si chiama hce-contenuti.json.')});this.value=''});
+$('b-exp').addEventListener('click',function(){var b=HCE.exportBackup();HCE.save(b.name,b.text).then(function(){msg('b-msg','Backup creato: «'+esc(b.name)+'». Salvalo dove lo ritrovi dall\'altro dispositivo.',true);uiDraw()})});
 $('f-bk').addEventListener('change',function(){var f=this.files[0];if(!f)return;
  readFile(f).then(function(t){var n=HCE.importBackup(t);msg('b-msg','Backup importato: '+n+' elementi aggiunti o aggiornati.',true);bstat();status()})
  .catch(function(e){msg('b-msg','Non riesco a importare: '+esc(e&&e.message?e.message:'file non valido'))});this.value=''});
 if(location.hash==='#contenuti')setTimeout(function(){$('contenuti').scrollIntoView({block:'center'})},300);
-$('ver').textContent='App versione 2026-11-11f-5eecae0e';
+function uiDraw(){var u=HCE.ui.get();[['ui-font',u.font],['ui-theme',u.theme]].forEach(function(p){Array.prototype.forEach.call($(p[0]).children,function(b){b.setAttribute('aria-pressed',b.dataset.v===p[1]?'true':'false')})});
+ var S=HCE.stats(),days=u.lastBackup?Math.floor((Date.now()-u.lastBackup)/864e5):-1,n=$('bk-nudge');
+ if(S.xp>=100&&(days<0||days>=14)){n.hidden=false;n.innerHTML='<b>'+(days<0?'Non hai ancora fatto un backup.':'Ultimo backup '+days+' giorni fa.')+'</b> I tuoi dati sono solo su questo dispositivo: se cancelli i dati del browser li perdi. <button class="btn" id="bk-go">Fai il backup ora</button>'}else n.hidden=true}
+['ui-font','ui-theme'].forEach(function(id){$(id).addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;HCE.ui.set(id==='ui-font'?'font':'theme',b.dataset.v);uiDraw()})});
+document.addEventListener('click',function(e){if(e.target.id==='bk-go'){$('set-bk').open=true;$('b-exp').click()}});
+uiDraw();
+$('ver').textContent='App versione 2026-11-11f-d24acfc6';
 status();bstat();
 window.addEventListener('pageshow',function(e){if(e.persisted){status();bstat()}});
 })();
@@ -276,11 +310,11 @@ window.addEventListener('pageshow',function(e){if(e.persisted){status();bstat()}
 /* Tema "gioco": colori, caratteri arrotondati, pulsanti in rilievo. Caricato dopo gli stili di ogni pagina. */
 :root{
  --bg:#F7F8FC;--surface:#FFFFFF;--sunk:#F1F3F9;--fg:#1B2240;--muted:#5A6385;--line:#E3E7F0;--line2:#EDF0F6;
- --accent:#2F6BFF;--accent-dk:#1E4FD6;--accent-fg:#FFFFFF;--accent-soft:#EAF0FF;
+ --accent:#2459E0;--accent-dk:#1B46B8;--accent-fg:#FFFFFF;--accent-soft:#EAF0FF;
  --star:#F5A524;--star-dk:#C98408;--star-soft:#FFF4DE;--warn:#C2410C;--warn-soft:#FFEDE3;
  --ok:#12805A;--ok-bg:#1FB37A;--ok-dk:#138A5C;--ok-soft:#E3F7EE;--fire:#FF8A3D;
- --c1:#2F6BFF;--c2:#16A06B;--c3:#E08E0B;--c4:#8B5CF6;--c5:#EF5350;
- --d:#2F6BFF;--d-soft:#EAF0FF;--p:#8B5CF6;--p-soft:#F3EEFF;--i:#E8590C;--i-soft:#FFEDE3;
+ --c1:#2459E0;--c2:#12805A;--c3:#9A6400;--c4:#7C3AED;--c5:#D32F2F;
+ --d:#2459E0;--d-soft:#EAF0FF;--p:#7C3AED;--p-soft:#F3EEFF;--i:#C2410C;--i-soft:#FFEDE3;
  --shadow:none;--lift:0 3px 0 var(--line);
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
@@ -340,5 +374,27 @@ textarea:focus,input:focus,select:focus{outline:none!important;border-color:var(
 .appbar a{display:flex!important;flex-direction:column;align-items:center;gap:2px;padding:6px 0!important;border-radius:14px!important;font-weight:800!important;font-size:.76rem!important;color:var(--muted)!important;background:none!important;max-width:160px;width:100%;justify-self:center}
 .appbar a svg{width:26px;height:26px}
 .appbar a[aria-current]{color:var(--accent)!important;background:var(--accent-soft)!important}
+
+/* ---------- Accessibilità: contrasto, dimensioni minime del testo e dei pulsanti ---------- */
+:root{--q-orange:#C2410C;--q-teal:#0B7C87;--q-blue:#2459E0;--q-pink:#C2255C;--q-green:#237A36;--q-purple:#7C3AED;--q-red:#C92A2A;--q-amber:#9A6400;--q-gray:#495057;--q-violet:#862E9C;--q-sky:#1971C2;--q-on:#FFFFFF;--xp-fg:#8A5A00}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--q-orange:#FFA94D;--q-teal:#5FD3DE;--q-blue:#8AAEFF;--q-pink:#FF8FB3;--q-green:#7EDC8F;--q-purple:#B69CFF;--q-red:#FF8787;--q-amber:#FFC247;--q-gray:#C1C7D0;--q-violet:#E0A3F5;--q-sky:#74C0FC;--q-on:#0B1020;--xp-fg:#FFC247}}
+:root[data-theme="dark"]{--q-orange:#FFA94D;--q-teal:#5FD3DE;--q-blue:#8AAEFF;--q-pink:#FF8FB3;--q-green:#7EDC8F;--q-purple:#B69CFF;--q-red:#FF8787;--q-amber:#FFC247;--q-gray:#C1C7D0;--q-violet:#E0A3F5;--q-sky:#74C0FC;--q-on:#0B1020;--xp-fg:#FFC247}
+html body .cnt .xp{color:var(--xp-fg)!important}
+.pill,.tag,.eyebrow,.lbl,.an,.area,.sy,.pl,.ph-tag,.crumb,body.studio div.ph,.mx th,.bub small,.sub small,.grp,.qtp,.rxh{font-size:.75rem!important}
+.src{min-height:36px;padding:7px 12px!important;align-items:center;font-size:.8rem!important}
+.ch,.fb{min-height:44px}
+a.chip,.lnk{display:inline-flex!important;align-items:center;min-height:36px}
+input[type=range]{min-height:32px}
+.dbt button,.mx td button{min-height:38px}
+:focus-visible{outline:3px solid var(--accent)!important;outline-offset:2px}
+.appbar a{font-size:clamp(12px,3.3vw,max(12px,.76rem))!important;white-space:nowrap}
+.tabs{overflow-x:auto;scrollbar-width:none;max-width:100%}.tabs::-webkit-scrollbar{display:none}.tabs .tab{flex-shrink:0}
+.ph>div{min-width:0}.ph h3,.ph small{overflow-wrap:anywhere}
+@media (max-width:979px){.mgrid{grid-template-columns:minmax(0,1fr)!important}}
+.mgrid>*{min-width:0}.stats,#kn{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.mgrid>*{margin-left:0!important;margin-right:0!important;width:auto;max-width:100%}
+select,input[type=text],input[type=search]{min-width:0;max-width:100%}
+.wrap .wrap{margin-left:0!important;margin-right:0!important;align-self:stretch;min-width:0}
+.wrap .wrap summary{flex-wrap:wrap}.wrap .wrap summary>*{min-width:0}
 </style>
 </body></html>

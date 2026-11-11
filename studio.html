@@ -198,7 +198,7 @@ body.noscroll{overflow:hidden}
 <div id="v-libri" hidden class="wrap" style="max-width:820px"></div>
 <p class="sync" id="sync"></p>
 </div>
-<div class="reader" id="reader" hidden role="dialog" aria-modal="true" aria-labelledby="r-t"><div class="rbar"><button class="btn" id="r-x">← Chiudi</button><button class="btn" id="r-ix" aria-expanded="false" aria-controls="r-list">☰ Moduli <span id="r-pos"></span></button><span class="sp"></span><button class="chk" id="r-chk" aria-pressed="false" aria-label="Segna come studiato">✓</button></div><div class="rix" id="r-list" hidden></div><div class="rin" id="r-in"></div></div>
+<div class="reader" id="reader" hidden role="dialog" aria-modal="true" aria-labelledby="r-t"><div class="rbar"><button class="btn" id="r-x">← Chiudi</button><button class="btn" id="r-ix" aria-expanded="false" aria-controls="r-list">☰ Moduli <span id="r-pos"></span></button><span class="sp"></span><button class="chk" id="r-chk" aria-pressed="false" aria-label="Segna come studiato">✓<span class="chkl"> Studiato</span></button></div><div class="rix" id="r-list" hidden></div><div class="rin" id="r-in"></div></div>
 
 <script>HCE.nav("studio");</script>
 <script>
@@ -348,7 +348,7 @@ function openReader(id){var m=modById(id);if(!m)return;RID=id;var L=LEV[m.l],ms=
  $('r-chk').setAttribute('aria-pressed',isD(id));
  var head='<div class="trail"><b>'+esc(L.p)+'</b>'+(L.p!==L.n?' › '+esc(L.n):'')+' · modulo '+esc(m.num)+'</div><h1 id="r-t">'+esc(m.t)+'</h1>'+(m.g.length?'<div class="chips">'+m.g.map(function(g){return chipA(g[0])}).join('')+'</div>':'');
  var nav='<div class="rnav">'+(pv?'<button class="btn" data-read="'+pv.id+'"><small>← Precedente</small>'+esc(pv.t)+'</button>':'<span></span>')+(nx?'<button class="btn" data-read="'+nx.id+'"><small>Successivo →</small>'+esc(nx.t)+'</button>':'<span></span>')+'</div>';
- $('r-in').innerHTML=head+'<div class="doc" id="r-doc"><p class="muted">Carico gli appunti…</p></div><div id="r-ex"></div>'+nav;exRender(id);
+ $('r-in').innerHTML=head+(EXD[id]?'<button class="btn" data-exjump="1" style="margin:10px 0 0;font-size:.86rem">Vai a «Esercitati» ↓</button>':'')+'<div class="doc" id="r-doc"><p class="muted">Carico gli appunti…</p></div><div id="r-ex"></div>'+nav;exRender(id);
  getLevel(m.l).then(function(j){if(RID!==id)return;$('r-doc').innerHTML=j[id]||'<p class="muted">Appunti non trovati.</p>'}).catch(function(){if(RID===id)$('r-doc').innerHTML='<p class="muted">Non riesco a caricare gli appunti adesso. Riprova tra poco.</p>'});
  $('r-pos').textContent=(ix+1)+'/'+ms.length;$('r-list').hidden=true;$('r-ix').setAttribute('aria-expanded','false');
  $('r-list').innerHTML='<div class="rxh">'+esc(L.n)+' · '+ms.filter(function(x){return isD(x.id)}).length+'/'+ms.length+' studiati</div>'+ms.map(function(x){return '<button class="rx'+(isD(x.id)?' d':'')+'" data-read="'+x.id+'"'+(x.id===id?' aria-current="true"':'')+'><span class="n">'+(isD(x.id)?'✓':esc(x.num))+'</span><span class="t">'+esc(x.t)+'</span></button>'}).join('');
@@ -379,6 +379,7 @@ var EXD=PACK.ex||{},EXK='ex_v1',EXID='',EXC=null;
 '#r-ex .pr b{font-size:1.02rem}#r-ex .pr p{margin:0;line-height:1.45}#r-ex .pr .k{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:900;color:var(--muted)}'+
 '#r-ex .ok{border-radius:12px;padding:9px 12px;font-weight:800;font-size:.9rem;background:var(--ok-soft);color:var(--ok)}'+
 '#r-ex .chkb{display:flex;gap:10px;align-items:center;font-weight:700;cursor:pointer}#r-ex .chkb input{width:22px;height:22px;accent-color:var(--accent)}'+
+'.chk .chkl{font-size:.86rem;font-weight:800}.chk:has(.chkl){width:auto;padding:0 12px}@media (max-width:420px){.chk .chkl{display:none}.chk:has(.chkl){padding:0;width:46px}}'+
 '.doc .exflash{outline:3px solid var(--accent);outline-offset:4px;border-radius:6px;transition:outline-color 1.5s}';
 document.head.appendChild(s)})();
 function exAll(){return HCE.lsJ(EXK,{})}
@@ -429,6 +430,7 @@ function exStep(id,X,st,cur){
      '<div class="row"><button class="btn'+(dn?'':' pri')+'" data-exp="'+i+'">'+(dn?'✓ Fatto il '+new Date(dn.t).toLocaleDateString('it-IT')+' · annulla':'L\'ho fatto · +10 XP')+'</button></div></div>'}).join('')+'<div data-exmsg></div>'}
   return ''}
 function exDue(id){var t=(D&&HCE.lsJ('studio_hce_v1',{})[id])||0;if(!t)return false;var a=Math.round((new Date(HCE.dayKey(Date.now())+'T12:00:00')-new Date(HCE.dayKey(t)+'T12:00:00'))/864e5);return a===1||a===3||a===7}
+document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('[data-exjump]')){var x=$('r-ex');if(x)x.scrollIntoView({block:'start'})}});
 document.addEventListener('click',function(e){var b,t=e.target;if(!t.closest||!t.closest('#r-ex'))return;var id=EXID,X=EXD[id];if(!X)return;var st=exSt(id);
   if(b=t.closest('[data-exs]')){EXSTEP[id]=b.dataset.exs;exRender(id);$('r-ex').scrollIntoView({block:'start'});return}
   if(t.closest('[data-exflip]')){EXC.flip=true;exRender(id);return}
@@ -497,11 +499,11 @@ render();(function(){var h=/^#([mx])=([\w-]+)/.exec(location.hash);if(h)setTimeo
 /* Tema "gioco": colori, caratteri arrotondati, pulsanti in rilievo. Caricato dopo gli stili di ogni pagina. */
 :root{
  --bg:#F7F8FC;--surface:#FFFFFF;--sunk:#F1F3F9;--fg:#1B2240;--muted:#5A6385;--line:#E3E7F0;--line2:#EDF0F6;
- --accent:#2F6BFF;--accent-dk:#1E4FD6;--accent-fg:#FFFFFF;--accent-soft:#EAF0FF;
+ --accent:#2459E0;--accent-dk:#1B46B8;--accent-fg:#FFFFFF;--accent-soft:#EAF0FF;
  --star:#F5A524;--star-dk:#C98408;--star-soft:#FFF4DE;--warn:#C2410C;--warn-soft:#FFEDE3;
  --ok:#12805A;--ok-bg:#1FB37A;--ok-dk:#138A5C;--ok-soft:#E3F7EE;--fire:#FF8A3D;
- --c1:#2F6BFF;--c2:#16A06B;--c3:#E08E0B;--c4:#8B5CF6;--c5:#EF5350;
- --d:#2F6BFF;--d-soft:#EAF0FF;--p:#8B5CF6;--p-soft:#F3EEFF;--i:#E8590C;--i-soft:#FFEDE3;
+ --c1:#2459E0;--c2:#12805A;--c3:#9A6400;--c4:#7C3AED;--c5:#D32F2F;
+ --d:#2459E0;--d-soft:#EAF0FF;--p:#7C3AED;--p-soft:#F3EEFF;--i:#C2410C;--i-soft:#FFEDE3;
  --shadow:none;--lift:0 3px 0 var(--line);
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
@@ -561,5 +563,27 @@ textarea:focus,input:focus,select:focus{outline:none!important;border-color:var(
 .appbar a{display:flex!important;flex-direction:column;align-items:center;gap:2px;padding:6px 0!important;border-radius:14px!important;font-weight:800!important;font-size:.76rem!important;color:var(--muted)!important;background:none!important;max-width:160px;width:100%;justify-self:center}
 .appbar a svg{width:26px;height:26px}
 .appbar a[aria-current]{color:var(--accent)!important;background:var(--accent-soft)!important}
+
+/* ---------- Accessibilità: contrasto, dimensioni minime del testo e dei pulsanti ---------- */
+:root{--q-orange:#C2410C;--q-teal:#0B7C87;--q-blue:#2459E0;--q-pink:#C2255C;--q-green:#237A36;--q-purple:#7C3AED;--q-red:#C92A2A;--q-amber:#9A6400;--q-gray:#495057;--q-violet:#862E9C;--q-sky:#1971C2;--q-on:#FFFFFF;--xp-fg:#8A5A00}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--q-orange:#FFA94D;--q-teal:#5FD3DE;--q-blue:#8AAEFF;--q-pink:#FF8FB3;--q-green:#7EDC8F;--q-purple:#B69CFF;--q-red:#FF8787;--q-amber:#FFC247;--q-gray:#C1C7D0;--q-violet:#E0A3F5;--q-sky:#74C0FC;--q-on:#0B1020;--xp-fg:#FFC247}}
+:root[data-theme="dark"]{--q-orange:#FFA94D;--q-teal:#5FD3DE;--q-blue:#8AAEFF;--q-pink:#FF8FB3;--q-green:#7EDC8F;--q-purple:#B69CFF;--q-red:#FF8787;--q-amber:#FFC247;--q-gray:#C1C7D0;--q-violet:#E0A3F5;--q-sky:#74C0FC;--q-on:#0B1020;--xp-fg:#FFC247}
+html body .cnt .xp{color:var(--xp-fg)!important}
+.pill,.tag,.eyebrow,.lbl,.an,.area,.sy,.pl,.ph-tag,.crumb,body.studio div.ph,.mx th,.bub small,.sub small,.grp,.qtp,.rxh{font-size:.75rem!important}
+.src{min-height:36px;padding:7px 12px!important;align-items:center;font-size:.8rem!important}
+.ch,.fb{min-height:44px}
+a.chip,.lnk{display:inline-flex!important;align-items:center;min-height:36px}
+input[type=range]{min-height:32px}
+.dbt button,.mx td button{min-height:38px}
+:focus-visible{outline:3px solid var(--accent)!important;outline-offset:2px}
+.appbar a{font-size:clamp(12px,3.3vw,max(12px,.76rem))!important;white-space:nowrap}
+.tabs{overflow-x:auto;scrollbar-width:none;max-width:100%}.tabs::-webkit-scrollbar{display:none}.tabs .tab{flex-shrink:0}
+.ph>div{min-width:0}.ph h3,.ph small{overflow-wrap:anywhere}
+@media (max-width:979px){.mgrid{grid-template-columns:minmax(0,1fr)!important}}
+.mgrid>*{min-width:0}.stats,#kn{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.mgrid>*{margin-left:0!important;margin-right:0!important;width:auto;max-width:100%}
+select,input[type=text],input[type=search]{min-width:0;max-width:100%}
+.wrap .wrap{margin-left:0!important;margin-right:0!important;align-self:stretch;min-width:0}
+.wrap .wrap summary{flex-wrap:wrap}.wrap .wrap summary>*{min-width:0}
 </style>
 </body></html>

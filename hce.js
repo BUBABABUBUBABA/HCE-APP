@@ -46,8 +46,9 @@ var HCE = (function () {
 
   /* pacchetto contenuti (file privato importato una volta) */
   function importPack(text) {
-    var p = JSON.parse(text);
-    if (!p || p.app !== 'hce-contenuti') throw new Error('Questo non è il file dei contenuti HCE.');
+    var p; try { p = JSON.parse(text); } catch (e) { throw new Error('il file scelto non è leggibile'); }
+    if (p && p.app === 'hce-backup') throw new Error('questo è un file di backup: importalo più sotto, in «Backup dei tuoi dati»');
+    if (!p || p.app !== 'hce-contenuti' || !p.data || !p.appunti) throw new Error('questo non è il file dei contenuti HCE');
     var pack = { version: p.version, vs: p.vs, vd: p.vd, data: p.data, areas: p.areas, sys: p.sys, toolnames: p.toolnames, unp: p.unp, books: p.books, e3: p.e3, mib: p.mib, istair: p.istair, feedback: p.feedback, diz: p.diz, io: p.io, ex: p.ex };
     return clear('appunti')
       .then(function () { return putAll('appunti', p.appunti); })
@@ -87,12 +88,14 @@ var HCE = (function () {
     var data = {};
     USER_KEYS.forEach(function (k) { var v = lsGet(k); if (v != null) data[k] = v; });
     var d = new Date(), stamp = d.toISOString().slice(0, 10);
+    lsSet('ui_last_backup', String(Date.now()));
     return { name: 'HCE_backup_' + stamp + '.json', text: JSON.stringify({ app: 'hce-backup', date: d.toISOString(), data: data }, null, 1) };
   }
   function J(s, d) { try { return s ? JSON.parse(s) : d; } catch (e) { return d; } }
   function importBackup(text) {
-    var b = JSON.parse(text);
-    if (!b || b.app !== 'hce-backup' || !b.data) throw new Error('Questo non è un file di backup HCE.');
+    var b; try { b = JSON.parse(text); } catch (e) { throw new Error('il file scelto non è leggibile'); }
+    if (b && b.app === 'hce-contenuti') throw new Error('questo è il file dei contenuti: importalo più sopra, in «Contenuti del corso»');
+    if (!b || b.app !== 'hce-backup' || !b.data) throw new Error('questo non è un file di backup HCE');
     var n = 0;
     // sessioni D-P-I: unione per id
     var a = J(lsGet('dpi_su_di_me_v1'), []), r = J(b.data['dpi_su_di_me_v1'], []);
@@ -260,7 +263,27 @@ var HCE = (function () {
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
   }
+  /* aspetto: grandezza del testo e tema, scelti in Impostazioni */
+  function uiGet() { return { font: lsGet('ui_font') || '100', theme: lsGet('ui_theme') || 'auto', lastBackup: +(lsGet('ui_last_backup') || 0) }; }
+  function uiApply() {
+    var u = uiGet(), r = document.documentElement;
+    r.style.fontSize = u.font === '100' ? '' : u.font + '%';
+    if (u.theme === 'light' || u.theme === 'dark') r.setAttribute('data-theme', u.theme); else r.removeAttribute('data-theme');
+  }
+  function uiSet(k, v) { lsSet('ui_' + k, v); uiApply(); }
+  uiApply();
+  /* schede che scorrono in orizzontale: una sfumatura sul bordo dice che ce ne sono altre */
+  function tabsHint() {
+    var st = document.createElement('style');
+    st.textContent = '.tabs.more-r{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent)}.tabs.more-l{-webkit-mask-image:linear-gradient(270deg,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(270deg,#000 calc(100% - 44px),transparent)}.tabs.more-l.more-r{-webkit-mask-image:linear-gradient(90deg,transparent,#000 44px,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(90deg,transparent,#000 44px,#000 calc(100% - 44px),transparent)}';
+    document.head.appendChild(st);
+    function upd(t) { var r = t.scrollLeft + t.clientWidth < t.scrollWidth - 6, l = t.scrollLeft > 6; t.classList.toggle('more-r', r); t.classList.toggle('more-l', l); }
+    function all() { Array.prototype.forEach.call(document.querySelectorAll('.tabs'), function (t) { if (!t._hint) { t._hint = 1; t.addEventListener('scroll', function () { upd(t); }, { passive: true }); } upd(t); }); }
+    document.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('.tab'); if (b && b.scrollIntoView) { try { b.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (x) {} } setTimeout(all, 60); });
+    window.addEventListener('resize', all); setTimeout(all, 300); setTimeout(all, 1500);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', tabsHint); else tabsHint();
   if (navigator.storage && navigator.storage.persist) { navigator.storage.persist().catch(function () {}); }
 
-  return { get: get, pack: pack, ready: ready, importPack: importPack, exportBackup: exportBackup, importBackup: importBackup, save: save, pickButton: pickButton, nav: nav, stats: stats, dayKey: dayKey, lsJ: lsJ, lsPut: lsPut, USER_KEYS: USER_KEYS };
+  return { get: get, pack: pack, ready: ready, importPack: importPack, exportBackup: exportBackup, importBackup: importBackup, save: save, pickButton: pickButton, nav: nav, stats: stats, dayKey: dayKey, lsJ: lsJ, lsPut: lsPut, USER_KEYS: USER_KEYS, ui: { get: uiGet, set: uiSet } };
 })();

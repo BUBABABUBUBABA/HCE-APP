@@ -24,7 +24,7 @@ body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 </head><body>
 <script>HCE.nav("tool");</script>
 <style>
-:root{--onp:#FFFFFF;--rg:#C2255C;--rg-s:#FFE3EC;--ar:#2B8A3E;--ar-s:#E3F6E5}
+:root{--onp:#FFFFFF;--rg:#C2255C;--rg-s:#FFE3EC;--ar:#237A36;--ar-s:#E3F6E5}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--onp:#0B1020;--rg:#FF8FB3;--rg-s:#3D1A28;--ar:#7EDC8F;--ar-s:#173320}}
 :root[data-theme="dark"]{--onp:#0B1020;--rg:#FF8FB3;--rg-s:#3D1A28;--ar:#7EDC8F;--ar-s:#173320}
 *{box-sizing:border-box}
@@ -131,7 +131,7 @@ function renderPrep(){var M=F[D.model],c=COL[D.model],list=HCE.lsJ(KEY,[]);
   var h='<div class="card" style="gap:14px"><div class="pick">'+['rings','arise'].map(function(k){return '<button data-model="'+k+'" aria-pressed="'+(D.model===k)+'" style="--mc:'+COL[k]+'">'+F[k].n+'<small>'+F[k].kind+'</small></button>'}).join('')+'</div>'+
    '<label class="f">A chi<input type="text" data-f="who" value="'+esc(D.who)+'" placeholder="Es. Vincenzo"></label><label class="f">Su cosa<input type="text" data-f="sit" value="'+esc(D.sit)+'" placeholder="Es. consegna in ritardo della relazione"></label>';
   if(D.model==='rings')h+='<label class="f">Come apri (luogo privato, permesso)<textarea data-f="pre" placeholder="Es. Hai un minuto? Vorrei parlarti di una cosa che ho notato…">'+esc(D.pre)+'</textarea></label>';
-  h+=M.steps.map(function(s){return '<div class="fs" style="--mc:'+c+'"><div class="h"><b>'+s.k+'</b><span>'+esc(s.n)+'</span><small>'+esc(s.prompt)+'</small></div><textarea data-s="'+s.k+'" placeholder="'+esc(s.say[0])+'">'+esc(D.s[s.k]||'')+'</textarea></div>'}).join('')+
+  h+=M.steps.map(function(s){return '<div class="fs" style="--mc:'+c+'"><div class="h"><b>'+s.k+'</b><span>'+esc(s.n)+'</span><small>'+esc(s.prompt)+'</small></div><textarea data-s="'+s.k+'" aria-label="'+esc(s.n)+'" placeholder="'+esc(s.say[0])+'">'+esc(D.s[s.k]||'')+'</textarea></div>'}).join('')+
    '<div class="row"><button class="btn pri" id="fb-save">'+(D.id?'Salva modifiche':'Salva')+'</button><button class="btn" id="fb-new">Nuovo</button></div><div id="fb-msg"></div></div>';
   h+='<div class="card"><h3>I tuoi feedback</h3>'+(list.length?list.map(function(x){return '<div class="item"><div class="tx"><b>'+esc(x.who||'Senza nome')+' · '+F[x.model].n+'</b><span>'+new Date(+x.id).toLocaleDateString('it-IT')+(x.sit?' · '+esc(x.sit):'')+'</span></div><button class="btn" data-open="'+x.id+'">Apri</button><button class="btn" data-del="'+x.id+'" aria-label="Elimina">✕</button></div>'}).join(''):'<p class="muted">Nessuno ancora. Ogni feedback preparato vale 20 XP.</p>')+'</div>';
   $('v-prep').innerHTML=h}
@@ -155,11 +155,11 @@ var h0=(location.hash||'').slice(1);if(['arise','prep','basi'].indexOf(h0)>=0)sh
 /* Tema "gioco": colori, caratteri arrotondati, pulsanti in rilievo. Caricato dopo gli stili di ogni pagina. */
 :root{
  --bg:#F7F8FC;--surface:#FFFFFF;--sunk:#F1F3F9;--fg:#1B2240;--muted:#5A6385;--line:#E3E7F0;--line2:#EDF0F6;
- --accent:#2F6BFF;--accent-dk:#1E4FD6;--accent-fg:#FFFFFF;--accent-soft:#EAF0FF;
+ --accent:#2459E0;--accent-dk:#1B46B8;--accent-fg:#FFFFFF;--accent-soft:#EAF0FF;
  --star:#F5A524;--star-dk:#C98408;--star-soft:#FFF4DE;--warn:#C2410C;--warn-soft:#FFEDE3;
  --ok:#12805A;--ok-bg:#1FB37A;--ok-dk:#138A5C;--ok-soft:#E3F7EE;--fire:#FF8A3D;
- --c1:#2F6BFF;--c2:#16A06B;--c3:#E08E0B;--c4:#8B5CF6;--c5:#EF5350;
- --d:#2F6BFF;--d-soft:#EAF0FF;--p:#8B5CF6;--p-soft:#F3EEFF;--i:#E8590C;--i-soft:#FFEDE3;
+ --c1:#2459E0;--c2:#12805A;--c3:#9A6400;--c4:#7C3AED;--c5:#D32F2F;
+ --d:#2459E0;--d-soft:#EAF0FF;--p:#7C3AED;--p-soft:#F3EEFF;--i:#C2410C;--i-soft:#FFEDE3;
  --shadow:none;--lift:0 3px 0 var(--line);
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
@@ -219,5 +219,27 @@ textarea:focus,input:focus,select:focus{outline:none!important;border-color:var(
 .appbar a{display:flex!important;flex-direction:column;align-items:center;gap:2px;padding:6px 0!important;border-radius:14px!important;font-weight:800!important;font-size:.76rem!important;color:var(--muted)!important;background:none!important;max-width:160px;width:100%;justify-self:center}
 .appbar a svg{width:26px;height:26px}
 .appbar a[aria-current]{color:var(--accent)!important;background:var(--accent-soft)!important}
+
+/* ---------- Accessibilità: contrasto, dimensioni minime del testo e dei pulsanti ---------- */
+:root{--q-orange:#C2410C;--q-teal:#0B7C87;--q-blue:#2459E0;--q-pink:#C2255C;--q-green:#237A36;--q-purple:#7C3AED;--q-red:#C92A2A;--q-amber:#9A6400;--q-gray:#495057;--q-violet:#862E9C;--q-sky:#1971C2;--q-on:#FFFFFF;--xp-fg:#8A5A00}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--q-orange:#FFA94D;--q-teal:#5FD3DE;--q-blue:#8AAEFF;--q-pink:#FF8FB3;--q-green:#7EDC8F;--q-purple:#B69CFF;--q-red:#FF8787;--q-amber:#FFC247;--q-gray:#C1C7D0;--q-violet:#E0A3F5;--q-sky:#74C0FC;--q-on:#0B1020;--xp-fg:#FFC247}}
+:root[data-theme="dark"]{--q-orange:#FFA94D;--q-teal:#5FD3DE;--q-blue:#8AAEFF;--q-pink:#FF8FB3;--q-green:#7EDC8F;--q-purple:#B69CFF;--q-red:#FF8787;--q-amber:#FFC247;--q-gray:#C1C7D0;--q-violet:#E0A3F5;--q-sky:#74C0FC;--q-on:#0B1020;--xp-fg:#FFC247}
+html body .cnt .xp{color:var(--xp-fg)!important}
+.pill,.tag,.eyebrow,.lbl,.an,.area,.sy,.pl,.ph-tag,.crumb,body.studio div.ph,.mx th,.bub small,.sub small,.grp,.qtp,.rxh{font-size:.75rem!important}
+.src{min-height:36px;padding:7px 12px!important;align-items:center;font-size:.8rem!important}
+.ch,.fb{min-height:44px}
+a.chip,.lnk{display:inline-flex!important;align-items:center;min-height:36px}
+input[type=range]{min-height:32px}
+.dbt button,.mx td button{min-height:38px}
+:focus-visible{outline:3px solid var(--accent)!important;outline-offset:2px}
+.appbar a{font-size:clamp(12px,3.3vw,max(12px,.76rem))!important;white-space:nowrap}
+.tabs{overflow-x:auto;scrollbar-width:none;max-width:100%}.tabs::-webkit-scrollbar{display:none}.tabs .tab{flex-shrink:0}
+.ph>div{min-width:0}.ph h3,.ph small{overflow-wrap:anywhere}
+@media (max-width:979px){.mgrid{grid-template-columns:minmax(0,1fr)!important}}
+.mgrid>*{min-width:0}.stats,#kn{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.mgrid>*{margin-left:0!important;margin-right:0!important;width:auto;max-width:100%}
+select,input[type=text],input[type=search]{min-width:0;max-width:100%}
+.wrap .wrap{margin-left:0!important;margin-right:0!important;align-self:stretch;min-width:0}
+.wrap .wrap summary{flex-wrap:wrap}.wrap .wrap summary>*{min-width:0}
 </style>
 </body></html>

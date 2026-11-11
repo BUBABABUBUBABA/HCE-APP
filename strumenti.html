@@ -35,7 +35,7 @@ h1{font-size:1.9rem;line-height:1.1;margin:0}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
 .tl{display:flex;gap:12px;align-items:flex-start;text-decoration:none;color:var(--fg);background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:14px;box-shadow:0 3px 0 var(--line);min-width:0}
 .tl:active{transform:translateY(2px);box-shadow:none}
-.tl .ic{flex:none;width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:var(--c);color:#fff;font-weight:900;font-size:.95rem}
+.tl .ic{flex:none;width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:var(--c);color:var(--q-on);font-weight:900;font-size:.95rem}
 .tl b{font-weight:900;font-size:1.05rem;display:block}.tl span{font-size:.84rem;color:var(--muted);font-weight:700;line-height:1.35}
 .sec{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;font-weight:900;color:var(--muted);margin-top:6px}
 </style>
@@ -48,16 +48,16 @@ h1{font-size:1.9rem;line-height:1.1;margin:0}
 </div>
 <script>
 (function(){
-var T1=[['e3.html','E³','Algoritmo E³','Engage, Explain, Exchange: 27 strumenti, regole, esempi.','#E8590C'],
-        ['mib.html','IBM','Matrice biochimica','Da un mix all\'altro: disinnesca, innesca, potenzia. Casi e sostanze.','#6741D9'],
-        ['istair.html','I','I-STAIR','La scala di acquisto: 5 gradini, 15 strumenti, come riconoscere dove è il cliente.','#D6336C'],
-        ['feedback.html','RA','Feedback: RINGS e ARISE','Correggere senza accusare, rafforzare ciò che funziona. Con la scheda per prepararlo.','#2B8A3E'],
-        ['prep.html','P','Prepara','Obiettivo, mix e copione E³ su un\'interazione vera, più il Dopo.','#12805A'],
-        ['protocollo.html','DPI','Protocollo D-P-I','Decode, Profile, Influence: prima, dopo e storico.','#C2255C']];
-var T2=[['studio.html','S','Studio sulla ruota','Moduli, webinar e libri organizzati per aspetto.','#2F6BFF'],
-        ['percorso.html','→','Il tuo percorso','I 21 livelli a tappe.','#0E9AA7'],
-        ['palestra.html','✓','Palestra','10 domande veloci su E³, IBM, I-STAIR, feedback, Dizionario e Termini. Con ripasso degli errori.','#E8590C'],
-        ['dizionario.html','Aa','Dizionario','Metafore, bias, chimica, concetti e i termini di tutti i livelli. Cerca una parola e la trovi.','#7048E8']];
+var T1=[['e3.html','E³','Algoritmo E³','Engage, Explain, Exchange: 27 strumenti, regole, esempi.','var(--q-orange)'],
+        ['mib.html','IBM','Matrice biochimica','Da un mix all\'altro: disinnesca, innesca, potenzia. Casi e sostanze.','var(--q-purple)'],
+        ['istair.html','I','I-STAIR','La scala di acquisto: 5 gradini, 15 strumenti, come riconoscere dove è il cliente.','var(--q-pink)'],
+        ['feedback.html','RA','Feedback: RINGS e ARISE','Correggere senza accusare, rafforzare ciò che funziona. Con la scheda per prepararlo.','var(--q-green)'],
+        ['prep.html','P','Prepara','Obiettivo, mix e copione E³ su un\'interazione vera, più il Dopo.','var(--q-teal)'],
+        ['protocollo.html','DPI','Protocollo D-P-I','Decode, Profile, Influence: prima, dopo e storico.','var(--q-red)']];
+var T2=[['studio.html','S','Studio sulla ruota','Moduli, webinar e libri organizzati per aspetto.','var(--q-blue)'],
+        ['percorso.html','→','Il tuo percorso','I 21 livelli a tappe.','var(--q-sky)'],
+        ['palestra.html','✓','Palestra','10 domande veloci su E³, IBM, I-STAIR, feedback, Dizionario e Termini. Con ripasso degli errori.','var(--q-orange)'],
+        ['dizionario.html','Aa','Dizionario','Metafore, bias, chimica, concetti e i termini di tutti i livelli. Cerca una parola e la trovi.','var(--q-violet)']];
 var EXTRA=window.HCE_TOOLS||[];
 function card(t){return '<a class="tl" href="'+t[0]+'"><span class="ic" style="--c:'+t[4]+'">'+t[1]+'</span><span><b>'+t[2]+'</b><span>'+t[3]+'</span></span></a>'}
 document.getElementById('g1').innerHTML=T1.concat(EXTRA.filter(function(t){return t[5]!=='study'})).map(card).join('');
@@ -69,11 +69,11 @@ document.getElementById('g2').innerHTML=T2.concat(EXTRA.filter(function(t){retur
 /* Tema "gioco": colori, caratteri arrotondati, pulsanti in rilievo. Caricato dopo gli stili di ogni pagina. */
 :root{
  --bg:#F7F8FC;--surface:#FFFFFF;--sunk:#F1F3F9;--fg:#1B2240;--muted:#5A6385;--line:#E3E7F0;--line2:#EDF0F6;
- --accent:#2F6BFF;--accent-dk:#1E4FD6;--accent-fg:#FFFFFF;--accent-soft:#EAF0FF;
+ --accent:#2459E0;--accent-dk:#1B46B8;--accent-fg:#FFFFFF;--accent-soft:#EAF0FF;
  --star:#F5A524;--star-dk:#C98408;--star-soft:#FFF4DE;--warn:#C2410C;--warn-soft:#FFEDE3;
  --ok:#12805A;--ok-bg:#1FB37A;--ok-dk:#138A5C;--ok-soft:#E3F7EE;--fire:#FF8A3D;
- --c1:#2F6BFF;--c2:#16A06B;--c3:#E08E0B;--c4:#8B5CF6;--c5:#EF5350;
- --d:#2F6BFF;--d-soft:#EAF0FF;--p:#8B5CF6;--p-soft:#F3EEFF;--i:#E8590C;--i-soft:#FFEDE3;
+ --c1:#2459E0;--c2:#12805A;--c3:#9A6400;--c4:#7C3AED;--c5:#D32F2F;
+ --d:#2459E0;--d-soft:#EAF0FF;--p:#7C3AED;--p-soft:#F3EEFF;--i:#C2410C;--i-soft:#FFEDE3;
  --shadow:none;--lift:0 3px 0 var(--line);
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
@@ -133,5 +133,27 @@ textarea:focus,input:focus,select:focus{outline:none!important;border-color:var(
 .appbar a{display:flex!important;flex-direction:column;align-items:center;gap:2px;padding:6px 0!important;border-radius:14px!important;font-weight:800!important;font-size:.76rem!important;color:var(--muted)!important;background:none!important;max-width:160px;width:100%;justify-self:center}
 .appbar a svg{width:26px;height:26px}
 .appbar a[aria-current]{color:var(--accent)!important;background:var(--accent-soft)!important}
+
+/* ---------- Accessibilità: contrasto, dimensioni minime del testo e dei pulsanti ---------- */
+:root{--q-orange:#C2410C;--q-teal:#0B7C87;--q-blue:#2459E0;--q-pink:#C2255C;--q-green:#237A36;--q-purple:#7C3AED;--q-red:#C92A2A;--q-amber:#9A6400;--q-gray:#495057;--q-violet:#862E9C;--q-sky:#1971C2;--q-on:#FFFFFF;--xp-fg:#8A5A00}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--q-orange:#FFA94D;--q-teal:#5FD3DE;--q-blue:#8AAEFF;--q-pink:#FF8FB3;--q-green:#7EDC8F;--q-purple:#B69CFF;--q-red:#FF8787;--q-amber:#FFC247;--q-gray:#C1C7D0;--q-violet:#E0A3F5;--q-sky:#74C0FC;--q-on:#0B1020;--xp-fg:#FFC247}}
+:root[data-theme="dark"]{--q-orange:#FFA94D;--q-teal:#5FD3DE;--q-blue:#8AAEFF;--q-pink:#FF8FB3;--q-green:#7EDC8F;--q-purple:#B69CFF;--q-red:#FF8787;--q-amber:#FFC247;--q-gray:#C1C7D0;--q-violet:#E0A3F5;--q-sky:#74C0FC;--q-on:#0B1020;--xp-fg:#FFC247}
+html body .cnt .xp{color:var(--xp-fg)!important}
+.pill,.tag,.eyebrow,.lbl,.an,.area,.sy,.pl,.ph-tag,.crumb,body.studio div.ph,.mx th,.bub small,.sub small,.grp,.qtp,.rxh{font-size:.75rem!important}
+.src{min-height:36px;padding:7px 12px!important;align-items:center;font-size:.8rem!important}
+.ch,.fb{min-height:44px}
+a.chip,.lnk{display:inline-flex!important;align-items:center;min-height:36px}
+input[type=range]{min-height:32px}
+.dbt button,.mx td button{min-height:38px}
+:focus-visible{outline:3px solid var(--accent)!important;outline-offset:2px}
+.appbar a{font-size:clamp(12px,3.3vw,max(12px,.76rem))!important;white-space:nowrap}
+.tabs{overflow-x:auto;scrollbar-width:none;max-width:100%}.tabs::-webkit-scrollbar{display:none}.tabs .tab{flex-shrink:0}
+.ph>div{min-width:0}.ph h3,.ph small{overflow-wrap:anywhere}
+@media (max-width:979px){.mgrid{grid-template-columns:minmax(0,1fr)!important}}
+.mgrid>*{min-width:0}.stats,#kn{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.mgrid>*{margin-left:0!important;margin-right:0!important;width:auto;max-width:100%}
+select,input[type=text],input[type=search]{min-width:0;max-width:100%}
+.wrap .wrap{margin-left:0!important;margin-right:0!important;align-self:stretch;min-width:0}
+.wrap .wrap summary{flex-wrap:wrap}.wrap .wrap summary>*{min-width:0}
 </style>
 </body></html>
