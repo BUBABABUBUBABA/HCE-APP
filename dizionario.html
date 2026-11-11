@@ -87,7 +87,7 @@ label.f{display:flex;flex-direction:column;gap:6px;font-weight:800;font-size:.92
 <header>
   <div class="eyebrow">HCE · tutto il percorso</div>
   <h1>Dizionario</h1>
-  <p class="lead">Metafore, bias, concetti e i termini di tutti i livelli, con il modulo da cui vengono. Scrivi una parola e la trovi.</p>
+  <p class="lead">Metafore, bias, chimica, concetti e i termini di tutti i livelli, con il modulo da cui vengono. Scrivi una parola e la trovi.</p>
 </header>
 <div class="card notice" id="old" hidden><h2>Serve il file dei contenuti aggiornato</h2><p class="muted">Importa la versione nuova di hce-contenuti.json dalla Home, in Impostazioni.</p><a class="btn pri" href="index.html#contenuti">Vai alla Home</a></div>
 <div id="app" hidden style="display:flex;flex-direction:column;gap:16px">
@@ -96,6 +96,7 @@ label.f{display:flex;flex-direction:column;gap:6px;font-weight:800;font-size:.92
     <div class="tabs">
       <button class="tab" data-t="met" aria-selected="true">Metafore</button>
       <button class="tab" data-t="bias" aria-selected="false">Bias</button>
+      <button class="tab" data-t="chim" aria-selected="false">Chimica</button>
       <button class="tab" data-t="conc" aria-selected="false">Concetti</button>
       <button class="tab" data-t="gl" aria-selected="false">Termini</button>
     </div>
@@ -103,6 +104,7 @@ label.f{display:flex;flex-direction:column;gap:6px;font-weight:800;font-size:.92
   <section id="v-res" hidden style="display:flex;flex-direction:column;gap:8px"></section>
   <section id="v-met" style="display:flex;flex-direction:column;gap:12px"></section>
   <section id="v-bias" hidden style="display:flex;flex-direction:column;gap:12px"></section>
+  <section id="v-chim" hidden style="display:flex;flex-direction:column;gap:12px"></section>
   <section id="v-conc" hidden style="display:flex;flex-direction:column;gap:12px"></section>
   <section id="v-gl" hidden style="display:flex;flex-direction:column;gap:12px"></section>
 </div>
@@ -184,6 +186,24 @@ function renderConc(){var h='',last='';
   h+='<div class="card"><h3>Riconoscere una metafora</h3><p>Paragone: termini intercambiabili. Similitudine: c\'è un marcatore (come, sembra). Metafora: identificazione diretta, senza marcatori. Analogia (HCE): concetti lontani, scopo esplicativo, frase lunga.</p><div class="say" style="--mc:var(--anc)">«Claudio è Dotto dei sette nani»: metafora.</div><div>'+ml('op28')+'</div></div>';
   $('v-conc').innerHTML=h}
 
+// CHIMICA
+var SUB=(PACK.mib&&PACK.mib.subst||[]).concat(Z.chemx||[]),MXL=(PACK.mib&&PACK.mib.mix)||[],CR=Z.chemrefs||{};
+var E3OF={};(Z.cheme3||[]).forEach(function(r){r[2].forEach(function(n){E3OF[n]=r})});
+var SC={Adrenalina:'#E8590C',Noradrenalina:'#D9480F',Cortisolo:'#C92A2A',Serotonina:'#2F6BFF',Ossitocina:'#C2255C',Dopamina:'#F08C00',Endorfine:'#2B8A3E',Testosterone:'#862E9C',Acetilcolina:'#0C8599',GABA:'#0E9AA7',Melatonina:'#495057'};
+function chemCard(s,i){var up=MXL.filter(function(m){return m.plus.indexOf(s.n)>=0}).map(function(m){return m.n}),dn=MXL.filter(function(m){return m.minus.indexOf(s.n)>=0}).map(function(m){return m.n}),e=E3OF[s.n],r=CR[s.n];
+  return '<details class="ent" id="chim-'+i+'" style="--mc:'+(SC[s.n]||'var(--accent)')+';--ms:var(--sunk)"><summary><span class="L">'+esc(s.n.slice(0,2))+'</span><span class="tx"><b>'+esc(s.n)+'</b><small>'+esc(s.nick)+'</small></span><span class="chev">›</span></summary><div class="sb">'+
+   '<p style="line-height:1.5;font-weight:600">'+esc(s.what)+'</p>'+
+   (up.length||dn.length?'<div class="lbl">Nei 7 mix</div><div class="chips">'+up.map(function(n){return '<a class="chip" href="mib.html#mix" style="text-decoration:none">▲ '+esc(n)+'</a>'}).join('')+dn.map(function(n){return '<a class="chip" href="mib.html#mix" style="text-decoration:none;opacity:.75">▼ '+esc(n)+'</a>'}).join('')+'</div>':'')+
+   (e?'<div class="lbl">In E³</div><p style="font-weight:600">Fase '+esc(e[0])+': '+esc(e[1])+'.</p>':'')+
+   (s.more&&s.more.length?'<div class="lbl">Come stimolarla</div>'+ul(s.more):'')+
+   (s.less&&s.less.length?'<div class="lbl">Come abbassarla</div>'+ul(s.less):'')+
+   (s.warn?'<div class="say">'+esc(s.warn)+'</div>':'')+(s.note?'<p class="note">'+esc(s.note)+'</p>':'')+
+   (r&&r.n?'<div class="lbl">Nel corso: nominata in '+r.n+' moduli. Dove se ne parla di più</div><div style="display:flex;flex-wrap:wrap;gap:6px">'+r.top.map(ml).join('')+'</div>':'')+
+   (s.m?'<div>'+ml(s.m)+'</div>':'<div><a class="src" href="mib.html#sostanze">↗ Sostanze nella matrice IBM</a></div>')+'</div></details>'}
+function renderChim(){var h='<p class="note">'+esc(Z.chemnote||'')+'</p>'+SUB.map(chemCard).join('');
+  if(Z.cheme3)h+='<div class="card"><h3>La chimica di E³</h3>'+Z.cheme3.map(function(r){return '<div class="rule"><b>'+esc(r[0])+' · '+esc(r[1])+'</b><span>'+esc(r[2].join(', '))+'</span></div>'}).join('')+'<div>'+ml(Z.cheme3m)+'</div></div>';
+  $('v-chim').innerHTML=h}
+
 // TERMINI (glossario per livello)
 var GL=Z.gloss||[],glv=(function(){try{return localStorage.getItem('diz_glv')||'iu'}catch(e){return 'iu'}})();
 var PATHS={};PACK.data.levels.forEach(function(l){if(GL.some(function(g){return g.l===l.k}))(PATHS[l.p]=PATHS[l.p]||[]).push(l)});
@@ -201,6 +221,7 @@ Z.met.forEach(function(c){IDX.push({t:'met',id:'met-'+c.k,n:c.n,s:'Metafora '+c.
   c.vocab.forEach(function(v){IDX.push({t:'met',id:'met-'+c.k,n:'«'+v+'»',s:'Metafora '+c.n.toLowerCase()+' ('+c.g+')',col:GC[c.g][0],txt:norm(v),v:1})})});
 Z.bias.forEach(function(b){IDX.push({t:'bias',id:'bias-'+b.k,n:b.n,s:b.alt+' · '+(BCN[b.cat]||''),col:BC[b.cat],txt:norm(b.n+' '+b.alt+' '+b.d+' '+b.ex.join(' ')+' '+b.recog.join(' ')+' '+b.src)})});
 (Z.biascit||[]).forEach(function(c,i){IDX.push({t:'bias',id:'cit-'+i,n:c[0],s:'Bias citato · '+(LV[c[5].slice(0,2)]||''),col:'var(--bi)',txt:norm(c[0]+' '+c[1]+' '+c[3]+' '+c[4])})});
+SUB.forEach(function(s,i){IDX.push({t:'chim',id:'chim-'+i,n:s.n,s:'Chimica · '+s.nick,col:SC[s.n]||'var(--accent)',txt:norm(s.n+' '+s.nick+' '+s.what)})});
 GL.forEach(function(g,i){IDX.push({t:'gl',id:'gl-'+i,gl:g.l,n:g.t,s:'Termine · '+(LV[g.l]||''),col:'var(--accent)',txt:norm(g.t+' '+g.one+' '+g.pts.join(' ')),w:1})});
 Z.biascats.forEach(function(c){IDX.push({t:'bias',id:'',n:c[1],s:c[3],col:BC[c[0]],txt:norm(c[1]+' '+c[2]+' '+c[3]),bf:c[0]})});
 Z.conc.forEach(function(c,i){IDX.push({t:'conc',id:'conc-'+i,n:c[1],s:CG[c[0]][1],col:CG[c[0]][0],txt:norm(c[1]+' '+c[2]+' '+c[3])})});
@@ -223,10 +244,10 @@ document.addEventListener('click',function(e){var b;
   if(b=e.target.closest('[data-mf]')){mf=b.dataset.mf;renderMet()}
   if(b=e.target.closest('[data-bf]')){bf=b.dataset.bf;renderBias()}});
 function show(t,keep){document.querySelectorAll('.tab').forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===t?'true':'false')});
-  ['met','bias','conc','gl'].forEach(function(x){$('v-'+x).hidden=x!==t});if(!keep)window.scrollTo(0,0)}
+  ['met','bias','chim','conc','gl'].forEach(function(x){$('v-'+x).hidden=x!==t});if(!keep)window.scrollTo(0,0)}
 document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(b)show(b.dataset.t)});
-renderMet();renderBias();renderConc();renderGl();
-var h0=(location.hash||'').slice(1);if(['bias','conc','gl','mie'].indexOf(h0)>=0){if(h0==='mie'){show('met');setTimeout(function(){$('mine').scrollIntoView()},50)}else show(h0)}
+renderMet();renderBias();renderChim();renderConc();renderGl();
+var h0=(location.hash||'').slice(1);if(['bias','chim','conc','gl','mie'].indexOf(h0)>=0){if(h0==='mie'){show('met');setTimeout(function(){$('mine').scrollIntoView()},50)}else show(h0)}
 });
 </script>
 
