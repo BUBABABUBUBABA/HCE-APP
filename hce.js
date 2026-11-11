@@ -1,7 +1,7 @@
 /* HCE app: database locale, pacchetto contenuti, backup, barra di navigazione */
 var HCE = (function () {
   var DBN = 'hce-app', DBV = 1, dbp = null;
-  var USER_KEYS = ['dpi_su_di_me_v1', 'dpi_know_v1', 'studio_hce_v1', 'e3_plans_v1', 'e3_daily_v1', 'ripasso_v1', 'mib_log_v1', 'prep_v1'];
+  var USER_KEYS = ['dpi_su_di_me_v1', 'dpi_know_v1', 'studio_hce_v1', 'e3_plans_v1', 'e3_daily_v1', 'ripasso_v1', 'mib_log_v1', 'prep_v1', 'fb_v1'];
 
   function open() {
     if (dbp) return dbp;
@@ -48,7 +48,7 @@ var HCE = (function () {
   function importPack(text) {
     var p = JSON.parse(text);
     if (!p || p.app !== 'hce-contenuti') throw new Error('Questo non è il file dei contenuti HCE.');
-    var pack = { version: p.version, vs: p.vs, vd: p.vd, data: p.data, areas: p.areas, sys: p.sys, toolnames: p.toolnames, unp: p.unp, books: p.books, e3: p.e3, mib: p.mib, istair: p.istair };
+    var pack = { version: p.version, vs: p.vs, vd: p.vd, data: p.data, areas: p.areas, sys: p.sys, toolnames: p.toolnames, unp: p.unp, books: p.books, e3: p.e3, mib: p.mib, istair: p.istair, feedback: p.feedback };
     return clear('appunti')
       .then(function () { return putAll('appunti', p.appunti); })
       .then(function () { return putAll('meta', { pack: pack, cerca: p.cerca }); })
@@ -126,6 +126,14 @@ var HCE = (function () {
       qa.sort(function (x, y) { return +y.id - +x.id; });
       lsSet('prep_v1', JSON.stringify(qa));
     }
+    // feedback preparati: unione per id
+    var fa = J(lsGet('fb_v1'), []), fb = J(b.data['fb_v1'], []);
+    if (Array.isArray(fb)) {
+      var fseen = {}; fa.forEach(function (x) { fseen[x.id] = 1; });
+      fb.forEach(function (x) { if (x && !fseen[x.id]) { fa.push(x); n++; } });
+      fa.sort(function (x, y) { return +y.id - +x.id; });
+      lsSet('fb_v1', JSON.stringify(fa));
+    }
     // matrice: unione per id
     var ma = J(lsGet('mib_log_v1'), []), mb = J(b.data['mib_log_v1'], []);
     if (Array.isArray(mb)) {
@@ -184,7 +192,7 @@ var HCE = (function () {
   function dayKey(ts) { var d = new Date(ts); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
   function stats() {
     var done = J(lsGet('studio_hce_v1'), {}) || {}, ses = J(lsGet('dpi_su_di_me_v1'), []) || [],
-      plans = J(lsGet('e3_plans_v1'), []) || [], daily = J(lsGet('e3_daily_v1'), {}) || {}, rip = J(lsGet('ripasso_v1'), {}) || {}, mlog = J(lsGet('mib_log_v1'), []) || [], preps = J(lsGet('prep_v1'), []) || [];
+      plans = J(lsGet('e3_plans_v1'), []) || [], daily = J(lsGet('e3_daily_v1'), {}) || {}, rip = J(lsGet('ripasso_v1'), {}) || {}, mlog = J(lsGet('mib_log_v1'), []) || [], preps = J(lsGet('prep_v1'), []) || [], fbs = J(lsGet('fb_v1'), []) || [];
     var ev = [], nm = 0;
     function add(t, type, xp, ref) { if (t > 1e12) ev.push({ t: t, d: dayKey(t), type: type, xp: xp, ref: ref }); }
     Object.keys(done).forEach(function (k) { var t = done[k]; if (t > 0) { nm++; add(t, 'mod', 10, k); } });
@@ -193,13 +201,14 @@ var HCE = (function () {
     Object.keys(daily).forEach(function (k) { var v = daily[k]; if (v && v.t) add(v.t, 'tool', 10, v.n); });
     Object.keys(rip).forEach(function (k) { add(rip[k], 'rip', 5, k); });
     mlog.forEach(function (x) { add(+x.id, 'mib', 15, x.id); });
+    fbs.forEach(function (x) { add(+x.id, 'fb', 20, x.id); });
     preps.forEach(function (x) { add(+x.id, 'prep', 20, x.id); if (x.after && x.after.t) add(x.after.t, 'prepafter', 10, x.id); });
-    var days = {}, xp = 0, today = dayKey(Date.now()), T = { mod: 0, ses: 0, plan: 0, tool: 0, rip: 0, after: 0, mib: 0, prep: 0, prepafter: 0 };
+    var days = {}, xp = 0, today = dayKey(Date.now()), T = { mod: 0, ses: 0, plan: 0, tool: 0, rip: 0, after: 0, mib: 0, prep: 0, prepafter: 0, fb: 0 };
     ev.forEach(function (e) { days[e.d] = 1; xp += e.xp; if (e.d === today) T[e.type]++; });
     var streak = 0, d = new Date();
     if (!days[dayKey(d)]) d.setDate(d.getDate() - 1);
     while (days[dayKey(d)]) { streak++; d.setDate(d.getDate() - 1); }
-    var plan = [Math.min(T.mod, 2) / 2, (T.ses + T.after + T.plan + T.mib + T.prep + T.prepafter) ? 1 : 0, T.tool ? 1 : 0];
+    var plan = [Math.min(T.mod, 2) / 2, (T.ses + T.after + T.plan + T.mib + T.prep + T.prepafter + T.fb) ? 1 : 0, T.tool ? 1 : 0];
     return { xp: xp, streak: streak, today: !!days[today], todayKey: today, days: days, events: ev, T: T,
       mods: nm, sessions: ses.length, plans: plans.length, preps: preps, done: done, ses: ses, planList: plans, daily: daily, rip: rip,
       goal: plan.filter(function (x) { return x >= 1; }).length, goalMax: 3, plan: plan };
