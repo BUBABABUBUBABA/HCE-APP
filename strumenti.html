@@ -43,6 +43,8 @@ h1{font-size:1.9rem;line-height:1.1;margin:0}
 <header><div class="eyebrow">HCE</div><h1>Strumenti</h1><p class="lead">Ogni strumento ha la sua schermata. Per usarli insieme su un'interazione vera c'è Prepara.</p></header>
 <div class="sec">Per le interazioni</div>
 <div class="grid" id="g1"></div>
+<div class="sec">Su di te</div>
+<div class="grid" id="g3"></div>
 <div class="sec">Per studiare</div>
 <div class="grid" id="g2"></div>
 </div>
@@ -53,7 +55,13 @@ var T1=[['e3.html','E³','Algoritmo E³','Engage, Explain, Exchange: 27 strument
         ['istair.html','I','I-STAIR','La scala di acquisto: 5 gradini, 15 strumenti, come riconoscere dove è il cliente.','var(--q-pink)'],
         ['feedback.html','RA','Feedback: RINGS e ARISE','Correggere senza accusare, rafforzare ciò che funziona. Con la scheda per prepararlo.','var(--q-green)'],
         ['prep.html','P','Prepara','Obiettivo, mix e copione E³ su un\'interazione vera, più il Dopo.','var(--q-teal)'],
-        ['protocollo.html','DPI','Protocollo D-P-I','Decode, Profile, Influence: prima, dopo e storico.','var(--q-red)']];
+        ['protocollo.html','DPI','Protocollo D-P-I','Decode, Profile, Influence: prima, dopo e storico.','var(--q-red)'],
+        ['slcc.html','SL','SLCC','Come ragiona l\'altro: 15 preferenze, il profilo di una persona e i messaggi MICRO e MACRO.','var(--q-teal)'],
+        ['incontro.html','1°','Prima di un incontro','EARLY, look, ambiente e frasi da evitare: una scheda per ogni incontro.','var(--q-orange)']];
+var T3=[['io.html#obiettivi','R','REACH · obiettivi','I tuoi obiettivi con le 5 fasi REACH, passo per passo.','var(--q-green)'],
+        ['io.html#focus','F','Focus','Una sessione di concentrazione con timer, pause e distrazioni.','var(--q-blue)'],
+        ['io.html#abitudini','A','Abitudini','Costruire un\'abitudine nuova o smontarne una vecchia, con il registro dei giorni.','var(--q-purple)'],
+        ['io.html#emozioni','E','Emozioni','Gestire un\'emozione forte, fase per fase, e i tuoi trigger.','var(--q-pink)']];
 var T2=[['studio.html','S','Studio sulla ruota','Moduli, webinar e libri organizzati per aspetto.','var(--q-blue)'],
         ['percorso.html','→','Il tuo percorso','I 21 livelli a tappe.','var(--q-sky)'],
         ['palestra.html','✓','Palestra','10 domande veloci su E³, IBM, I-STAIR, feedback, Dizionario e Termini. Con ripasso degli errori.','var(--q-orange)'],
@@ -61,6 +69,7 @@ var T2=[['studio.html','S','Studio sulla ruota','Moduli, webinar e libri organiz
 var EXTRA=window.HCE_TOOLS||[];
 function card(t){return '<a class="tl" href="'+t[0]+'"><span class="ic" style="--c:'+t[4]+'">'+t[1]+'</span><span><b>'+t[2]+'</b><span>'+t[3]+'</span></span></a>'}
 document.getElementById('g1').innerHTML=T1.concat(EXTRA.filter(function(t){return t[5]!=='study'})).map(card).join('');
+document.getElementById('g3').innerHTML=T3.map(card).join('');
 document.getElementById('g2').innerHTML=T2.concat(EXTRA.filter(function(t){return t[5]==='study'})).map(card).join('');
 })();
 </script>

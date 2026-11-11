@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="it"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Prima di un incontro</title>
+<meta name="theme-color" content="#1f5a5e">
+<link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="HCE">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+.appbar{display:flex;gap:4px;padding:10px 0 2px;max-width:1200px;margin:0 auto;overflow-x:auto}
+.appbar a{font:600 .82rem/1 Inter,system-ui,sans-serif;text-decoration:none;color:var(--muted,#5d6869);padding:9px 12px;border-radius:99px;white-space:nowrap}
+.appbar a[aria-current]{background:var(--accent-soft,#d9e9e7);color:var(--accent,#1f5a5e)}
+.loading{font:15px/1.5 system-ui,sans-serif;padding:40px 16px;text-align:center;color:#5d6869}
+</style>
+<script src="hce.js"></script>
+</head><body>
+<script>HCE.nav("tool");</script>
+<style>
+:root{--onp:#FFFFFF;--sl:#9A4A12;--sl-s:#FBEDE2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--onp:#0B1020;--sl:#F2A46B;--sl-s:#3A2414}}
+:root[data-theme="dark"]{--onp:#0B1020;--sl:#F2A46B;--sl-s:#3A2414}
+*{box-sizing:border-box}
+body{margin:0;padding-block:0 110px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.page{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+p{margin:0}
+header{padding-top:22px;display:flex;flex-direction:column;gap:8px}
+.eyebrow{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sl);font-weight:900}
+h1{font-size:1.9rem;line-height:1.1;margin:0}h2{font-size:1.3rem;margin:0}h3{font-size:1.05rem;margin:0}
+.lead{color:var(--muted);font-weight:600}
+nav.tb{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:8px 0}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}
+.tab{flex:1 0 auto;padding:10px 12px;border:0;background:transparent;color:var(--muted);font:inherit;font-size:.88rem;cursor:pointer;min-height:44px}
+section{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--surface);padding:16px;display:flex;flex-direction:column;gap:12px}
+.lbl{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;font-weight:900;color:var(--muted)}
+.tip{font-size:.88rem;color:var(--muted);font-weight:600;line-height:1.45}
+.note{background:var(--sunk);border-radius:14px;padding:10px 12px;font-size:.88rem;font-weight:600;color:var(--muted);line-height:1.45}
+.src{display:inline-flex;font-size:.8rem;font-weight:800;color:var(--accent);background:var(--sunk);border-radius:99px;padding:7px 12px;text-decoration:none;align-self:flex-start;min-height:36px;align-items:center}
+label.f{display:flex;flex-direction:column;gap:6px;font-weight:800;font-size:.92rem}
+textarea,input[type=text],select{width:100%;font:inherit;padding:10px 12px;color:var(--fg)}
+textarea{min-height:64px;resize:vertical}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 16px;font:inherit;cursor:pointer;background:var(--surface);color:var(--fg);min-height:46px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.btn.sl{background:var(--sl);color:var(--onp);border-color:var(--sl);font-weight:900}
+.msg{border-radius:12px;padding:9px 12px;font-weight:800;font-size:.88rem;background:var(--ok-soft);color:var(--ok)}
+.grp{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;font-weight:900;color:var(--sl);margin-top:6px}
+.ent{border-radius:20px;border:2px solid var(--line);background:var(--surface);overflow:hidden;box-shadow:0 3px 0 var(--line)}
+.ent summary{list-style:none;cursor:pointer;display:flex;gap:12px;align-items:center;padding:12px 14px;min-height:62px}
+.ent summary::-webkit-details-marker{display:none}
+.ent .L{flex:none;width:46px;height:46px;border-radius:14px;background:var(--sl-s);color:var(--sl);display:grid;place-items:center;font-weight:900;font-size:1rem}
+.ent summary b{font-weight:900;font-size:1.05rem;display:block}.ent summary small{display:block;color:var(--muted);font-weight:700;font-size:.84rem}
+.ent .chev{margin-left:auto;color:var(--muted);transition:transform .15s;flex:none}.ent[open] .chev{transform:rotate(90deg)}
+.sb{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.two{grid-template-columns:minmax(0,1fr)}}
+.face{border:2px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.face b{font-weight:900;color:var(--sl)}.face span{font-weight:600;line-height:1.4}.face ul{margin:0;padding-left:18px;color:var(--muted);font-weight:600;font-size:.88rem;line-height:1.45}
+.say{background:var(--sunk);border-left:4px solid var(--sl);border-radius:10px;padding:10px 12px;font-weight:700;line-height:1.45}
+.pr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;border-top:2px solid var(--line2);padding-top:10px}
+.pr .nm b{font-weight:900}.pr .nm small{display:block;color:var(--muted);font-weight:700;font-size:.8rem;line-height:1.35}
+.seg{display:flex;gap:4px}.seg button{font:inherit;font-weight:800;font-size:.84rem;padding:8px 10px;min-height:44px;border:2px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--sl);border-color:var(--sl);color:var(--onp)}
+@media (max-width:520px){.pr{grid-template-columns:minmax(0,1fr)}}
+.item{display:flex;gap:10px;align-items:center;border:2px solid var(--line);border-radius:16px;padding:10px 12px;background:var(--surface)}
+.item .tx{flex:1;min-width:0}.item .tx b{display:block;font-weight:900}.item .tx span{font-size:.82rem;color:var(--muted);font-weight:700}
+.adv{display:flex;flex-direction:column;gap:8px}.adv div{border-radius:12px;padding:10px 12px;background:var(--sunk);line-height:1.45;font-weight:600}.adv div b{font-weight:900}
+.adv div.k{background:var(--sl-s)}
+.step{border-top:2px solid var(--line2);padding-top:10px;display:flex;flex-direction:column;gap:6px}
+.step .h{display:flex;gap:10px;align-items:center}.step .h .L{flex:none;width:36px;height:36px;border-radius:11px;background:var(--sl);color:var(--onp);display:grid;place-items:center;font-weight:900}
+.step .h b{font-weight:900}
+.muted{color:var(--muted);font-size:.86rem;font-weight:600}
+.notice{text-align:center;align-items:center}
+.chips{display:flex;gap:8px;flex-wrap:wrap}.chips button{font:inherit;font-weight:800;font-size:.86rem;padding:8px 12px;min-height:44px;border:2px solid var(--line);border-radius:99px;background:var(--surface);color:var(--fg);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--sl);border-color:var(--sl);color:var(--onp)}
+.ck{display:flex;gap:10px;align-items:flex-start;font-weight:600;line-height:1.4;min-height:44px;padding:4px 0}.ck input{width:22px;height:22px;flex:none;margin-top:2px;accent-color:var(--sl)}
+table.t{width:100%;border-collapse:collapse;font-size:.88rem}table.t td,table.t th{text-align:left;padding:8px 6px;border-top:2px solid var(--line2);vertical-align:top;line-height:1.4}table.t th{font-weight:900}
+.tw{overflow-x:auto}
+</style>
+<div class="page">
+<header>
+  <div class="eyebrow">HCE · Prima impressione · Look · Colore · Embodied</div>
+  <h1>Prima di un incontro</h1>
+  <p class="lead">Una scheda da preparare prima di vedere qualcuno: cosa si aspetta, come ti presenti, cosa indossi, dove vi vedete, cosa non dire.</p>
+</header>
+<div class="card notice" id="old" hidden><h2>Serve il file dei contenuti aggiornato</h2><p class="muted">Importa la versione nuova di hce-contenuti.json dalla Home, in Impostazioni.</p><a class="btn pri" href="index.html#contenuti">Vai alla Home</a></div>
+<div id="app" hidden style="display:flex;flex-direction:column;gap:16px">
+  <nav class="tb"><div class="tabs">
+    <button class="tab" data-t="scheda" aria-selected="true">Scheda</button>
+    <button class="tab" data-t="early" aria-selected="false">EARLY</button>
+    <button class="tab" data-t="look" aria-selected="false">Look</button>
+    <button class="tab" data-t="amb" aria-selected="false">Ambiente</button>
+    <button class="tab" data-t="dopo" aria-selected="false">Se va male</button>
+  </div></nav>
+  <section id="v-scheda"></section>
+  <section id="v-early" hidden></section>
+  <section id="v-look" hidden></section>
+  <section id="v-amb" hidden></section>
+  <section id="v-dopo" hidden></section>
+</div>
+</div>
+<script>
+HCE.ready(function(PACK){
+var Z=PACK.inc,$=function(i){return document.getElementById(i)};
+if(!Z){$('old').hidden=false;return}
+$('app').hidden=false;
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var MODT={};PACK.data.mods.forEach(function(m){MODT[m.id]=m.t});
+function ml(id){return id?'<a class="src" href="studio.html#m='+id+'">↗ '+esc(MODT[id]||id)+'</a>':''}
+var K='incontro_v1';
+function list(){return HCE.lsJ(K,[])}
+function put(x){var a=list(),i=a.findIndex(function(y){return y.id===x.id});x.u=Date.now();if(i>=0)a[i]=x;else a.unshift(x);HCE.lsPut(K,a)}
+var CTX={};Z.ctx.forEach(function(c){CTX[c.k]=c});
+function blank(){return {id:'',ctx:'',who:'',obj:'',e:{},l:{},dic:{},amb:'',av:{},esito:''}}
+var CUR=blank();
+
+/* ---------- SCHEDA ---------- */
+function fld(lab,key,val,ph,sub){return '<label class="f">'+esc(lab)+(sub?'<span class="muted">'+esc(sub)+'</span>':'')+'<textarea data-f="'+key+'" placeholder="'+esc(ph||'')+'" aria-label="'+esc(lab)+'">'+esc(val||'')+'</textarea></label>'}
+function renderScheda(){
+  var c=CTX[CUR.ctx],h='';
+  var old=list();
+  if(old.length&&!CUR.id)h+='<div class="card"><span class="lbl">Le tue schede</span>'+old.slice(0,8).map(function(x){return '<div class="item"><div class="tx"><b>'+esc(x.who||'Senza nome')+'</b><span>'+esc((CTX[x.ctx]||{}).n||'')+(x.esito?' · fatto':'')+' · '+new Date(+x.id).toLocaleDateString('it-IT')+'</span></div><button class="btn" data-open="'+x.id+'">Apri</button></div>'}).join('')+'</div>';
+  h+='<div class="card"><span class="lbl">1 · Che incontro è</span><div class="chips">'+Z.ctx.map(function(x){return '<button data-ctx="'+x.k+'" aria-pressed="'+(CUR.ctx===x.k)+'">'+esc(x.n)+'</button>'}).join('')+'</div>'+
+    (c?'<div class="adv">'+c.tips.map(function(t){return '<div>'+esc(t)+'</div>'}).join('')+'</div>'+ml(c.m):'<p class="muted">Scegli il tipo: ti mostro le regole del corso per quel contesto.</p>')+
+    '<label class="f">Con chi<input type="text" data-f="who" value="'+esc(CUR.who)+'" placeholder="Nome o ruolo"></label>'+
+    fld('Che impressione voglio lasciare','obj',CUR.obj,'Es. affidabile e concreto','Nessun priming è giusto in assoluto: decidi prima l\'obiettivo.')+'</div>';
+  h+='<div class="card"><span class="lbl">2 · EARLY, a casa</span><p class="tip">'+esc(Z.early.intro)+'</p>'+Z.early.items.map(function(i){return fld(i.k+' · '+i.n,'e.'+i.k,CUR.e[i.k],i.ph,i.d)}).join('')+'</div>';
+  h+='<div class="card"><span class="lbl">3 · Cosa indosso</span><p class="tip">'+esc(Z.look.intro)+'</p>'+Z.look.steps.map(function(s){return fld(s.n,'l.'+s.k,CUR.l[s.k],s.q,s.d)}).join('')+
+    '<span class="lbl">Dicotomie: dove voglio stare</span>'+Z.look.dic.map(function(d,i){var v=CUR.dic[i]||'';return '<div class="pr"><div class="nm"><b>'+esc(d[0])+' / '+esc(d[1])+'</b><small>'+esc(d[2])+'</small></div><div class="seg">'+
+      [['a',d[0]],['', '—'],['b',d[1]]].map(function(o){return '<button data-dic="'+i+'" data-v="'+o[0]+'" aria-pressed="'+(v===o[0])+'">'+esc(o[1])+'</button>'}).join('')+'</div></div>'}).join('')+'</div>';
+  h+='<div class="card"><span class="lbl">4 · Dove ci vediamo</span><p class="tip">'+esc(Z.amb.intro)+'</p>'+fld('Cosa c\'è di significativo e come lo gestisco','amb',CUR.amb,'Es. molto vetro e bianco: userò parole di solidità e voce attiva')+'<a class="src" href="#amb" data-go="amb">Colori e materiali →</a></div>';
+  h+='<div class="card"><span class="lbl">5 · Frasi da non dire</span>'+Z.words.avoid.map(function(w,i){return '<label class="ck"><input type="checkbox" data-av="'+i+'"'+(CUR.av[i]?' checked':'')+'><span>'+esc(w)+'</span></label>'}).join('')+'<p class="tip">'+esc(Z.words.vocab)+'</p>'+ml(Z.words.avoid_m)+'</div>';
+  h+='<div class="card"><span class="lbl">6 · Corpo e voce, se vuoi fiducia</span><div class="adv">'+Z.body.items.map(function(t){return '<div>'+esc(t)+'</div>'}).join('')+'</div><p class="tip">'+esc(Z.body.intro)+'</p>'+ml(Z.body.m)+'</div>';
+  if(CUR.id)h+='<div class="card"><span class="lbl">Dopo · com\'è andata</span>'+fld('Cosa ha funzionato, cosa cambierei','esito',CUR.esito,'Scrivilo appena puoi: +10 XP')+'</div>';
+  h+='<div class="row stick"><button class="btn sl" id="i-save">'+(CUR.id?'Aggiorna la scheda':'Salva la scheda · +20 XP')+'</button>'+(CUR.id?'<button class="btn" id="i-new">Nuova</button><button class="btn" id="i-del">Elimina</button>':'')+'</div><div id="i-msg"></div>';
+  $('v-scheda').innerHTML=h}
+$('v-scheda').addEventListener('input',function(e){var f=e.target.dataset.f;if(!f)return;var p=f.split('.');if(p.length>1)CUR[p[0]][p[1]]=e.target.value;else CUR[f]=e.target.value});
+$('v-scheda').addEventListener('change',function(e){var t=e.target;if(t.dataset.av!=null)CUR.av[t.dataset.av]=t.checked});
+$('v-scheda').addEventListener('click',function(e){var t=e.target.closest('button,a');if(!t)return;
+  if(t.dataset.ctx){CUR.ctx=CUR.ctx===t.dataset.ctx?'':t.dataset.ctx;renderScheda();return}
+  if(t.dataset.dic!=null){CUR.dic[t.dataset.dic]=t.dataset.v;t.parentNode.querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',b===t)});return}
+  if(t.dataset.open){CUR=JSON.parse(JSON.stringify(list().filter(function(x){return x.id===t.dataset.open})[0]||blank()));['e','l','dic','av'].forEach(function(k){CUR[k]=CUR[k]||{}});renderScheda();window.scrollTo(0,0);return}
+  if(t.dataset.go){e.preventDefault();show(t.dataset.go);return}
+  if(t.id==='i-new'){CUR=blank();renderScheda();window.scrollTo(0,0);return}
+  if(t.id==='i-del'){if(t.textContent!=='Elimina?'){t.textContent='Elimina?';return}HCE.lsPut(K,list().filter(function(x){return x.id!==CUR.id}));CUR=blank();renderScheda();return}
+  if(t.id==='i-save'){var fresh=!CUR.id;if(fresh)CUR.id=String(Date.now());if(CUR.esito&&!CUR.et)CUR.et=Date.now();if(!CUR.esito)delete CUR.et;put(CUR);var m=fresh?'Scheda salvata · +20 XP':'Scheda aggiornata'+(CUR.et&&CUR.esito?' · il Dopo vale +10 XP':'');renderScheda();$('i-msg').innerHTML='<div class="msg">'+esc(m)+'</div>'}});
+
+/* ---------- EARLY ---------- */
+function renderEarly(){$('v-early').innerHTML='<div class="card"><p class="tip">'+esc(Z.early.intro)+'</p>'+Z.early.items.map(function(i){return '<div class="step"><div class="h"><span class="L">'+i.k+'</span><b>'+esc(i.n)+'</b></div><span>'+esc(i.d)+'</span>'+ml(i.m)+'</div>'}).join('')+'</div>'+
+  '<div class="card"><h3>Le parole fanno priming</h3><p class="tip">'+esc(Z.words.intro)+'</p>'+ml(Z.words.m)+'</div>'+
+  '<div class="card"><h3>Per contesto</h3>'+Z.ctx.map(function(c){return '<details class="ent"><summary><span><b>'+esc(c.n)+'</b></span><span class="chev">›</span></summary><div class="sb"><div class="adv">'+c.tips.map(function(t){return '<div>'+esc(t)+'</div>'}).join('')+'</div>'+ml(c.m)+'</div></details>'}).join('')+'</div>'}
+
+/* ---------- LOOK ---------- */
+function renderLook(){var L=Z.look;$('v-look').innerHTML='<div class="card"><p class="tip">'+esc(L.intro)+'</p>'+L.steps.map(function(s,i){return '<div class="step"><div class="h"><span class="L">'+(i+1)+'</span><b>'+esc(s.n)+'</b></div><span>'+esc(s.d)+'</span>'+ml(s.m)+'</div>'}).join('')+'</div>'+
+  '<div class="card"><h3>Le cinque dicotomie</h3><p class="tip">'+esc(L.dic_intro)+'</p>'+L.dic.map(function(d){return '<div class="step"><b>'+esc(d[0])+' / '+esc(d[1])+'</b><span>'+esc(d[2])+'</span>'+ml(d[3])+'</div>'}).join('')+'</div>'+
+  '<div class="card"><h3>Il colore che indossi</h3><span>'+esc(L.colors)+'</span>'+ml(L.colors_m)+'</div>'+
+  '<div class="card"><h3>Se il look è sbagliato</h3><span>'+esc(L.wrong)+'</span>'+ml(L.wrong_m)+'</div>'}
+
+/* ---------- AMBIENTE ---------- */
+function tab(rows,h){return '<div class="tw"><table class="t"><tr><th>'+h+'</th><th>Evoca</th><th>Come gestirlo</th></tr>'+rows.map(function(r){return '<tr><td><b>'+esc(r[0])+'</b></td><td>'+esc(r[1])+'</td><td>'+esc(r[2])+'</td></tr>'}).join('')+'</table></div>'}
+function renderAmb(){var A=Z.amb;$('v-amb').innerHTML='<div class="card"><p class="tip">'+esc(A.intro)+'</p>'+ml(A.m)+'<div class="note">'+esc(A.note)+'</div></div>'+
+  '<div class="card"><h3>Colori</h3>'+tab(A.col,'Colore')+'<div class="row">'+A.col.map(function(r){return ml(r[3])}).join('')+'</div></div>'+
+  '<div class="card"><h3>Materiali</h3>'+tab(A.mat,'Materiale')+'<div class="row">'+ml('ec06')+ml('ec07')+ml('ec08')+ml('ec09')+'</div></div>'+
+  '<div class="card"><h3>Forme</h3><span>'+esc(A.forms)+'</span>'+ml(A.forms_m)+'</div>'}
+
+/* ---------- DOPO ---------- */
+function renderDopo(){var D=Z.after;$('v-dopo').innerHTML='<div class="card"><h3>Se è partita male</h3><span>'+esc(D.recover)+'</span>'+ml(D.recover_m)+'</div><div class="card"><h3>Anche tu subisci il priming</h3><span>'+esc(D.self)+'</span>'+ml(D.self_m)+'</div>'}
+
+var R_={scheda:renderScheda,early:renderEarly,look:renderLook,amb:renderAmb,dopo:renderDopo};
+function show(t){document.querySelectorAll('.tab').forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===t?'true':'false')});Object.keys(R_).forEach(function(x){$('v-'+x).hidden=x!==t});R_[t]();window.scrollTo(0,0)}
+document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(b)show(b.dataset.t)});
+var h0=(location.hash||'').slice(1);if(R_[h0])show(h0);else renderScheda();
+});
+</script>
+
+<style>
+/* Tema "gioco": colori, caratteri arrotondati, pulsanti in rilievo. Caricato dopo gli stili di ogni pagina. */
+:root{
+ --bg:#F7F8FC;--surface:#FFFFFF;--sunk:#F1F3F9;--fg:#1B2240;--muted:#5A6385;--line:#E3E7F0;--line2:#EDF0F6;
+ --accent:#2459E0;--accent-dk:#1B46B8;--accent-fg:#FFFFFF;--accent-soft:#EAF0FF;
+ --star:#F5A524;--star-dk:#C98408;--star-soft:#FFF4DE;--warn:#C2410C;--warn-soft:#FFEDE3;
+ --ok:#12805A;--ok-bg:#1FB37A;--ok-dk:#138A5C;--ok-soft:#E3F7EE;--fire:#FF8A3D;
+ --c1:#2459E0;--c2:#12805A;--c3:#9A6400;--c4:#7C3AED;--c5:#D32F2F;
+ --d:#2459E0;--d-soft:#EAF0FF;--p:#7C3AED;--p-soft:#F3EEFF;--i:#C2410C;--i-soft:#FFEDE3;
+ --shadow:none;--lift:0 3px 0 var(--line);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#0F1426;--surface:#182038;--sunk:#131A30;--fg:#EEF1FA;--muted:#A3ACC9;--line:#2A3459;--line2:#222B4A;
+ --accent:#6F97FF;--accent-dk:#3F66D6;--accent-fg:#0B1020;--accent-soft:#1D2A52;
+ --star:#FFC247;--star-dk:#B88310;--star-soft:#3A2F14;--warn:#FF9B6A;--warn-soft:#3B2318;
+ --ok:#4FD69C;--ok-bg:#2FBF83;--ok-dk:#1B7F56;--ok-soft:#14352A;--fire:#FF9D5C;
+ --c1:#7EA2FF;--c2:#4FD69C;--c3:#FFC247;--c4:#B69CFF;--c5:#FF8A80;
+ --d:#7EA2FF;--d-soft:#1D2A52;--p:#B69CFF;--p-soft:#2A2350;--i:#FF9B6A;--i-soft:#3B2318;
+ --shadow:none;--lift:0 3px 0 var(--line);color-scheme:dark}}
+:root[data-theme="dark"]{
+ --bg:#0F1426;--surface:#182038;--sunk:#131A30;--fg:#EEF1FA;--muted:#A3ACC9;--line:#2A3459;--line2:#222B4A;
+ --accent:#6F97FF;--accent-dk:#3F66D6;--accent-fg:#0B1020;--accent-soft:#1D2A52;
+ --star:#FFC247;--star-dk:#B88310;--star-soft:#3A2F14;--warn:#FF9B6A;--warn-soft:#3B2318;
+ --ok:#4FD69C;--ok-bg:#2FBF83;--ok-dk:#1B7F56;--ok-soft:#14352A;--fire:#FF9D5C;
+ --c1:#7EA2FF;--c2:#4FD69C;--c3:#FFC247;--c4:#B69CFF;--c5:#FF8A80;
+ --d:#7EA2FF;--d-soft:#1D2A52;--p:#B69CFF;--p-soft:#2A2350;--i:#FF9B6A;--i-soft:#3B2318;
+ --shadow:none;--lift:0 3px 0 var(--line);color-scheme:dark}
+
+html body,html body *:not(svg):not(svg *):not(code):not(pre){font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif}
+html body svg text{font-family:Nunito,system-ui,sans-serif!important}
+body{background:var(--bg);color:var(--fg);padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))!important}
+h1,h2,h3{font-weight:900!important;letter-spacing:-.01em}
+h1{font-size:1.9rem}
+.eyebrow,.ph,.area{font-weight:800!important}
+
+/* schede */
+.card,.hist,.mod,details.lv,.ig{border:2px solid var(--line)!important;border-radius:20px!important;box-shadow:var(--lift)!important}
+.mod.done{background:var(--ok-soft)!important;border-color:var(--ok-bg)!important;box-shadow:0 3px 0 var(--ok-bg)!important}
+
+/* pulsanti in rilievo */
+.btn{border-radius:14px!important;font-weight:800!important;letter-spacing:.02em;border:2px solid var(--line)!important;box-shadow:0 4px 0 var(--line);transition:transform .06s,box-shadow .06s}
+.btn.pri,.dpi .btn:not(.sec):not(.on){background:var(--accent)!important;color:var(--accent-fg)!important;border-color:var(--accent)!important;box-shadow:0 4px 0 var(--accent-dk)}
+.btn:active,.chk:active,.star:active,.ch:active,.scale button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.btn.pri:active{box-shadow:0 1px 0 var(--accent-dk)}
+.chk,.star{border:2px solid var(--line)!important;border-radius:14px!important;box-shadow:0 3px 0 var(--line)}
+.chk[aria-pressed="true"]{background:var(--ok-bg)!important;border-color:var(--ok-bg)!important;color:#fff!important;box-shadow:0 3px 0 var(--ok-dk)}
+.star[aria-pressed="true"]{background:var(--star)!important;border-color:var(--star)!important;box-shadow:0 3px 0 var(--star-dk)}
+.scale button,.ch{border:2px solid var(--line)!important;border-radius:14px!important;font-weight:800!important;box-shadow:0 3px 0 var(--line)}
+.ch{border-radius:99px!important}
+.scale button[aria-pressed="true"]{background:var(--accent)!important;border-color:var(--accent)!important;color:var(--accent-fg)!important;box-shadow:0 3px 0 var(--accent-dk)}
+
+/* schede (tabs) */
+.tabs,.seg{background:var(--sunk)!important;border-radius:16px!important;padding:5px!important}
+.tab,.seg button{font-weight:800!important;border-radius:12px!important}
+.tab[aria-selected="true"],.seg button[aria-pressed="true"]{background:var(--accent)!important;color:var(--accent-fg)!important;box-shadow:0 3px 0 var(--accent-dk)!important}
+
+/* campi */
+textarea,input[type=text],input[type=search],select{border:2px solid var(--line)!important;border-radius:14px!important;background:var(--sunk)!important;font-weight:600}
+textarea:focus,input:focus,select:focus{outline:none!important;border-color:var(--accent)!important}
+.pill,.tag{font-weight:800!important}
+.bar{height:10px!important;border-radius:99px}.bar i{background:var(--ok-bg)!important;border-radius:99px}
+
+/* barra di navigazione in basso */
+.appbar{position:fixed!important;left:0;right:0;bottom:0;top:auto!important;z-index:15;max-width:none!important;margin:0!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px!important;
+ background:var(--surface);border-top:2px solid var(--line);padding:8px max(10px,env(safe-area-inset-left,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-right,0px))!important}
+.appbar a{display:flex!important;flex-direction:column;align-items:center;gap:2px;padding:6px 0!important;border-radius:14px!important;font-weight:800!important;font-size:.76rem!important;color:var(--muted)!important;background:none!important;max-width:160px;width:100%;justify-self:center}
+.appbar a svg{width:26px;height:26px}
+.appbar a[aria-current]{color:var(--accent)!important;background:var(--accent-soft)!important}
+
+/* ---------- Accessibilità: contrasto, dimensioni minime del testo e dei pulsanti ---------- */
+:root{--q-orange:#C2410C;--q-teal:#0B7C87;--q-blue:#2459E0;--q-pink:#C2255C;--q-green:#237A36;--q-purple:#7C3AED;--q-red:#C92A2A;--q-amber:#9A6400;--q-gray:#495057;--q-violet:#862E9C;--q-sky:#1971C2;--q-on:#FFFFFF;--xp-fg:#8A5A00}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--q-orange:#FFA94D;--q-teal:#5FD3DE;--q-blue:#8AAEFF;--q-pink:#FF8FB3;--q-green:#7EDC8F;--q-purple:#B69CFF;--q-red:#FF8787;--q-amber:#FFC247;--q-gray:#C1C7D0;--q-violet:#E0A3F5;--q-sky:#74C0FC;--q-on:#0B1020;--xp-fg:#FFC247}}
+:root[data-theme="dark"]{--q-orange:#FFA94D;--q-teal:#5FD3DE;--q-blue:#8AAEFF;--q-pink:#FF8FB3;--q-green:#7EDC8F;--q-purple:#B69CFF;--q-red:#FF8787;--q-amber:#FFC247;--q-gray:#C1C7D0;--q-violet:#E0A3F5;--q-sky:#74C0FC;--q-on:#0B1020;--xp-fg:#FFC247}
+html body .cnt .xp{color:var(--xp-fg)!important}
+.pill,.tag,.eyebrow,.lbl,.an,.area,.sy,.pl,.ph-tag,.crumb,body.studio div.ph,.mx th,.bub small,.sub small,.grp,.qtp,.rxh{font-size:.75rem!important}
+.src{min-height:36px;padding:7px 12px!important;align-items:center;font-size:.8rem!important}
+.ch,.fb{min-height:44px}
+a.chip,.lnk{display:inline-flex!important;align-items:center;min-height:36px}
+input[type=range]{min-height:32px}
+.dbt button,.mx td button{min-height:38px}
+:focus-visible{outline:3px solid var(--accent)!important;outline-offset:2px}
+.appbar a{font-size:clamp(12px,3.3vw,max(12px,.76rem))!important;white-space:nowrap}
+.tabs{overflow-x:auto;scrollbar-width:none;max-width:100%}.tabs::-webkit-scrollbar{display:none}.tabs .tab{flex-shrink:0}
+.ph>div{min-width:0}.ph h3,.ph small{overflow-wrap:anywhere}
+@media (max-width:979px){.mgrid{grid-template-columns:minmax(0,1fr)!important}}
+.mgrid>*{min-width:0}.stats,#kn{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.mgrid>*{margin-left:0!important;margin-right:0!important;width:auto;max-width:100%}
+select,input[type=text],input[type=search]{min-width:0;max-width:100%}
+.wrap .wrap{margin-left:0!important;margin-right:0!important;align-self:stretch;min-width:0}
+.wrap .wrap summary{flex-wrap:wrap}.wrap .wrap summary>*{min-width:0}
+
+/* pulsanti comodi anche per dita grandi e mani meno ferme */
+button,.btn,a.btn,label.btn,summary,select,input[type=text],input[type=search],input[type=date],.appbar a{min-height:44px}
+button:not(.st):not(.tl):not(.tick){min-width:44px}
+.mx td button{min-height:44px}
+.row.stick{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:6;background:var(--surface);padding:8px 0;border-top:2px solid var(--line2)}
+.mc,.opts button,.chips button,.ch{min-height:44px!important}
+</style>
+</body></html>

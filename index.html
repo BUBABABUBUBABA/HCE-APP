@@ -231,7 +231,7 @@ function dayNum(d){return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.get
 function draw(p){
   PACK=p;var S=HCE.stats();
   $('s-streak').textContent=S.streak;$('s-fire').classList.toggle('off',!S.today);$('s-xp').textContent=S.xp;
-  $('welcome').hidden=!!p;$('main').hidden=!p;$('upd').hidden=!p||!!(p.e3&&p.mib&&p.istair&&p.feedback&&p.diz&&p.diz.gloss&&p.diz.chemrefs&&p.io&&p.ex&&p.lex);if(!p)return;
+  $('welcome').hidden=!!p;$('main').hidden=!p;$('upd').hidden=!p||!!(p.e3&&p.mib&&p.istair&&p.feedback&&p.diz&&p.diz.gloss&&p.diz.chemrefs&&p.io&&p.ex&&p.lex&&p.slcc&&p.inc);if(!p)return;
   var D=p.data,done=S.done,today=S.todayKey,now=new Date();
   $('hello').textContent=greet()+'!';
   $('hi-s').textContent=S.goal>=S.goalMax?'Piano di oggi completato. Grande!':S.streak?'Serie di '+S.streak+(S.streak===1?' giorno':' giorni')+(S.today?': continua così.':': fai qualcosa oggi per non perderla.'):'Ecco il tuo piano di oggi.';
@@ -303,7 +303,7 @@ function uiDraw(){var u=HCE.ui.get();Array.prototype.forEach.call(document.query
 ['ui-font','ui-theme'].forEach(function(id){$(id).addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;HCE.ui.set(id==='ui-font'?'font':'theme',b.dataset.v);uiDraw()})});
 document.addEventListener('click',function(e){var b;if(e.target.id==='bk-go'){$('set-bk').open=true;$('b-exp').click()}if(b=e.target.closest('[data-uifont] button')){HCE.ui.set('font',b.dataset.v);uiDraw()}});
 uiDraw();
-$('ver').textContent='App versione 2026-11-12a-3aec53f6';
+$('ver').textContent='App versione 2026-11-12b-b1f27fb4';
 status();bstat();
 window.addEventListener('pageshow',function(e){if(e.persisted){status();bstat()}});
 })();
