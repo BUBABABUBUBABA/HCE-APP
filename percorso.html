@@ -81,6 +81,13 @@ ol{margin:6px 0 0;padding-left:20px;display:grid;gap:4px;font-size:.92rem}
 input[type=file]{display:none}
 .welcome{text-align:center;align-items:center}
 .welcome .em{width:96px;height:96px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center;color:var(--accent)}
+.cap summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-height:44px;justify-content:center}.cap summary::-webkit-details-marker{display:none}.cap summary b{font-size:1.1rem;font-weight:900}
+.cap summary::after{content:"Apri";font-weight:800;color:var(--accent);font-size:.86rem}.cap[open] summary::after{content:"Chiudi"}
+#cap-b{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.capr{display:flex;flex-direction:column;gap:4px}.capt{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.capt b{font-weight:800}.capt span{color:var(--muted);font-weight:700;font-size:.86rem}
+.capbar{display:flex;height:12px;border-radius:99px;overflow:hidden;background:var(--sunk)}.capbar i{display:block;height:100%}.capbar .s{background:var(--ok-bg)}.capbar .q{background:var(--star)}.capbar .n{background:var(--warn)}
+.caprev{display:flex;gap:10px;align-items:center;justify-content:space-between;border:2px solid var(--line);border-radius:14px;padding:10px 12px;text-decoration:none;color:var(--fg);min-height:44px}
+.caprev span:first-child{display:flex;flex-direction:column;min-width:0}.caprev b{font-weight:800}.caprev small{color:var(--muted);font-weight:700}
 </style>
 <div class="page">
 <div class="top">
@@ -98,6 +105,7 @@ input[type=file]{display:none}
   <a class="big w" id="h-go" href="studio.html">CONTINUA</a>
 </div>
 <a class="qk" href="studio.html" style="--c:var(--c1);--c-soft:var(--accent-soft);flex-direction:row;align-items:center;gap:12px"><span class="ic" style="margin:0"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;color:var(--fg)"><b>Studio sulla ruota HCE</b><span id="q-mods">Moduli, webinar e libri per aspetto</span></span></a>
+<details class="card cap" id="cap" hidden><summary><b>Quanto hai capito</b><span id="cap-s" class="muted"></span></summary><div id="cap-b"></div></details>
 <div class="path" id="path"></div>
 </div>
 <script>
@@ -134,6 +142,19 @@ function draw(){
     html+='<a class="node '+st+'" href="studio.html#m='+first.id+'" style="transform:translateX('+OFF[k%OFF.length]+'px)"><span class="nd">'+ic+'</span><span class="nl"><b>'+esc(l.n)+'</b><span>'+(st==='cur'?'Sei qui · ':'')+nd+'/'+tot+' moduli</span></span></a>';k++;
   });
   $('path').innerHTML=html;
+  // comprensione: dalle flashcard di «Esercitati» (ultima volta che hai fatto il test di ogni modulo)
+  var ex=HCE.lsJ('ex_v1',{}),MI={},per={},rev=[],tot={si:0,quasi:0,no:0};D.mods.forEach(function(m){MI[m.id]=m});
+  Object.keys(ex).forEach(function(id){var r=(ex[id]||{}).r,m=MI[id];if(!r||!m)return;var c={si:0,quasi:0,no:0};Object.keys(r).forEach(function(i){if(c[r[i]]!=null){c[r[i]]++;tot[r[i]]++}});
+    var L=per[m.l]=per[m.l]||{si:0,quasi:0,no:0,n:0};L.si+=c.si;L.quasi+=c.quasi;L.no+=c.no;L.n++;
+    if(c.no||c.quasi)rev.push({m:m,c:c,t:ex[id].tl||ex[id].t1||0})});
+  var all=tot.si+tot.quasi+tot.no;$('cap').hidden=!all;
+  if(all){$('cap-s').textContent=Math.round(100*tot.si/all)+'% di risposte sapute · '+Object.keys(per).reduce(function(a,k){return a+per[k].n},0)+' moduli testati';
+    var h='<p class="muted">Dalle flashcard di «Esercitati»: conta l\'ultima volta che hai fatto il test di ogni modulo. Verde = lo sapevo, giallo = quasi, rosso = no.</p>';
+    h+=D.levels.filter(function(l){return per[l.k]}).map(function(l){var x=per[l.k],n=x.si+x.quasi+x.no;return '<div class="capr"><div class="capt"><b>'+esc(l.n)+'</b><span>'+Math.round(100*x.si/n)+'% · '+x.n+' '+(x.n===1?'modulo':'moduli')+'</span></div><div class="capbar" role="img" aria-label="'+x.si+' sapute, '+x.quasi+' quasi, '+x.no+' no"><i class="s" style="width:'+(100*x.si/n)+'%"></i><i class="q" style="width:'+(100*x.quasi/n)+'%"></i><i class="n" style="width:'+(100*x.no/n)+'%"></i></div></div>'}).join('');
+    rev.sort(function(a,b){return (b.c.no*2+b.c.quasi)-(a.c.no*2+a.c.quasi)||b.t-a.t});
+    if(rev.length)h+='<div class="lbl" style="margin-top:6px">Da rivedere</div>'+rev.slice(0,8).map(function(x){return '<a class="caprev" href="studio.html#x='+x.m.id+'"><span><b>'+esc(x.m.t)+'</b><small>'+esc(LV[x.m.l]?LV[x.m.l].n:'')+' · '+(x.c.no?x.c.no+' no':'')+(x.c.no&&x.c.quasi?', ':'')+(x.c.quasi?x.c.quasi+' quasi':'')+'</small></span><span aria-hidden="true">›</span></a>'}).join('')+(rev.length>8?'<p class="muted">E altri '+(rev.length-8)+'.</p>':'');
+    else h+='<p class="muted">Nessun modulo da rivedere.</p>';
+    $('cap-b').innerHTML=h}
 }
 draw();window.addEventListener('pageshow',function(e){if(e.persisted)draw()});
 });

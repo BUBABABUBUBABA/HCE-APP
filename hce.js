@@ -49,7 +49,7 @@ var HCE = (function () {
     var p; try { p = JSON.parse(text); } catch (e) { throw new Error('il file scelto non è leggibile'); }
     if (p && p.app === 'hce-backup') throw new Error('questo è un file di backup: importalo più sotto, in «Backup dei tuoi dati»');
     if (!p || p.app !== 'hce-contenuti' || !p.data || !p.appunti) throw new Error('questo non è il file dei contenuti HCE');
-    var pack = { version: p.version, vs: p.vs, vd: p.vd, data: p.data, areas: p.areas, sys: p.sys, toolnames: p.toolnames, unp: p.unp, books: p.books, e3: p.e3, mib: p.mib, istair: p.istair, feedback: p.feedback, diz: p.diz, io: p.io, ex: p.ex };
+    var pack = { version: p.version, vs: p.vs, vd: p.vd, data: p.data, areas: p.areas, sys: p.sys, toolnames: p.toolnames, unp: p.unp, books: p.books, e3: p.e3, mib: p.mib, istair: p.istair, feedback: p.feedback, diz: p.diz, io: p.io, ex: p.ex, lex: p.lex };
     return clear('appunti')
       .then(function () { return putAll('appunti', p.appunti); })
       .then(function () { return putAll('meta', { pack: pack, cerca: p.cerca }); })

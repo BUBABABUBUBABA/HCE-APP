@@ -349,7 +349,7 @@ function openReader(id){var m=modById(id);if(!m)return;RID=id;var L=LEV[m.l],ms=
  var head='<div class="trail"><b>'+esc(L.p)+'</b>'+(L.p!==L.n?' › '+esc(L.n):'')+' · modulo '+esc(m.num)+'</div><h1 id="r-t">'+esc(m.t)+'</h1>'+(m.g.length?'<div class="chips">'+m.g.map(function(g){return chipA(g[0])}).join('')+'</div>':'');
  var nav='<div class="rnav">'+(pv?'<button class="btn" data-read="'+pv.id+'"><small>← Precedente</small>'+esc(pv.t)+'</button>':'<span></span>')+(nx?'<button class="btn" data-read="'+nx.id+'"><small>Successivo →</small>'+esc(nx.t)+'</button>':'<span></span>')+'</div>';
  $('r-in').innerHTML=head+(EXD[id]?'<button class="btn" data-exjump="1" style="margin:10px 0 0;font-size:.86rem">Vai a «Esercitati» ↓</button>':'')+'<div class="doc" id="r-doc"><p class="muted">Carico gli appunti…</p></div><div id="r-ex"></div>'+nav;exRender(id);
- getLevel(m.l).then(function(j){if(RID!==id)return;$('r-doc').innerHTML=j[id]||'<p class="muted">Appunti non trovati.</p>';exDoc()}).catch(function(){if(RID===id)$('r-doc').innerHTML='<p class="muted">Non riesco a caricare gli appunti adesso. Riprova tra poco.</p>'});
+ getLevel(m.l).then(function(j){if(RID!==id)return;$('r-doc').innerHTML=j[id]||'<p class="muted">Appunti non trovati.</p>';exDoc();exLex()}).catch(function(){if(RID===id)$('r-doc').innerHTML='<p class="muted">Non riesco a caricare gli appunti adesso. Riprova tra poco.</p>'});
  $('r-pos').textContent=(ix+1)+'/'+ms.length;$('r-list').hidden=true;$('r-ix').setAttribute('aria-expanded','false');
  $('r-list').innerHTML='<div class="rxh">'+esc(L.n)+' · '+ms.filter(function(x){return isD(x.id)}).length+'/'+ms.length+' studiati</div>'+ms.map(function(x){return '<button class="rx'+(isD(x.id)?' d':'')+'" data-read="'+x.id+'"'+(x.id===id?' aria-current="true"':'')+'><span class="n">'+(isD(x.id)?'✓':esc(x.num))+'</span><span class="t">'+esc(x.t)+'</span></button>'}).join('');
  $('r-x').focus()}
@@ -464,6 +464,34 @@ function exMode(m){var d=$('r-doc');if(!d)return;d.classList.toggle('ess',m==='e
   var bar=d.querySelector('.readbar');if(bar){var s=bar.querySelector('small')||bar.appendChild(document.createElement('small'));s.textContent='circa '+Math.max(1,Math.round(w/200))+' min'}}
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-read-mode]');if(!b)return;try{localStorage.setItem('ui_read',b.dataset.readMode)}catch(x){}exMode(b.dataset.readMode)});
 (function(){var s=document.createElement('style');s.textContent='.readbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0 14px}.readbar span{font-weight:800;color:var(--muted);font-size:.86rem;margin-right:4px}.readbar small{color:var(--muted);font-weight:700;margin-left:6px}.readbar button{font:inherit;font-weight:800;font-size:.86rem;padding:8px 12px;border:2px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);cursor:pointer}.readbar button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}#r-doc.ess>[data-ess="0"]{display:none}';document.head.appendChild(s)})();
+/* Parole difficili spiegate al tocco: la prima volta che compaiono nel modulo diventano toccabili.
+   Le spiegazioni vengono solo dal corso (Termini, matrice IBM, Dizionario, strumenti). */
+var LEX=PACK.lex||[],LXRE=null,LXMAP={};
+(function(){if(!LEX.length)return;var all=[];LEX.forEach(function(e,i){e.w.forEach(function(w){LXMAP[w.toLowerCase()]=i;all.push(w)})});
+  all.sort(function(a,b){return b.length-a.length});
+  LXRE=new RegExp('('+all.map(function(w){return w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}).join('|')+')','gi');
+  var s=document.createElement('style');s.textContent=
+  '.lx{font:inherit;color:inherit;background:transparent;border:0;padding:0;margin:0;min-height:0!important;min-width:0!important;cursor:pointer;text-decoration:underline dotted var(--accent) 2px;text-underline-offset:3px;border-radius:3px}.lx:hover,.lx:focus-visible{background:var(--accent-soft)}'+
+  '#lxp{position:fixed;left:0;right:0;bottom:0;z-index:80;background:var(--surface);border-top:2px solid var(--line);box-shadow:0 -8px 24px rgba(0,0,0,.15);padding:16px max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}'+
+  '#lxp .in{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:8px}#lxp .hd{display:flex;gap:10px;align-items:center}#lxp b{font-size:1.15rem;font-weight:900;flex:1;min-width:0}#lxp p{margin:0;line-height:1.5;font-weight:600}#lxp a{align-self:flex-start}';
+  document.head.appendChild(s)})();
+function isWord(c){return !!c&&/[A-Za-zÀ-ÿ0-9³]/.test(c)}
+function exLex(){var d=$('r-doc');if(!d||!LXRE)return;var used={},nodes=[],w=document.createTreeWalker(d,NodeFilter.SHOW_TEXT,{acceptNode:function(n){var p=n.parentElement;if(!p||p.closest('h1,h2,h3,h4,a,button,code,pre,.readbar,.lx,table th'))return NodeFilter.FILTER_REJECT;return NodeFilter.FILTER_ACCEPT}}),n;
+  while(n=w.nextNode())nodes.push(n);
+  nodes.forEach(function(node){var t=node.textContent,m,last=0,frag=null;LXRE.lastIndex=0;
+    while(m=LXRE.exec(t)){var k=LXMAP[m[0].toLowerCase()],e=LEX[k];if(e==null||used[k])continue;
+      if(isWord(t.charAt(m.index-1))||isWord(t.charAt(m.index+m[0].length)))continue;
+      if(e.cs&&e.w.indexOf(m[0])<0)continue;
+      used[k]=1;frag=frag||document.createDocumentFragment();frag.appendChild(document.createTextNode(t.slice(last,m.index)));
+      var b=document.createElement('button');b.type='button';b.className='lx';b.setAttribute('data-lx',k);b.setAttribute('aria-label',m[0]+': spiegazione');b.textContent=m[0];frag.appendChild(b);last=m.index+m[0].length}
+    if(frag){frag.appendChild(document.createTextNode(t.slice(last)));node.parentNode.replaceChild(frag,node)}})}
+function lxClose(){var p=$('lxp');if(p)p.remove()}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.lx');
+  if(!b){if(e.target.closest&&!e.target.closest('#lxp'))lxClose();if(e.target.closest&&e.target.closest('[data-lxx]'))lxClose();return}
+  var x=LEX[+b.dataset.lx];if(!x)return;lxClose();var p=document.createElement('div');p.id='lxp';p.setAttribute('role','dialog');p.setAttribute('aria-label',x.t);
+  p.innerHTML='<div class="in"><div class="hd"><b>'+esc(x.t)+'</b><button class="btn" data-lxx="1" aria-label="Chiudi">✕</button></div><p>'+esc(x.d)+'</p>'+(x.h?'<a class="src" href="'+x.h+'">↗ '+esc(x.l)+'</a>':'')+'</div>';
+  document.body.appendChild(p);var c=p.querySelector('[data-lxx]');if(c)c.focus()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')lxClose()});
 
 function closeReader(){$('reader').hidden=true;document.body.classList.remove('noscroll');RID='';if(!$('v-ruota').hidden)wheelSync()}
 $('r-x').addEventListener('click',closeReader);
