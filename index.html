@@ -264,7 +264,7 @@ $('f-bk').addEventListener('change',function(){var f=this.files[0];if(!f)return;
  readFile(f).then(function(t){var n=HCE.importBackup(t);msg('b-msg','Backup importato: '+n+' elementi aggiunti o aggiornati.',true);bstat();status()})
  .catch(function(e){msg('b-msg','Non riesco a importare: '+esc(e&&e.message?e.message:'file non valido'))});this.value=''});
 if(location.hash==='#contenuti')$('contenuti').open=true;
-$('ver').textContent='App versione 2026-11-11-22abd32c';
+$('ver').textContent='App versione 2026-11-11-c9650ca4';
 status();bstat();
 window.addEventListener('pageshow',function(e){if(e.persisted){status();bstat()}});
 })();

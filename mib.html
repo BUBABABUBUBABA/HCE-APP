@@ -43,8 +43,8 @@ header{padding-top:22px;display:flex;flex-direction:column;gap:8px}
 h1{font-size:1.9rem;line-height:1.1;margin:0}h2{font-size:1.25rem;margin:0}h3{font-size:1.05rem;margin:0}
 .lead{color:var(--muted);font-weight:600;max-width:62ch}
 nav.tb{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:8px 0}
-.tabs{display:flex;gap:4px}
-.tab{flex:1;border:0;background:transparent;color:var(--muted);padding:10px 4px;font:inherit;font-size:.86rem;cursor:pointer;min-height:44px}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}
+.tab{flex:1 0 auto;padding-inline:12px!important;border:0;background:transparent;color:var(--muted);padding:10px 4px;font:inherit;font-size:.86rem;cursor:pointer;min-height:44px}
 .card{background:var(--surface);padding:16px;display:flex;flex-direction:column;gap:12px}
 .lbl{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;font-weight:900;color:var(--muted)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
@@ -106,6 +106,15 @@ a.src{color:var(--accent)}
 .sheet{background:var(--surface);width:100%;max-width:620px;max-height:88vh;overflow-y:auto;border-radius:26px 26px 0 0;padding:18px max(18px,env(safe-area-inset-left,0px)) calc(22px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:10px}
 @media(min-width:700px){.sh-bg{align-items:center}.sheet{border-radius:26px;max-height:84vh}}
 .notice{text-align:center;align-items:center}
+.case{border-radius:22px;border:2px solid var(--line);background:var(--surface);overflow:hidden;box-shadow:0 3px 0 var(--line)}
+.case summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.case summary::-webkit-details-marker{display:none}
+.case .ct{display:flex;gap:10px;align-items:baseline}.case .ct b{font-weight:900;font-size:1.08rem}.case .ct small{color:var(--muted);font-weight:900}
+.case .tr{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-weight:900;font-size:.85rem}
+.pill{border-radius:99px;padding:3px 10px;font-weight:900;font-size:.78rem}
+.caseb{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px}
+.sb{display:flex;flex-direction:column;gap:8px}
+.sb .tags{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:.8rem;font-weight:800;color:var(--muted)}
 </style>
 <div class="page">
 <header>
@@ -117,11 +126,15 @@ a.src{color:var(--accent)}
 <div id="app" hidden style="display:flex;flex-direction:column;gap:16px">
   <nav class="tb"><div class="tabs" role="tablist">
     <button class="tab" role="tab" data-t="matrice" aria-selected="true">Matrice</button>
+    <button class="tab" role="tab" data-t="casi" aria-selected="false">Casi</button>
     <button class="tab" role="tab" data-t="mix" aria-selected="false">I 7 mix</button>
+    <button class="tab" role="tab" data-t="sostanze" aria-selected="false">Sostanze</button>
     <button class="tab" role="tab" data-t="procedura" aria-selected="false">Procedura</button>
     <button class="tab" role="tab" data-t="regole" aria-selected="false">Regole</button>
   </div></nav>
   <section id="v-matrice" style="display:flex;flex-direction:column;gap:14px"></section>
+  <section id="v-casi" hidden style="display:flex;flex-direction:column;gap:12px"></section>
+  <section id="v-sostanze" hidden style="display:flex;flex-direction:column;gap:12px"></section>
   <section id="v-mix" hidden style="display:flex;flex-direction:column;gap:12px"></section>
   <section id="v-procedura" hidden style="display:flex;flex-direction:column;gap:10px"></section>
   <section id="v-regole" hidden style="display:flex;flex-direction:column;gap:12px"></section>
@@ -176,6 +189,28 @@ $('v-matrice').addEventListener('click',function(e){var b;
   if(e.target.id==='m-log'){var l=HCE.lsJ(LOG,[]);l.unshift({id:String(Date.now()),from:MX[FROM].k,to:MX[TO].k});HCE.lsPut(LOG,l);$('m-msg').innerHTML='<div class="msg">Registrata · +15 XP</div>'}
 });
 
+// casi pratici
+function pill(k){var m=MX[IDX[k]];return '<span class="pill" style="background:'+ms(k)+';color:'+mv(k)+'">'+esc(m.n)+'</span>'}
+$('v-casi').innerHTML='<div class="card"><h3>Prima su di te</h3>'+M.self.map(function(x){return '<p class="muted">'+esc(x)+'</p>'}).join('')+'</div>'+
+ M.cases.map(function(c){var a=IDX[c.from],b=IDX[c.to];
+  return '<details class="case"><summary><div class="ct"><small>'+c.n+'</small><b>'+esc(c.t)+'</b></div><p class="muted">'+esc(c.sit)+'</p><div class="tr">'+pill(c.from)+'<span>→</span>'+pill(c.to)+'<span style="margin-left:auto">D'+(a+1)+' + P'+(b+1)+'</span></div></summary><div class="caseb">'+
+   '<div class="blk" style="--sc:'+mv(c.from)+'"><h4>1 · Disinnesca '+esc(MX[a].n.toLowerCase())+'</h4>'+ul(c.s1)+'</div>'+
+   '<div class="blk" style="--sc:'+mv(c.to)+'"><h4>2 · Attiva '+esc(MX[b].n.toLowerCase())+'</h4>'+ul(c.s2)+'</div>'+
+   '<div class="blk"><h4>Super trick</h4><div class="say" style="--sc:var(--star)">'+esc(c.trick)+'</div></div>'+
+   (c.note?'<div class="warnb">'+esc(c.note)+'</div>':'')+
+   '<div class="row"><button class="btn pri" data-case="'+a+','+b+'">Apri nella matrice</button></div></div></details>'}).join('')+'<div>'+src('B5')+'</div>';
+$('v-casi').addEventListener('click',function(e){var b=e.target.closest('[data-case]');if(!b)return;var q=b.dataset.case.split(',');FROM=+q[0];TO=+q[1];renderMat();show('matrice')});
+
+// sostanze
+$('v-sostanze').innerHTML='<p class="muted">Le «magnifiche 10». Nessuna è buona o cattiva in sé: dipende dal contesto e dall\'obiettivo. Quali mix sostiene o frena è preso dagli schemi del capitolo 3.</p>'+
+ M.subst.map(function(x){var up=[],dn=[];MX.forEach(function(m){if(m.plus.indexOf(x.n)>=0)up.push(m.k);if(m.minus.map(function(z){return z.toLowerCase()}).indexOf(x.n.toLowerCase())>=0)dn.push(m.k)});
+  return '<details class="mixc" style="--mc:var(--accent)"><summary><span class="dot" style="font-size:.8rem">'+esc(x.n.slice(0,2))+'</span><span><b style="color:var(--fg)">'+esc(x.n)+'</b><br><span class="s">'+esc(x.nick)+'</span></span><span class="chev">›</span></summary><div class="mixb sb">'+
+   '<p>'+esc(x.what)+'</p>'+
+   ((up.length||dn.length)?'<div class="tags">'+(up.length?'Sostiene '+up.map(pill).join(' '):'')+(dn.length?' · Frena '+dn.map(pill).join(' '):'')+'</div>':'')+
+   (x.more.length?'<div class="blk"><h4>Per aumentarla</h4>'+ul(x.more)+'</div>':'')+
+   (x.less.length?'<div class="blk"><h4>Per ridurla o gestirla</h4>'+ul(x.less)+'</div>':'')+
+   (x.warn?'<div class="warnb">'+esc(x.warn)+'</div>':'')+(x.note?'<div class="note">'+esc(x.note)+'</div>':'')+'<div>'+src('B2')+'</div></div></details>'}).join('');
+
 // i 7 mix
 $('v-mix').innerHTML='<p class="muted">Per ogni mix: le sostanze che lo sostengono (+) e quelle che lo frenano (−), la scala d\'intensità, come riconoscerlo e quando serve.</p>'+
  MX.map(function(m,i){return '<details class="mixc" style="--mc:'+mv(m.k)+'"><summary><span class="dot">'+(i+1)+'</span><span><b>'+esc(m.n)+'</b><br><span class="s">+ '+esc(m.plus.join(', '))+' · − '+esc(m.minus.join(', '))+'</span></span><span class="chev">›</span></summary><div class="mixb">'+
@@ -205,10 +240,10 @@ $('v-regole').innerHTML='<div class="card"><h3>Cose da tenere a mente</h3>'+M.no
  '<div class="card"><h3>Nel corso</h3>'+M.links.map(function(l){return '<div style="display:flex;flex-direction:column;gap:4px">'+src(l.s)+'<p class="muted">'+esc(l.d)+'</p></div>'}).join('')+'<div>'+src('B4')+'</div></div>';
 
 function show(t){document.querySelectorAll('.tab').forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===t?'true':'false')});
-  ['matrice','mix','procedura','regole'].forEach(function(x){$('v-'+x).hidden=x!==t});window.scrollTo(0,0)}
+  ['matrice','casi','mix','sostanze','procedura','regole'].forEach(function(x){$('v-'+x).hidden=x!==t});window.scrollTo(0,0)}
 document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(b)show(b.dataset.t)});
 renderMat();
-var h0=(location.hash||'').slice(1);if(['mix','procedura','regole'].indexOf(h0)>=0)show(h0);
+var h0=(location.hash||'').slice(1);if(['casi','mix','sostanze','procedura','regole'].indexOf(h0)>=0)show(h0);
 });
 </script>
 
