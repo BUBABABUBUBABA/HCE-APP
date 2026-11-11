@@ -266,7 +266,7 @@ $('f-bk').addEventListener('change',function(){var f=this.files[0];if(!f)return;
  readFile(f).then(function(t){var n=HCE.importBackup(t);msg('b-msg','Backup importato: '+n+' elementi aggiunti o aggiornati.',true);bstat();status()})
  .catch(function(e){msg('b-msg','Non riesco a importare: '+esc(e&&e.message?e.message:'file non valido'))});this.value=''});
 if(location.hash==='#contenuti')setTimeout(function(){$('contenuti').scrollIntoView({block:'center'})},300);
-$('ver').textContent='App versione 2026-11-11c-86f25315';
+$('ver').textContent='App versione 2026-11-11c-8ca5b54f';
 status();bstat();
 window.addEventListener('pageshow',function(e){if(e.persisted){status();bstat()}});
 })();
