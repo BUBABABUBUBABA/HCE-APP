@@ -70,13 +70,24 @@ ul{margin:0;padding-left:20px;display:grid;gap:5px;line-height:1.45}
 .hit .d{flex:none;width:12px;height:12px;border-radius:99px;background:var(--mc)}.hit b{font-weight:900}.hit span{color:var(--muted);font-weight:700;font-size:.84rem}
 .empty{text-align:center;padding:24px 8px;color:var(--muted);font-weight:700}
 .notice{text-align:center;align-items:center}
+select,input[type=text]{width:100%;font:inherit;padding:10px 12px;color:var(--fg)}
+label.f{display:flex;flex-direction:column;gap:6px;font-weight:800;font-size:.92rem}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn.pri{font-weight:900}
+.my{display:flex;gap:10px;align-items:center;border-top:2px solid var(--line2);padding-top:8px}
+.my .tx{flex:1;min-width:0}.my .tx b{font-weight:900}.my .tx span{display:block;font-size:.8rem;color:var(--muted);font-weight:700}
+.prof{display:flex;flex-wrap:wrap;gap:6px}.prof span{border-radius:99px;padding:4px 10px;font-weight:800;font-size:.84rem;background:var(--sunk)}
+.prof span b{color:var(--accent)}
+.mini{border-top:2px solid var(--line2);padding-top:10px;display:flex;flex-direction:column;gap:4px}
+.mini b{font-weight:900}.mini .alt{color:var(--muted);font-weight:700;font-size:.84rem}
+.ok-msg{border-radius:12px;padding:9px 12px;font-weight:800;font-size:.88rem;background:var(--ok-soft);color:var(--ok)}
 .btn{padding:10px 16px;font:inherit;cursor:pointer;background:var(--surface);color:var(--fg);min-height:46px;text-decoration:none;display:inline-flex;align-items:center}
 </style>
 <div class="page">
 <header>
-  <div class="eyebrow">HCE · Oltre la parola · Bias</div>
+  <div class="eyebrow">HCE · tutto il percorso</div>
   <h1>Dizionario</h1>
-  <p class="lead">Metafore, bias e concetti del corso, con il modulo da cui vengono. Scrivi una parola e trovi a che categoria appartiene.</p>
+  <p class="lead">Metafore, bias, concetti e i termini di tutti i livelli, con il modulo da cui vengono. Scrivi una parola e la trovi.</p>
 </header>
 <div class="card notice" id="old" hidden><h2>Serve il file dei contenuti aggiornato</h2><p class="muted">Importa la versione nuova di hce-contenuti.json dalla Home, in Impostazioni.</p><a class="btn pri" href="index.html#contenuti">Vai alla Home</a></div>
 <div id="app" hidden style="display:flex;flex-direction:column;gap:16px">
@@ -86,12 +97,14 @@ ul{margin:0;padding-left:20px;display:grid;gap:5px;line-height:1.45}
       <button class="tab" data-t="met" aria-selected="true">Metafore</button>
       <button class="tab" data-t="bias" aria-selected="false">Bias</button>
       <button class="tab" data-t="conc" aria-selected="false">Concetti</button>
+      <button class="tab" data-t="gl" aria-selected="false">Termini</button>
     </div>
   </nav>
   <section id="v-res" hidden style="display:flex;flex-direction:column;gap:8px"></section>
   <section id="v-met" style="display:flex;flex-direction:column;gap:12px"></section>
   <section id="v-bias" hidden style="display:flex;flex-direction:column;gap:12px"></section>
   <section id="v-conc" hidden style="display:flex;flex-direction:column;gap:12px"></section>
+  <section id="v-gl" hidden style="display:flex;flex-direction:column;gap:12px"></section>
 </div>
 </div>
 <script>
@@ -101,7 +114,7 @@ if(!Z){$('old').hidden=false;return}
 $('app').hidden=false;
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 var MODT={};PACK.data.mods.forEach(function(m){MODT[m.id]=m.t});
-var LV={op:'Oltre la parola',bi:'Bias'};
+var LV={};PACK.data.levels.forEach(function(l){LV[l.k]=l.n});LV.we='Webinar';
 function ml(id){return id?'<a class="src" href="studio.html#m='+id+'">↗ '+(LV[id.slice(0,2)]||'')+' '+id.slice(2)+' · '+esc(MODT[id]||'')+'</a>':''}
 function ul(a){return '<ul>'+a.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>'}
 function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[«»"']/g,' ')}
@@ -119,8 +132,30 @@ function renderMet(){
   var h='<div class="filters">'+[['all','Tutte'],['ancestrale','Ancestrali'],['moderna','Moderne']].map(function(f){return '<button class="fb" data-mf="'+f[0]+'" aria-pressed="'+(mf===f[0])+'">'+f[1]+'</button>'}).join('')+'</div>';
   h+=Z.met.filter(function(c){return mf==='all'||c.g===mf}).map(function(c){return metCard(c)}).join('');
   h+='<div class="card"><h3>Come usarle</h3>'+Z.metrules.map(function(r){return '<div class="rule"><b>'+esc(r[0])+'</b><span>'+esc(r[1])+'</span><div>'+ml(r[2])+'</div></div>'}).join('')+'</div>'+
-     '<p class="note">Le 10 categorie sono raggruppamenti pratici del corso, non una classificazione scientifica: la stessa espressione può stare in più categorie, conta il frame prevalente. Gli effetti ormonali attribuiti alle singole metafore sono ipotesi del corso.</p>';
+     myCard()+'<p class="note">'+esc(Z.metmore||'')+'</p><p class="note">Le 10 categorie sono raggruppamenti pratici del corso, non una classificazione scientifica: la stessa espressione può stare in più categorie, conta il frame prevalente. Gli effetti ormonali attribuiti alle singole metafore sono ipotesi del corso.</p>';
   $('v-met').innerHTML=h}
+
+// LE MIE ESPRESSIONI (op17: costruisci il tuo elenco personale)
+var MYK='diz_my_v1',MYD={txt:'',cat:'',who:''},CATN={};Z.met.forEach(function(c){CATN[c.k]=c.n});
+function myCard(){var list=HCE.lsJ(MYK,[]),cnt={};list.forEach(function(x){cnt[x.cat]=(cnt[x.cat]||0)+1});
+  var h='<div class="card" id="mine"><h3>Le mie espressioni</h3><p class="muted">Il corso consiglia di costruirti un elenco personale (op17). Segna le metafore che senti nelle interazioni vere e a chi: col tempo vedi il sistema metaforico preferito di ogni persona.</p>'+
+   '<label class="f">Espressione<input type="text" id="my-t" value="'+esc(MYD.txt)+'" placeholder="Es. siamo in trincea"></label>'+
+   '<label class="f">Categoria<select id="my-c"><option value="">Scegli…</option>'+Z.met.map(function(c){return '<option value="'+c.k+'"'+(MYD.cat===c.k?' selected':'')+'>'+esc(c.n)+' ('+c.g+')</option>'}).join('')+'</select></label>'+
+   '<label class="f">Chi l\'ha detta, dove (facoltativo)<input type="text" id="my-w" value="'+esc(MYD.who)+'" placeholder="Es. Marco, riunione budget"></label>'+
+   '<div class="row"><button class="btn pri" id="my-s">Aggiungi</button></div><div id="my-msg"></div>';
+  if(list.length){var who={};list.forEach(function(x){var w=(x.who||'').split(',')[0].trim();if(w){(who[w]=who[w]||{});who[w][x.cat]=(who[w][x.cat]||0)+1}});
+    h+='<div class="lbl">Le tue categorie</div><div class="prof">'+Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]}).map(function(k){return '<span>'+esc(CATN[k]||k)+' <b>'+cnt[k]+'</b></span>'}).join('')+'</div>';
+    var wk=Object.keys(who).filter(function(w){var s=0;for(var c in who[w])s+=who[w][c];return s>=2});
+    if(wk.length)h+='<div class="lbl">Per persona</div>'+wk.map(function(w){var o=who[w],top=Object.keys(o).sort(function(a,b){return o[b]-o[a]});return '<div class="my"><div class="tx"><b>'+esc(w)+'</b><span>'+top.map(function(k){return esc(CATN[k])+' '+o[k]}).join(' · ')+'</span></div></div>'}).join('')+'<p class="muted">Un indizio, non un\'etichetta: per profilare serve tempo (op19).</p>';
+    h+='<div class="lbl">Elenco</div>'+list.map(function(x){return '<div class="my"><div class="tx"><b>«'+esc(x.txt)+'»</b><span>'+esc(CATN[x.cat]||'')+(x.who?' · '+esc(x.who):'')+' · '+new Date(+x.id).toLocaleDateString('it-IT')+'</span></div><button class="btn" data-mydel="'+x.id+'" aria-label="Elimina">✕</button></div>'}).join('')}
+  return h+'</div>'}
+document.addEventListener('input',function(e){var t=e.target;if(t.id==='my-t')MYD.txt=t.value;if(t.id==='my-w')MYD.who=t.value;if(t.id==='my-c')MYD.cat=t.value});
+document.addEventListener('change',function(e){if(e.target.id==='my-c')MYD.cat=e.target.value});
+document.addEventListener('click',function(e){var b,t=e.target;
+  if(t.id==='my-s'){if(!MYD.txt.trim()||!MYD.cat){$('my-msg').innerHTML='<div class="note">Scrivi l\'espressione e scegli la categoria.</div>';return}
+    var a=HCE.lsJ(MYK,[]);a.unshift({id:String(Date.now()),txt:MYD.txt.trim(),cat:MYD.cat,who:MYD.who.trim()});HCE.lsPut(MYK,a);MYD={txt:'',cat:MYD.cat,who:MYD.who};renderMet();
+    $('my-msg').innerHTML='<div class="ok-msg">Aggiunta</div>';return}
+  if(b=t.closest('[data-mydel]')){if(b.textContent!=='Elimina?'){b.textContent='Elimina?';return}HCE.lsPut(MYK,HCE.lsJ(MYK,[]).filter(function(x){return x.id!==b.dataset.mydel}));renderMet()}});
 
 // BIAS
 var bf='all';
@@ -134,6 +169,8 @@ function renderBias(){
   if(bf!=='all'){var c=Z.biascats.filter(function(x){return x[0]===bf})[0];h+='<div class="cat" style="--mc:'+BC[bf]+';--ms:var(--sunk)"><b>'+esc(c[1])+'</b><span>'+esc(c[2])+'</span><small>Esempio: '+esc(c[3])+'</small></div>'}
   h+=Z.bias.filter(function(b){return bf==='all'||b.cat===bf}).map(function(b){return biasCard(b)}).join('');
   h+='<div class="card"><h3>Le 5 categorie HCE</h3>'+Z.biascats.map(function(c){return '<div class="rule"><b style="color:'+BC[c[0]]+'">'+esc(c[1])+'</b><span>'+esc(c[2])+'</span><span class="muted">'+esc(c[3])+'</span></div>'}).join('')+'<div>'+ml('bi03')+'</div></div>';
+  var cit=(Z.biascit||[]).filter(function(c){return bf==='all'||c[2]===bf});
+  if(cit.length)h+='<div class="card"><h3>Altri bias citati nel corso</h3><p class="muted">Il corso li nomina in altri livelli e li spiega in breve.</p>'+cit.map(function(c,i){return '<div class="mini" id="cit-'+Z.biascit.indexOf(c)+'"><b>'+esc(c[0])+'</b>'+(c[1]||c[2]?'<span class="alt">'+esc([c[1],c[2]?BCN[c[2]]:''].filter(Boolean).join(' · '))+'</span>':'')+'<span>'+esc(c[3])+'</span>'+(c[4]?'<span class="muted">Fonti: '+esc(c[4])+'</span>':'')+'<div>'+ml(c[5])+'</div></div>'}).join('')+(bf==='all'?'<p class="note">'+esc(Z.biascitnote||'')+'</p>':'')+'</div>';
   h+='<div class="card"><h3>Basi</h3>'+Z.biasbase.map(function(r){return '<div class="rule"><b>'+esc(r[0])+'</b><span>'+esc(r[1])+'</span><div>'+ml(r[2])+'</div></div>'}).join('')+'</div>';
   $('v-bias').innerHTML=h}
 
@@ -147,25 +184,38 @@ function renderConc(){var h='',last='';
   h+='<div class="card"><h3>Riconoscere una metafora</h3><p>Paragone: termini intercambiabili. Similitudine: c\'è un marcatore (come, sembra). Metafora: identificazione diretta, senza marcatori. Analogia (HCE): concetti lontani, scopo esplicativo, frase lunga.</p><div class="say" style="--mc:var(--anc)">«Claudio è Dotto dei sette nani»: metafora.</div><div>'+ml('op28')+'</div></div>';
   $('v-conc').innerHTML=h}
 
+// TERMINI (glossario per livello)
+var GL=Z.gloss||[],glv=(function(){try{return localStorage.getItem('diz_glv')||'iu'}catch(e){return 'iu'}})();
+var PATHS={};PACK.data.levels.forEach(function(l){if(GL.some(function(g){return g.l===l.k}))(PATHS[l.p]=PATHS[l.p]||[]).push(l)});
+function glCard(g,i){return '<details class="ent" id="gl-'+i+'" style="--mc:var(--accent);--ms:var(--sunk)"><summary><span class="tx"><b>'+esc(g.t)+'</b><small>'+esc(g.one)+'</small></span><span class="chev">›</span></summary><div class="sb">'+
+  (g.pts.length?'<ul>'+g.pts.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>':'')+(g.notes.length?'<p class="note">'+g.notes.map(esc).join('<br>')+'</p>':'')+'<div>'+ml(g.id)+'</div></div></details>'}
+function renderGl(){var h='<label class="f">Livello<select id="gl-l">'+Object.keys(PATHS).map(function(p){return '<optgroup label="'+esc(p)+'">'+PATHS[p].map(function(l){return '<option value="'+l.k+'"'+(glv===l.k?' selected':'')+'>'+esc(l.n)+'</option>'}).join('')+'</optgroup>'}).join('')+'</select></label>';
+  GL.forEach(function(g,i){if(g.l===glv)h+=glCard(g,i)});
+  h+='<p class="note">Una voce per ogni modulo con un concetto proprio, presa dalla sintesi del modulo. Introduzioni, riepiloghi e debriefing sono esclusi; Oltre la parola e Bias sono nelle altre schede. Le note in grigio sono di verifica.</p>';
+  $('v-gl').innerHTML=h}
+document.addEventListener('change',function(e){if(e.target.id==='gl-l'){glv=e.target.value;try{localStorage.setItem('diz_glv',glv)}catch(x){}renderGl()}});
+
 // RICERCA
 var IDX=[];
 Z.met.forEach(function(c){IDX.push({t:'met',id:'met-'+c.k,n:c.n,s:'Metafora '+c.g,col:GC[c.g][0],txt:norm(c.n+' '+c.eff+' '+c.tips.join(' '))});
   c.vocab.forEach(function(v){IDX.push({t:'met',id:'met-'+c.k,n:'«'+v+'»',s:'Metafora '+c.n.toLowerCase()+' ('+c.g+')',col:GC[c.g][0],txt:norm(v),v:1})})});
 Z.bias.forEach(function(b){IDX.push({t:'bias',id:'bias-'+b.k,n:b.n,s:b.alt+' · '+(BCN[b.cat]||''),col:BC[b.cat],txt:norm(b.n+' '+b.alt+' '+b.d+' '+b.ex.join(' ')+' '+b.recog.join(' ')+' '+b.src)})});
+(Z.biascit||[]).forEach(function(c,i){IDX.push({t:'bias',id:'cit-'+i,n:c[0],s:'Bias citato · '+(LV[c[5].slice(0,2)]||''),col:'var(--bi)',txt:norm(c[0]+' '+c[1]+' '+c[3]+' '+c[4])})});
+GL.forEach(function(g,i){IDX.push({t:'gl',id:'gl-'+i,gl:g.l,n:g.t,s:'Termine · '+(LV[g.l]||''),col:'var(--accent)',txt:norm(g.t+' '+g.one+' '+g.pts.join(' ')),w:1})});
 Z.biascats.forEach(function(c){IDX.push({t:'bias',id:'',n:c[1],s:c[3],col:BC[c[0]],txt:norm(c[1]+' '+c[2]+' '+c[3]),bf:c[0]})});
 Z.conc.forEach(function(c,i){IDX.push({t:'conc',id:'conc-'+i,n:c[1],s:CG[c[0]][1],col:CG[c[0]][0],txt:norm(c[1]+' '+c[2]+' '+c[3])})});
 function search(q){var n=norm(q).trim();
   if(n.length<2){$('v-res').hidden=true;return}
   var STOP={di:1,da:1,il:1,lo:1,la:1,le:1,gli:1,un:1,una:1,uno:1,che:1,del:1,della:1,per:1,con:1,in:1,a:1,e:1,al:1,sul:1};
   var words=n.split(/\s+/).filter(function(w){return w&&!STOP[w]});if(!words.length)words=[n];
-  var r=IDX.map(function(x){var sc=0,all=true,nn=norm(x.n);words.forEach(function(w){var a=x.txt.indexOf(w)>=0,t=nn.indexOf(w)>=0;if(!a&&!t)all=false;if(a)sc+=x.v?3:1;if(t)sc+=4});return [all?sc:0,x]}).filter(function(a){return a[0]>0}).sort(function(a,b){return b[0]-a[0]}).slice(0,12);
+  var r=IDX.map(function(x){var sc=0,all=true,nn=norm(x.n);words.forEach(function(w){var a=x.txt.indexOf(w)>=0,t=nn.indexOf(w)>=0;if(!a&&!t)all=false;if(a)sc+=x.v?3:1;if(t)sc+=x.w?3:4});return [all?sc:0,x]}).filter(function(a){return a[0]>0}).sort(function(a,b){return b[0]-a[0]}).slice(0,20);
   $('v-res').hidden=false;
   $('v-res').innerHTML='<div class="lbl">Risultati</div>'+(r.length?r.map(function(a,i){var x=a[1];return '<button class="hit" data-go="'+i+'" style="--mc:'+x.col+'"><span class="d"></span><span><b>'+esc(x.n)+'</b><br><span>'+esc(x.s)+'</span></span></button>'}).join(''):'<div class="empty">Nessun risultato. Il dizionario contiene solo ciò che è nel corso.</div>');
   $('v-res')._r=r}
 $('q').addEventListener('input',function(){search(this.value)});
 $('v-res').addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(!b)return;var x=$('v-res')._r[+b.dataset.go][1];
   $('q').value='';$('v-res').hidden=true;
-  if(x.t==='met'){mf='all';renderMet()}if(x.t==='bias'){bf=x.bf||'all';renderBias()}
+  if(x.t==='met'){mf='all';renderMet()}if(x.t==='bias'){bf=x.bf||'all';renderBias()}if(x.t==='gl'){glv=x.gl;renderGl()}
   show(x.t,true);
   if(x.id){var el=$(x.id);if(el){el.open=true;setTimeout(function(){el.scrollIntoView({block:'start'});window.scrollBy(0,-120)},30)}}});
 
@@ -173,10 +223,10 @@ document.addEventListener('click',function(e){var b;
   if(b=e.target.closest('[data-mf]')){mf=b.dataset.mf;renderMet()}
   if(b=e.target.closest('[data-bf]')){bf=b.dataset.bf;renderBias()}});
 function show(t,keep){document.querySelectorAll('.tab').forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===t?'true':'false')});
-  ['met','bias','conc'].forEach(function(x){$('v-'+x).hidden=x!==t});if(!keep)window.scrollTo(0,0)}
+  ['met','bias','conc','gl'].forEach(function(x){$('v-'+x).hidden=x!==t});if(!keep)window.scrollTo(0,0)}
 document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(b)show(b.dataset.t)});
-renderMet();renderBias();renderConc();
-var h0=(location.hash||'').slice(1);if(h0==='bias'||h0==='conc')show(h0);
+renderMet();renderBias();renderConc();renderGl();
+var h0=(location.hash||'').slice(1);if(['bias','conc','gl','mie'].indexOf(h0)>=0){if(h0==='mie'){show('met');setTimeout(function(){$('mine').scrollIntoView()},50)}else show(h0)}
 });
 </script>
 

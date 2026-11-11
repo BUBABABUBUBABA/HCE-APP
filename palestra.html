@@ -96,7 +96,7 @@ body.quiz .appbar{display:none}
 HCE.ready(function(PACK){
 var $=function(i){return document.getElementById(i)};
 var E=PACK.e3,M=PACK.mib,I=PACK.istair,F=PACK.feedback,Z=PACK.diz;
-if(!(E&&M&&I&&F&&Z)){$('old').hidden=false;return}
+if(!(E&&M&&I&&F&&Z&&Z.gloss)){$('old').hidden=false;return}
 $('app').hidden=false;
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function shuf(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
@@ -154,10 +154,16 @@ Z.bias.forEach(function(b){b.ex.forEach(function(x,i){add('diz','bx-'+b.k+i,'Qua
   add('diz','bd-'+b.k,'Quale bias è questo?',b.d,b.n,BN,'Detto anche: '+b.alt+'.',mod(b.m));
   add('diz','bc-'+b.k,'In quale categoria HCE sta '+b.n+'?','',BCN[b.cat],BCL,b.note||b.d,mod(b.m));
   if(b.manage[0])add('diz','bm-'+b.k,'Questo antidoto è per quale bias?',b.manage[0],b.n,BN,b.d,mod(b.m))});
+var CIT=Z.biascit||[],CITN=CIT.map(function(c){return c[0]});
+CIT.forEach(function(c){add('diz','cit-'+c[0],'Quale bias o effetto è questo?',c[3].replace(new RegExp(c[0].split(' ')[0],'ig'),'…'),c[0],CITN.concat(BN),c[4]?'Fonti: '+c[4]:c[3],mod(c[5]))});
+// TERMINI (glossario)
+var LVN={};PACK.data.levels.forEach(function(l){LVN[l.k]=l.n});
+(Z.gloss||[]).forEach(function(g){var same=Z.gloss.filter(function(y){return y.l===g.l&&y!==g}).map(function(y){return y.t});
+  add('gl',g.id,'Di quale concetto si parla? ('+LVN[g.l]+')',g.one,g.t,same,g.pts.length?g.pts.slice(0,2).join(' '):g.one,mod(g.id))});
 var KN=Z.conc.map(function(c){return c[1]});
 Z.conc.forEach(function(c){add('diz','c-'+c[1],'Di quale concetto si parla?',c[2].replace(new RegExp(c[1].split(' ')[0],'ig'),'…'),c[1],KN,c[3]||c[2],mod(c[4]))});
 
-var TPS=[['all','Tutto','mix di tutti gli strumenti'],['e3','E³','27 strumenti, 9 aspetti'],['ibm','IBM','mix, sostanze, casi'],['ist','I-STAIR','gradini e strumenti'],['fb','Feedback','RINGS e ARISE'],['diz','Dizionario','metafore, bias, concetti']];
+var TPS=[['all','Tutto','mix di tutti gli strumenti'],['e3','E³','27 strumenti, 9 aspetti'],['ibm','IBM','mix, sostanze, casi'],['ist','I-STAIR','gradini e strumenti'],['fb','Feedback','RINGS e ARISE'],['diz','Dizionario','metafore, bias, concetti'],['gl','Termini','i concetti di tutti i livelli']];
 var tp=(function(){try{return localStorage.getItem('gym_tp')||'all'}catch(e){return 'all'}})();
 function count(t){return B.filter(function(q){return t==='all'||q.tp===t}).length}
 function renderHome(){var log=HCE.lsJ('gym_v1',[]),errs=HCE.lsJ('gym_err_v1',{}),ne=Object.keys(errs).filter(function(k){return B.some(function(q){return q.id===k})}).length,today=HCE.dayKey(Date.now());
@@ -179,7 +185,7 @@ function start(errMode){S_err=errMode;var errs=HCE.lsJ('gym_err_v1',{});
   if(!qs.length)return;S={qs:qs,i:0,t:tp,err:errMode};
   $('home').hidden=true;$('quiz').hidden=false;document.body.classList.add('quiz');renderQ();window.scrollTo(0,0)}
 $('go').addEventListener('click',function(){start(false)});$('err').addEventListener('click',function(){start(true)});
-var TPN={e3:'E³',ibm:'IBM',ist:'I-STAIR',fb:'Feedback',diz:'Dizionario'};
+var TPN={e3:'E³',ibm:'IBM',ist:'I-STAIR',fb:'Feedback',diz:'Dizionario',gl:'Termini'};
 function renderQ(){var x=S.qs[S.i],q=x.q;
   $('quiz').innerHTML='<div class="top"><button class="x" id="qx" aria-label="Esci">✕</button><div class="bar"><i style="width:'+(S.i/S.qs.length*100)+'%"></i></div></div>'+
    '<div class="qtp">'+TPN[q.tp]+(S.err?' · ripasso errori':'')+'</div><div class="q">'+esc(q.q)+'</div>'+(q.sub?'<div class="quote">'+esc(q.sub)+'</div>':'')+

@@ -1,7 +1,7 @@
 /* HCE app: database locale, pacchetto contenuti, backup, barra di navigazione */
 var HCE = (function () {
   var DBN = 'hce-app', DBV = 1, dbp = null;
-  var USER_KEYS = ['dpi_su_di_me_v1', 'dpi_know_v1', 'studio_hce_v1', 'e3_plans_v1', 'e3_daily_v1', 'ripasso_v1', 'mib_log_v1', 'prep_v1', 'fb_v1', 'gym_v1', 'gym_err_v1'];
+  var USER_KEYS = ['dpi_su_di_me_v1', 'dpi_know_v1', 'studio_hce_v1', 'e3_plans_v1', 'e3_daily_v1', 'ripasso_v1', 'mib_log_v1', 'prep_v1', 'fb_v1', 'gym_v1', 'gym_err_v1', 'diz_my_v1'];
 
   function open() {
     if (dbp) return dbp;
@@ -141,6 +141,14 @@ var HCE = (function () {
       gb.forEach(function (x) { if (x && !gseen[x.id]) { ga.push(x); n++; } });
       ga.sort(function (x, y) { return +y.id - +x.id; });
       lsSet('gym_v1', JSON.stringify(ga));
+    }
+    // le mie espressioni del dizionario: unione per id
+    var da = J(lsGet('diz_my_v1'), []), db = J(b.data['diz_my_v1'], []);
+    if (Array.isArray(db)) {
+      var dseen = {}; da.forEach(function (x) { dseen[x.id] = 1; });
+      db.forEach(function (x) { if (x && !dseen[x.id]) { da.push(x); n++; } });
+      da.sort(function (x, y) { return +y.id - +x.id; });
+      lsSet('diz_my_v1', JSON.stringify(da));
     }
     // matrice: unione per id
     var ma = J(lsGet('mib_log_v1'), []), mb = J(b.data['mib_log_v1'], []);
