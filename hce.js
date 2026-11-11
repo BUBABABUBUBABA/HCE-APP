@@ -286,7 +286,76 @@ var HCE = (function () {
     window.addEventListener('resize', all); setTimeout(all, 300); setTimeout(all, 1500);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', tabsHint); else tabsHint();
+
+  /* medaglie: 17 famiglie a tre gradi (bronzo, argento, oro) + 6 speciali = 57 */
+  var MEDAL_FAM = [
+    ['streak', 'Costanza', 'giorni di fila (record)', [3, 7, 30], 'Usa l\'app ogni giorno: vale qualsiasi attività.', 'index.html'],
+    ['xp', 'Punti', 'XP totali', [500, 2000, 5000], 'Ogni attività vale punti.', 'index.html'],
+    ['mod', 'Studio', 'moduli studiati', [10, 50, 150], 'Segna «✓ Studiato» alla fine di un modulo.', 'percorso.html'],
+    ['rip', 'Ripasso', 'ripassi fatti', [5, 25, 100], 'I moduli di 1, 3 e 7 giorni fa, in Home.', 'index.html#rip-c'],
+    ['ex', 'Esercitati', 'moduli con almeno 3 prove su 4', [5, 25, 100], 'In fondo a ogni modulo, «Esercitati».', 'percorso.html'],
+    ['gym', 'Palestra', 'allenamenti', [5, 25, 100], 'Un giro di domande in Palestra.', 'palestra.html'],
+    ['prep', 'Preparazione', 'interazioni preparate', [1, 10, 30], 'Prepara un\'interazione vera.', 'prep.html#nuova'],
+    ['after', 'Il Dopo', '«com\'è andata» compilati', [3, 15, 40], 'Dopo un\'interazione, in Prepara, D-P-I o Prima di un incontro.', 'prep.html'],
+    ['ses', 'D-P-I', 'sessioni del protocollo', [1, 10, 30], 'Decode, Profile, Influence su una persona.', 'protocollo.html#prima'],
+    ['mib', 'Chimica', 'mix usati in un\'interazione vera', [1, 10, 30], 'Nella Matrice biochimica: «✓ Usata in un\'interazione vera».', 'mib.html'],
+    ['fb', 'Feedback', 'feedback preparati', [1, 5, 20], 'Prepara un feedback con RINGS o ARISE.', 'feedback.html'],
+    ['slcc', 'SLCC', 'profili e messaggi', [3, 15, 40], 'Profila una persona o scrivi un messaggio MICRO o MACRO.', 'slcc.html'],
+    ['inc', 'Primo incontro', 'schede «Prima di un incontro»', [1, 5, 20], 'Una scheda prima di vedere qualcuno.', 'incontro.html'],
+    ['check', 'Check-in', 'check-in in Io', [7, 30, 100], 'Due minuti al giorno: come stai.', 'io.html#oggi'],
+    ['habit', 'Abitudini', 'giorni segnati', [7, 30, 100], 'Segna ogni giorno le tue abitudini.', 'io.html#abitudini'],
+    ['focus', 'Focus', 'sessioni di focus', [3, 15, 50], 'Una sessione con il timer.', 'io.html#focus'],
+    ['emo', 'Emozioni', 'emozioni gestite', [3, 10, 30], 'Fase per fase, in Io.', 'io.html#emozioni']
+  ];
+  var MEDAL_TIER = ['Bronzo', 'Argento', 'Oro'];
+  var MEDAL_SPEC = [
+    ['reach', 'Obiettivo raggiunto', 'Porta un obiettivo fino all\'ultima fase REACH.', 'io.html#obiettivi'],
+    ['level', 'Livello completo', 'Studia tutti i moduli di un livello.', 'percorso.html'],
+    ['perfect', 'Dieci su dieci', 'Un giro di Palestra senza errori (almeno 10 domande).', 'palestra.html'],
+    ['all', 'Esploratore', 'Usa almeno una volta Prepara, D-P-I, IBM, Feedback, Palestra, SLCC, Prima di un incontro, Io ed Esercitati.', 'strumenti.html'],
+    ['week', 'Un mese di settimane', 'Fai 4 revisioni della settimana.', 'io.html#settimana'],
+    ['backup', 'Al sicuro', 'Esporta il tuo primo backup.', 'index.html#set-bk']
+  ];
+  function medals(pk) {
+    var S = stats(), c = {}, ev = S.events;
+    ev.forEach(function (e) { var k = e.type; if (k === 'io') k = e.ref; if (k === 'prepafter') k = 'after';
+      if (k === 'inc') { if (c['_inc_' + e.ref]) { c.after = (c.after || 0) + 1; return; } c['_inc_' + e.ref] = 1; }
+      c[k] = (c[k] || 0) + 1; });
+    c.mod = S.mods; c.xp = S.xp;
+    var ds = Object.keys(S.days).sort(), best = 0, run = 0, prev = null;
+    ds.forEach(function (d) { var t = Date.parse(d + 'T12:00:00'); run = prev != null && Math.round((t - prev) / 864e5) === 1 ? run + 1 : 1; prev = t; if (run > best) best = run; });
+    c.streak = best;
+    var exa = J(lsGet('ex_v1'), {}) || {}; c.ex = Object.keys(exa).filter(function (m) { var s = exa[m] || {}; return ['t1', 't2', 't3', 't4'].filter(function (k) { return s[k]; }).length >= 3; }).length;
+    var out = [];
+    MEDAL_FAM.forEach(function (f) { var v = c[f[0]] || 0;
+      f[3].forEach(function (th, i) { out.push({ k: f[0] + i, fam: f[0], n: f[1] + ' · ' + MEDAL_TIER[i], fn: f[1], tier: i, what: f[2], th: th, v: v, got: v >= th, how: f[4], href: f[5] }); }); });
+    var gl = J(lsGet('io_goals_v1'), []) || [], gym = J(lsGet('gym_v1'), []) || [];
+    var lev = false;
+    if (pk && pk.data) { var by = {}; pk.data.mods.forEach(function (m) { (by[m.l] = by[m.l] || []).push(m.id); }); var done = J(lsGet('studio_hce_v1'), {}) || {};
+      lev = Object.keys(by).some(function (l) { return by[l].every(function (id) { return done[id] > 0; }); }); }
+    var sp = { reach: gl.some(function (g) { return g.done && g.done.C; }), level: lev, perfect: gym.some(function (x) { return x.n >= 10 && x.ok === x.n; }),
+      all: ['prep', 'ses', 'mib', 'fb', 'gym', 'slcc', 'inc', 'check', 'ex'].every(function (k) { return (c[k] || 0) > 0 || (k === 'inc' && c.after); }) && (c.ex || 0) > 0,
+      week: (c.week || 0) >= 4, backup: +(lsGet('ui_last_backup') || 0) > 0 };
+    MEDAL_SPEC.forEach(function (m) { out.push({ k: m[0], fam: 'spec', n: m[1], fn: m[1], tier: 3, how: m[2], href: m[3], got: !!sp[m[0]] }); });
+    return out;
+  }
+  /* medaglia nuova: un avviso in basso, una volta sola */
+  function medalCheck() {
+    pack().then(function (pk) { if (!pk) return;
+      var all = medals(pk), seen = J(lsGet('medals_seen_v1'), null), first = !seen; seen = seen || {};
+      var nu = all.filter(function (m) { return m.got && !seen[m.k]; });
+      nu.forEach(function (m) { seen[m.k] = Date.now(); }); lsSet('medals_seen_v1', JSON.stringify(seen));
+      if (first || !nu.length) return;
+      var t = document.createElement('a'); t.href = 'io.html#medaglie'; t.className = 'medal-toast'; t.setAttribute('role', 'status');
+      t.innerHTML = '<span class="mt-ic">🏅</span><span><b>' + (nu.length > 1 ? nu.length + ' medaglie nuove' : 'Medaglia sbloccata') + '</b><span>' + nu.map(function (m) { return m.n; }).join(', ').replace(/[<>&]/g, '') + '</span></span>';
+      var st = document.createElement('style');
+      st.textContent = '.medal-toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:50;display:flex;gap:12px;align-items:center;max-width:min(92vw,420px);padding:12px 16px;border-radius:18px;background:var(--fg);color:var(--bg);text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.25);animation:mtin .3s ease-out}.medal-toast .mt-ic{font-size:1.8rem}.medal-toast b{display:block;font-weight:900}.medal-toast span span{font-size:.88rem;font-weight:700}@keyframes mtin{from{opacity:0;transform:translate(-50%,16px)}}@media (prefers-reduced-motion:reduce){.medal-toast{animation:none}}';
+      document.head.appendChild(st); document.body.appendChild(t);
+      setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 6000);
+    }).catch(function () {});
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(medalCheck, 900); }); else setTimeout(medalCheck, 900);
   if (navigator.storage && navigator.storage.persist) { navigator.storage.persist().catch(function () {}); }
 
-  return { get: get, pack: pack, ready: ready, importPack: importPack, exportBackup: exportBackup, importBackup: importBackup, save: save, pickButton: pickButton, nav: nav, stats: stats, dayKey: dayKey, lsJ: lsJ, lsPut: lsPut, USER_KEYS: USER_KEYS, ui: { get: uiGet, set: uiSet } };
+  return { get: get, pack: pack, ready: ready, importPack: importPack, exportBackup: exportBackup, importBackup: importBackup, save: save, pickButton: pickButton, nav: nav, stats: stats, dayKey: dayKey, lsJ: lsJ, lsPut: lsPut, USER_KEYS: USER_KEYS, medals: medals, ui: { get: uiGet, set: uiSet } };
 })();

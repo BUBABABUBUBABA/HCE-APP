@@ -24,9 +24,9 @@ body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 </head><body>
 <script>HCE.nav("io");</script>
 <style>
-:root{--onp:#FFFFFF;--io:#7048E8;--io-s:#EFE9FF}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--onp:#0B1020;--io:#B4A0FF;--io-s:#261C47}}
-:root[data-theme="dark"]{--onp:#0B1020;--io:#B4A0FF;--io-s:#261C47}
+:root{--onp:#FFFFFF;--io:#7048E8;--io-s:#EFE9FF;--md0:#8A4B1F;--md1:#5E6B78;--md2:#8A6400;--md3:#7048E8;--md-off:#C9CED6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--onp:#0B1020;--io:#B4A0FF;--io-s:#261C47;--md0:#E3A273;--md1:#C7D0DA;--md2:#FFC247;--md3:#B4A0FF;--md-off:#3A4152}}
+:root[data-theme="dark"]{--onp:#0B1020;--io:#B4A0FF;--io-s:#261C47;--md0:#E3A273;--md1:#C7D0DA;--md2:#FFC247;--md3:#B4A0FF;--md-off:#3A4152}
 *{box-sizing:border-box}
 body{margin:0;padding-block:0 110px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
@@ -83,6 +83,21 @@ textarea{min-height:60px;resize:vertical}
 input[type=range]{width:100%;accent-color:var(--io)}
 .muted{color:var(--muted);font-size:.86rem;font-weight:600}
 .notice{text-align:center;align-items:center}
+.mdh{display:flex;align-items:center;gap:14px}.mdh b.big{font-size:2rem;font-weight:900;line-height:1}
+.mbar{height:12px;border-radius:99px;background:var(--sunk);overflow:hidden}.mbar i{display:block;height:100%;background:var(--io);border-radius:99px}
+.mfam{border-top:2px solid var(--line2);padding-top:12px;display:flex;flex-direction:column;gap:8px}
+.mfam .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}.mfam .top b{font-weight:900;font-size:1.02rem}
+.mrow{display:flex;gap:10px;flex-wrap:wrap}
+.md{display:flex;flex-direction:column;align-items:center;gap:4px;width:84px;text-align:center}
+.md .c{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:1.05rem;color:var(--onp);background:var(--mc);box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
+.md.off .c{background:transparent;color:var(--muted);border:3px dashed var(--md-off);box-shadow:none}
+.md small{font-size:.75rem;font-weight:800;color:var(--muted);line-height:1.25}.md.on small{color:var(--fg)}
+.mnext{font-size:.86rem;font-weight:700;color:var(--muted)}
+.mspec{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.msp{display:flex;gap:12px;align-items:center;border:2px solid var(--line);border-radius:16px;padding:10px 12px;text-decoration:none;color:var(--fg);min-width:0}
+.msp .c{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:1.3rem;background:var(--md3);color:var(--onp)}
+.msp.off .c{background:transparent;border:3px dashed var(--md-off);filter:grayscale(1);opacity:.75}
+.msp b{display:block;font-weight:900}.msp span span{font-size:.82rem;color:var(--muted);font-weight:700;line-height:1.35}
 </style>
 <div class="page">
 <header>
@@ -100,6 +115,7 @@ input[type=range]{width:100%;accent-color:var(--io)}
     <button class="tab" data-t="emozioni" aria-selected="false">Emozioni</button>
     <button class="tab" data-t="bias" aria-selected="false">Bias</button>
     <button class="tab" data-t="settimana" aria-selected="false">Settimana</button>
+    <button class="tab" data-t="medaglie" aria-selected="false">Medaglie</button>
   </div></nav>
   <section id="v-oggi"></section>
   <section id="v-obiettivi" hidden></section>
@@ -108,6 +124,7 @@ input[type=range]{width:100%;accent-color:var(--io)}
   <section id="v-emozioni" hidden></section>
   <section id="v-bias" hidden></section>
   <section id="v-settimana" hidden></section>
+  <section id="v-medaglie" hidden></section>
 </div>
 </div>
 <script>
@@ -323,7 +340,17 @@ $('v-settimana').addEventListener('input',function(e){var t=e.target;if(t.datase
 $('v-settimana').addEventListener('click',function(e){if(e.target.id!=='w-save')return;var all=G('io_week_v1',{}),wk=weekKey(monday(0)),first=!all[wk];WD.t=(all[wk]&&all[wk].t)||Date.now();WD.u=Date.now();all[wk]=WD;P('io_week_v1',all);WD=null;renderSettimana();flash('w-msg',first?'Salvato · +20 XP':'Aggiornato')});
 
 /* ---------- tab ---------- */
-var R_={oggi:renderOggi,obiettivi:renderObiettivi,abitudini:renderAbitudini,focus:renderFocus,emozioni:renderEmozioni,bias:renderBias,settimana:renderSettimana};
+function renderMedaglie(){var M=HCE.medals(PACK),got=M.filter(function(m){return m.got}).length,ab={streak:'🔥',xp:'⚡',mod:'📖',rip:'↻',ex:'✎',gym:'✓',prep:'P',after:'↩',ses:'DPI',mib:'IBM',fb:'RA',slcc:'SL',inc:'1°',check:'☺',habit:'7',focus:'◎',emo:'♥'};
+  var spi={reach:'🎯',level:'🎓',perfect:'💯',all:'🧭',week:'📅',backup:'💾'};
+  var h='<div class="card"><div class="mdh"><span style="font-size:2.4rem" aria-hidden="true">🏅</span><div style="flex:1"><b class="big">'+got+'</b> <span class="muted">su '+M.length+' medaglie</span><div class="mbar" style="margin-top:8px"><i style="width:'+Math.round(100*got/M.length)+'%"></i></div></div></div>'+
+    '<p class="muted">17 famiglie con tre gradi (bronzo, argento, oro) e 6 medaglie speciali. Si sbloccano da sole mentre usi l\'app: quando ne prendi una, compare un avviso.</p></div>';
+  h+='<div class="card"><h3>Speciali</h3><div class="mspec">'+M.filter(function(m){return m.fam==='spec'}).map(function(m){return '<a class="msp '+(m.got?'on':'off')+'" href="'+m.href+'"><span class="c" aria-hidden="true">'+spi[m.k]+'</span><span><b>'+esc(m.n)+(m.got?' ✓':'')+'</b><span>'+esc(m.how)+'</span></span></a>'}).join('')+'</div></div>';
+  var fams=[];M.forEach(function(m){if(m.fam!=='spec'&&fams.indexOf(m.fam)<0)fams.push(m.fam)});
+  h+='<div class="card"><h3>Famiglie</h3>'+fams.map(function(f){var t=M.filter(function(m){return m.fam===f}),nx=t.filter(function(m){return !m.got})[0];
+    return '<div class="mfam"><div class="top"><b>'+esc(t[0].fn)+'</b><span class="muted">'+t[0].v+' '+esc(t[0].what)+'</span></div><div class="mrow">'+t.map(function(m){return '<div class="md '+(m.got?'on':'off')+'" style="--mc:var(--md'+m.tier+')"><span class="c" aria-hidden="true">'+ab[f]+'</span><small>'+['Bronzo','Argento','Oro'][m.tier]+'<br>'+m.th+'</small><span class="sr" style="position:absolute;left:-9999px">'+(m.got?'sbloccata':'da sbloccare')+'</span></div>'}).join('')+'</div>'+
+      (nx?'<div class="mnext">Ne mancano '+(nx.th-nx.v)+' per '+(['il bronzo','l\'argento','l\'oro'][nx.tier])+'. '+esc(t[0].how)+' <a href="'+t[0].href+'">Vai →</a></div>':'<div class="mnext">Famiglia completa ✓</div>')+'</div>'}).join('')+'</div>';
+  $('v-medaglie').innerHTML=h}
+var R_={medaglie:renderMedaglie,oggi:renderOggi,obiettivi:renderObiettivi,abitudini:renderAbitudini,focus:renderFocus,emozioni:renderEmozioni,bias:renderBias,settimana:renderSettimana};
 function show(t){document.querySelectorAll('.tab').forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===t?'true':'false')});
   Object.keys(R_).forEach(function(x){$('v-'+x).hidden=x!==t});R_[t]();window.scrollTo(0,0)}
 document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(b)show(b.dataset.t)});
