@@ -1,7 +1,7 @@
 /* HCE app: database locale, pacchetto contenuti, backup, barra di navigazione */
 var HCE = (function () {
   var DBN = 'hce-app', DBV = 1, dbp = null;
-  var USER_KEYS = ['dpi_su_di_me_v1', 'dpi_know_v1', 'studio_hce_v1', 'e3_plans_v1', 'e3_daily_v1', 'ripasso_v1', 'mib_log_v1', 'prep_v1', 'fb_v1', 'gym_v1', 'gym_err_v1', 'diz_my_v1', 'io_check_v1', 'io_goals_v1', 'io_habits_v1', 'io_focus_v1', 'io_emo_v1', 'io_trig_v1', 'io_pred_v1', 'io_week_v1'];
+  var USER_KEYS = ['dpi_su_di_me_v1', 'dpi_know_v1', 'studio_hce_v1', 'e3_plans_v1', 'e3_daily_v1', 'ripasso_v1', 'mib_log_v1', 'prep_v1', 'fb_v1', 'gym_v1', 'gym_err_v1', 'diz_my_v1', 'io_check_v1', 'io_goals_v1', 'io_habits_v1', 'io_focus_v1', 'io_emo_v1', 'io_trig_v1', 'io_pred_v1', 'io_week_v1', 'ex_v1'];
 
   function open() {
     if (dbp) return dbp;
@@ -48,7 +48,7 @@ var HCE = (function () {
   function importPack(text) {
     var p = JSON.parse(text);
     if (!p || p.app !== 'hce-contenuti') throw new Error('Questo non è il file dei contenuti HCE.');
-    var pack = { version: p.version, vs: p.vs, vd: p.vd, data: p.data, areas: p.areas, sys: p.sys, toolnames: p.toolnames, unp: p.unp, books: p.books, e3: p.e3, mib: p.mib, istair: p.istair, feedback: p.feedback, diz: p.diz, io: p.io };
+    var pack = { version: p.version, vs: p.vs, vd: p.vd, data: p.data, areas: p.areas, sys: p.sys, toolnames: p.toolnames, unp: p.unp, books: p.books, e3: p.e3, mib: p.mib, istair: p.istair, feedback: p.feedback, diz: p.diz, io: p.io, ex: p.ex };
     return clear('appunti')
       .then(function () { return putAll('appunti', p.appunti); })
       .then(function () { return putAll('meta', { pack: pack, cerca: p.cerca }); })
@@ -165,7 +165,7 @@ var HCE = (function () {
       lsSet(k, JSON.stringify(x));
     });
     // scheda Io: liste unite per id (vince la versione aggiornata per ultima), oggetti uniti per chiave
-    USER_KEYS.filter(function (k) { return k.indexOf('io_') === 0; }).forEach(function (k) {
+    USER_KEYS.filter(function (k) { return k.indexOf('io_') === 0 || k === 'ex_v1'; }).forEach(function (k) {
       var y = J(b.data[k], null); if (y == null) return;
       var x = J(lsGet(k), Array.isArray(y) ? [] : {});
       if (Array.isArray(y)) {
@@ -239,14 +239,17 @@ var HCE = (function () {
     L('io_focus_v1', []).forEach(function (x) { add(+x.id, 'io', 10, 'focus'); });
     L('io_emo_v1', []).forEach(function (x) { add(+x.id, 'io', 15, 'emo'); });
     L('io_pred_v1', []).forEach(function (x) { add(+x.id, 'io', 5, 'pred'); if (x.rt) add(x.rt, 'io', 5, 'pred'); });
+    var exa = L('ex_v1', {}); Object.keys(exa).forEach(function (m) { var s = exa[m] || {};
+      if (s.t1) add(s.t1, 'ex', 10, m); if (s.t2) add(s.t2, 'ex', 10, m); if (s.t3) add(s.t3, 'ex', 5, m); if (s.t4) add(s.t4, 'ex', 10, m);
+      Object.keys(s.done || {}).forEach(function (i) { if (s.done[i] && s.done[i].t) add(s.done[i].t, 'exp', 10, m); }); });
     var wk = L('io_week_v1', {}); Object.keys(wk).forEach(function (k) { if (wk[k] && wk[k].t) add(wk[k].t, 'io', 20, 'week'); });
     preps.forEach(function (x) { add(+x.id, 'prep', 20, x.id); if (x.after && x.after.t) add(x.after.t, 'prepafter', 10, x.id); });
-    var days = {}, xp = 0, today = dayKey(Date.now()), T = { mod: 0, ses: 0, plan: 0, tool: 0, rip: 0, after: 0, mib: 0, prep: 0, prepafter: 0, fb: 0, gym: 0, io: 0 };
+    var days = {}, xp = 0, today = dayKey(Date.now()), T = { mod: 0, ses: 0, plan: 0, tool: 0, rip: 0, after: 0, mib: 0, prep: 0, prepafter: 0, fb: 0, gym: 0, io: 0, ex: 0, exp: 0 };
     ev.forEach(function (e) { days[e.d] = 1; xp += e.xp; if (e.d === today) T[e.type]++; });
     var streak = 0, d = new Date();
     if (!days[dayKey(d)]) d.setDate(d.getDate() - 1);
     while (days[dayKey(d)]) { streak++; d.setDate(d.getDate() - 1); }
-    var plan = [Math.min(T.mod, 2) / 2, (T.ses + T.after + T.plan + T.mib + T.prep + T.prepafter + T.fb + T.gym + T.io) ? 1 : 0, T.tool ? 1 : 0];
+    var plan = [Math.min(T.mod, 2) / 2, (T.ses + T.after + T.plan + T.mib + T.prep + T.prepafter + T.fb + T.gym + T.io + T.exp) ? 1 : 0, T.tool ? 1 : 0];
     return { xp: xp, streak: streak, today: !!days[today], todayKey: today, days: days, events: ev, T: T,
       mods: nm, sessions: ses.length, plans: plans.length, preps: preps, done: done, ses: ses, planList: plans, daily: daily, rip: rip,
       goal: plan.filter(function (x) { return x >= 1; }).length, goalMax: 3, plan: plan };

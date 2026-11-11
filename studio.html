@@ -348,12 +348,108 @@ function openReader(id){var m=modById(id);if(!m)return;RID=id;var L=LEV[m.l],ms=
  $('r-chk').setAttribute('aria-pressed',isD(id));
  var head='<div class="trail"><b>'+esc(L.p)+'</b>'+(L.p!==L.n?' › '+esc(L.n):'')+' · modulo '+esc(m.num)+'</div><h1 id="r-t">'+esc(m.t)+'</h1>'+(m.g.length?'<div class="chips">'+m.g.map(function(g){return chipA(g[0])}).join('')+'</div>':'');
  var nav='<div class="rnav">'+(pv?'<button class="btn" data-read="'+pv.id+'"><small>← Precedente</small>'+esc(pv.t)+'</button>':'<span></span>')+(nx?'<button class="btn" data-read="'+nx.id+'"><small>Successivo →</small>'+esc(nx.t)+'</button>':'<span></span>')+'</div>';
- $('r-in').innerHTML=head+'<div class="doc" id="r-doc"><p class="muted">Carico gli appunti…</p></div>'+nav;
+ $('r-in').innerHTML=head+'<div class="doc" id="r-doc"><p class="muted">Carico gli appunti…</p></div><div id="r-ex"></div>'+nav;exRender(id);
  getLevel(m.l).then(function(j){if(RID!==id)return;$('r-doc').innerHTML=j[id]||'<p class="muted">Appunti non trovati.</p>'}).catch(function(){if(RID===id)$('r-doc').innerHTML='<p class="muted">Non riesco a caricare gli appunti adesso. Riprova tra poco.</p>'});
  $('r-pos').textContent=(ix+1)+'/'+ms.length;$('r-list').hidden=true;$('r-ix').setAttribute('aria-expanded','false');
  $('r-list').innerHTML='<div class="rxh">'+esc(L.n)+' · '+ms.filter(function(x){return isD(x.id)}).length+'/'+ms.length+' studiati</div>'+ms.map(function(x){return '<button class="rx'+(isD(x.id)?' d':'')+'" data-read="'+x.id+'"'+(x.id===id?' aria-current="true"':'')+'><span class="n">'+(isD(x.id)?'✓':esc(x.num))+'</span><span class="t">'+esc(x.t)+'</span></button>'}).join('');
  $('r-x').focus()}
 $('r-ix').addEventListener('click',function(){var l=$('r-list'),o=l.hidden;l.hidden=!o;this.setAttribute('aria-expanded',o?'true':'false');if(o){$('reader').scrollTop=0;var c=l.querySelector('[aria-current]');if(c)setTimeout(function(){c.scrollIntoView({block:'center'})},20)}});
+/* Esercitati: il sistema di apprendimento HCE (iu34) applicato al modulo aperto.
+   1 test subito (flashcard) · 2 spiegalo a un bambino · 3 colma le lacune · 4 organizza e semplifica · 5 pratica entro 24 ore */
+var EXD=PACK.ex||{},EXK='ex_v1',EXID='',EXC=null;
+(function(){var s=document.createElement('style');s.textContent=
+'#r-ex{max-width:760px;margin:26px auto 0;display:flex;flex-direction:column;gap:12px}'+
+'#r-ex .exh{display:flex;flex-direction:column;gap:6px;padding-top:16px;border-top:2px solid var(--line2)}'+
+'#r-ex .exh h2{margin:0;font-size:1.35rem}#r-ex .exh p{margin:0;color:var(--muted);font-weight:600;line-height:1.45}'+
+'#r-ex .steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}'+
+'#r-ex .sp{border:2px solid var(--line);background:var(--surface);color:var(--muted);border-radius:12px;padding:8px 4px;font:inherit;font-size:.74rem;font-weight:800;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:54px;text-align:center;line-height:1.15}'+
+'#r-ex .sp b{font-size:1rem}#r-ex .sp.dn{background:var(--ok-soft);border-color:var(--ok-bg);color:var(--ok)}#r-ex .sp[aria-current="true"]{border-color:var(--accent);color:var(--accent)}'+
+'#r-ex .exc{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px}'+
+'#r-ex .exc h3{margin:0;font-size:1.1rem}#r-ex .tip{color:var(--muted);font-weight:600;font-size:.9rem;line-height:1.45;margin:0}'+
+'#r-ex .fc{border:2px solid var(--line);border-radius:18px;padding:20px 16px;min-height:150px;display:flex;flex-direction:column;justify-content:center;gap:10px;background:var(--sunk);text-align:center}'+
+'#r-ex .fc .n{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:900;color:var(--muted)}'+
+'#r-ex .fc .qq{font-size:1.2rem;font-weight:800;line-height:1.35}#r-ex .fc .aa{font-weight:700;line-height:1.5;border-top:2px solid var(--line);padding-top:10px}'+
+'#r-ex .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}#r-ex .row.c{justify-content:center}'+
+'#r-ex .rt{flex:1 1 90px}#r-ex .rt.si{border-color:var(--ok-bg)!important;color:var(--ok)!important}#r-ex .rt.no{border-color:var(--warn)!important;color:var(--warn)!important}'+
+'#r-ex label.f{display:flex;flex-direction:column;gap:6px;font-weight:800;font-size:.92rem}'+
+'#r-ex textarea,#r-ex input[type=text]{width:100%;box-sizing:border-box;font:inherit;padding:10px 12px;color:var(--fg)}#r-ex textarea{min-height:70px;resize:vertical}'+
+'#r-ex .model{background:var(--accent-soft);border-radius:14px;padding:12px;font-weight:700;line-height:1.5}'+
+'#r-ex .gap{display:flex;gap:10px;align-items:center;border:2px solid var(--line);border-radius:14px;padding:10px 12px}#r-ex .gap .tx{flex:1;min-width:0;font-weight:700;line-height:1.35}#r-ex .gap .tx small{display:block;color:var(--muted);font-weight:600}'+
+'#r-ex .pr{border:2px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px}#r-ex .pr.dn{border-color:var(--ok-bg);background:var(--ok-soft)}'+
+'#r-ex .pr b{font-size:1.02rem}#r-ex .pr p{margin:0;line-height:1.45}#r-ex .pr .k{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:900;color:var(--muted)}'+
+'#r-ex .ok{border-radius:12px;padding:9px 12px;font-weight:800;font-size:.9rem;background:var(--ok-soft);color:var(--ok)}'+
+'#r-ex .chkb{display:flex;gap:10px;align-items:center;font-weight:700;cursor:pointer}#r-ex .chkb input{width:22px;height:22px;accent-color:var(--accent)}'+
+'.doc .exflash{outline:3px solid var(--accent);outline-offset:4px;border-radius:6px;transition:outline-color 1.5s}';
+document.head.appendChild(s)})();
+function exAll(){return HCE.lsJ(EXK,{})}
+function exSt(id){var a=exAll();return a[id]||{}}
+function exSave(id,st){var a=exAll();st.u=Date.now();a[id]=st;HCE.lsPut(EXK,a)}
+var EXSTEP={};
+function exRender(id){var el=$('r-ex');if(!el)return;var X=EXD[id];if(!X){el.innerHTML='';return}
+  if(EXID!==id){EXID=id;EXC=null}
+  var st=exSt(id),steps=[['1','Test',st.t1,!!X.q],['2','Spiegalo',st.t2,true],['3','Lacune',st.t3,true],['4','Semplifica',st.t4,true],['5','Pratica',X.ex&&X.ex.every(function(e,i){return (st.done||{})[i]}),!!X.ex]];
+  var cur=EXSTEP[id]||(steps.filter(function(s){return s[3]&&!s[2]})[0]||steps[0])[0];EXSTEP[id]=cur;
+  var h='<div class="exh"><h2>Esercitati</h2><p>Il sistema di apprendimento HCE: subito dopo il modulo ti metti alla prova, poi i tre passi di Feynman, poi la pratica entro 24 ore.</p>'+
+   '<button class="btn" data-read="iu34" style="align-self:flex-start;font-size:.82rem;padding:6px 12px;min-height:36px">↗ Il sistema di apprendimento HCE</button></div>'+
+   '<div class="steps">'+steps.map(function(s){return s[3]?'<button class="sp'+(s[2]?' dn':'')+'" data-exs="'+s[0]+'"'+(cur===s[0]?' aria-current="true"':'')+'><b>'+(s[2]?'✓':s[0])+'</b>'+s[1]+'</button>':'<button class="sp" disabled style="opacity:.4"><b>'+s[0]+'</b>'+s[1]+'</button>'}).join('')+'</div>';
+  h+='<div class="exc">'+exStep(id,X,st,cur)+'</div>';
+  el.innerHTML=h}
+function exStep(id,X,st,cur){
+  if(cur==='1'){var q=X.q||[];if(!EXC)EXC={i:0,flip:false,r:{}};
+    if(EXC.i>=q.length){var ok=0,qu=0;Object.keys(EXC.r).forEach(function(k){if(EXC.r[k]==='si')ok++;if(EXC.r[k]==='quasi')qu++});
+      return '<h3>Test sul momento</h3><div class="fc"><div class="n">Risultato</div><div class="qq">'+ok+' su '+q.length+' sapute'+(qu?' · '+qu+' quasi':'')+'</div></div>'+
+       '<p class="tip">'+(ok===q.length?'Tutto chiaro: passa a spiegarlo a un bambino.':'Le carte «quasi» e «no» le ritrovi al passo 3, con la sezione da rileggere.')+'</p>'+
+       '<div class="row"><button class="btn pri" data-exs="2">Avanti: spiegalo</button><button class="btn" data-exre="1">Rifai il test</button></div>'}
+    var c=q[EXC.i];
+    return '<h3>Test sul momento</h3><p class="tip">Rispondi a voce, senza guardare gli appunti. Poi gira la carta e valutati con onestà: serve a passare dalla memoria a breve a quella a lungo termine.</p>'+
+     '<div class="fc"><div class="n">Carta '+(EXC.i+1)+' di '+q.length+'</div><div class="qq">'+esc(c[0])+'</div>'+(EXC.flip?'<div class="aa">'+esc(c[1])+'</div>':'')+'</div>'+
+     (EXC.flip?'<div class="row"><button class="btn rt si" data-exr="si">Lo sapevo</button><button class="btn rt" data-exr="quasi">Quasi</button><button class="btn rt no" data-exr="no">No</button></div>':'<div class="row c"><button class="btn pri" data-exflip="1">Gira la carta</button></div>')}
+  if(cur==='2'){return '<h3>Spiegalo a un bambino</h3><p class="tip">Feynman, passo 1. Come alla lavagna davanti a una terza elementare: parole semplici, niente termini tecnici. Scrivi o illustra, poi ripetilo a voce davanti allo specchio o alla videocamera del telefono. I punti oscuri salteranno all\'occhio.</p>'+
+    '<label class="f">La mia spiegazione<textarea data-exf="kid" placeholder="Immagina di parlare a un bambino di 8 anni…">'+esc(st.kid||'')+'</textarea></label>'+
+    '<label class="f">Dove mi sono fermato<input type="text" data-exf="stuck" value="'+esc(st.stuck||'')+'" placeholder="Il punto che non riuscivo a spiegare"></label>'+
+    '<label class="chkb"><input type="checkbox" data-exf="mirror"'+(st.mirror?' checked':'')+'> L\'ho ripetuto a voce, allo specchio o alla videocamera</label>'+
+    (X.kid?(st.showkid?'<div class="model"><small class="tip" style="display:block">Traccia degli appunti</small>'+esc(X.kid)+'</div>':'<button class="btn" data-exshow="kid" style="align-self:flex-start">Confronta con la traccia</button>'):'')+
+    '<div class="row"><button class="btn pri" data-exdone="t2">'+(st.t2?'Aggiorna':'Fatto · +10 XP')+'</button></div><div data-exmsg></div>'}
+  if(cur==='3'){var rr=st.r||{},gm={};(X.gaps||[]).forEach(function(g){gm[g[0]]=g[1]});
+    var miss=(X.q||[]).map(function(c,i){return {q:c[0],r:rr[i],sec:gm[c[0]]}}).filter(function(x){return x.r==='no'||x.r==='quasi'});
+    var h='<h3>Colma le lacune</h3><p class="tip">Feynman, passo 2. Torna solo sui punti in cui ti sei fermato: rileggi, fai domande, cerca spiegazioni diverse finché riesci a spiegarlo in modo semplice. Come con una parola sconosciuta: non sorvolare, cercala.</p>';
+    if(!st.t1&&X.q)h+='<p class="tip">Fai prima il test: le carte che non sapevi finiscono qui.</p>';
+    h+=miss.map(function(x){return '<div class="gap"><div class="tx">'+esc(x.q)+'<small>'+(x.r==='no'?'Non la sapevo':'Quasi')+(x.sec?' · sezione «'+esc(x.sec)+'»':'')+'</small></div>'+(x.sec?'<button class="btn" data-exgo="'+esc(x.sec)+'">Rileggi</button>':'')+'</div>'}).join('');
+    if(st.stuck)h+='<div class="gap"><div class="tx">'+esc(st.stuck)+'<small>Dove ti sei fermato spiegandolo</small></div></div>';
+    if(st.t1&&!miss.length&&!st.stuck)h+='<p class="tip">Nessuna lacuna dal test e dalla spiegazione.</p>';
+    h+='<div class="row"><a class="btn" href="dizionario.html">Cerca nel Dizionario</a><button class="btn pri" data-exdone="t3">'+(st.t3?'Fatto':'Lacune colmate · +5 XP')+'</button></div><div data-exmsg></div>';return h}
+  if(cur==='4'){var o=st.org||{};return '<h3>Organizza e semplifica</h3><p class="tip">Feynman, passo 3. Torna sull\'intero discorso e limalo: prima in una frase, poi in cinque righe.</p>'+
+    '<label class="f">In una frase<textarea data-exo="f">'+esc(o.f||'')+'</textarea></label>'+
+    [['cosa','Cosa'],['perche','Perché'],['come','Come'],['es','Un esempio'],['lim','Un limite o una cautela']].map(function(r){return '<label class="f">'+r[1]+'<input type="text" data-exo="'+r[0]+'" value="'+esc(o[r[0]]||'')+'"></label>'}).join('')+
+    (X.org?(st.showorg?'<div class="model"><small class="tip" style="display:block">Frase modello degli appunti</small>'+esc(X.org)+'</div>':'<button class="btn" data-exshow="org" style="align-self:flex-start">Confronta con la frase modello</button>'):'')+
+    '<div class="row"><button class="btn pri" data-exdone="t4">'+(st.t4?'Aggiorna':'Fatto · +10 XP')+'</button></div><div data-exmsg></div>'}
+  if(cur==='5'){var d=st.done||{};return '<h3>Pratica entro 24 ore</h3><p class="tip">Dalla teoria alla pratica prima che il ricordo si indebolisca. Segna ogni esercizio quando l\'hai fatto davvero, con cosa hai verificato.</p>'+
+    (X.ex||[]).map(function(e,i){var dn=d[i];return '<div class="pr'+(dn?' dn':'')+'"><b>'+(i+1)+'. '+esc(e.n)+'</b>'+(e.s?'<div><span class="k">Scopo</span><p>'+esc(e.s)+'</p></div>':'')+(e.c?'<div><span class="k">Come si fa</span><p>'+esc(e.c)+'</p></div>':'')+(e.v?'<div><span class="k">Come verificare</span><p>'+esc(e.v)+'</p></div>':'')+
+     '<label class="f">Com\'è andata<input type="text" data-exn="'+i+'" value="'+esc(dn&&dn.note||'')+'" placeholder="Cosa ho verificato"></label>'+
+     '<div class="row"><button class="btn'+(dn?'':' pri')+'" data-exp="'+i+'">'+(dn?'✓ Fatto il '+new Date(dn.t).toLocaleDateString('it-IT')+' · annulla':'L\'ho fatto · +10 XP')+'</button></div></div>'}).join('')+'<div data-exmsg></div>'}
+  return ''}
+function exDue(id){var t=(D&&HCE.lsJ('studio_hce_v1',{})[id])||0;if(!t)return false;var a=Math.round((new Date(HCE.dayKey(Date.now())+'T12:00:00')-new Date(HCE.dayKey(t)+'T12:00:00'))/864e5);return a===1||a===3||a===7}
+document.addEventListener('click',function(e){var b,t=e.target;if(!t.closest||!t.closest('#r-ex'))return;var id=EXID,X=EXD[id];if(!X)return;var st=exSt(id);
+  if(b=t.closest('[data-exs]')){EXSTEP[id]=b.dataset.exs;exRender(id);$('r-ex').scrollIntoView({block:'start'});return}
+  if(t.closest('[data-exflip]')){EXC.flip=true;exRender(id);return}
+  if(b=t.closest('[data-exr]')){EXC.r[EXC.i]=b.dataset.exr;EXC.i++;EXC.flip=false;
+    if(EXC.i>=(X.q||[]).length){st.r=EXC.r;if(!st.t1)st.t1=Date.now();st.tl=Date.now();exSave(id,st);
+      if(exDue(id)){var r=HCE.lsJ('ripasso_v1',{});r[id+'@'+HCE.dayKey(Date.now())]=Date.now();HCE.lsPut('ripasso_v1',r)}}
+    exRender(id);return}
+  if(b=t.closest('[data-exre]')){EXC={i:0,flip:false,r:{}};exRender(id);return}
+  if(b=t.closest('[data-exshow]')){st['show'+b.dataset.exshow]=1;exSave(id,st);exRender(id);return}
+  if(b=t.closest('[data-exdone]')){var k=b.dataset.exdone,first=!st[k];if(!st[k])st[k]=Date.now();exSave(id,st);var nx={t2:'3',t3:'4',t4:X.ex?'5':'4'}[k];if(first&&nx)EXSTEP[id]=nx;exRender(id);
+    if(first){var m=document.querySelector('#r-ex [data-exmsg]');if(m)m.innerHTML='<div class="ok">Fatto · +'+(k==='t3'?5:10)+' XP</div>'}return}
+  if(b=t.closest('[data-exp]')){var i=b.dataset.exp;st.done=st.done||{};if(st.done[i])delete st.done[i];else st.done[i]={t:Date.now(),note:(document.querySelector('#r-ex [data-exn="'+i+'"]')||{}).value||''};exSave(id,st);exRender(id);return}
+  if(b=t.closest('[data-exgo]')){var want=b.dataset.exgo.toLowerCase().replace(/^\d+\.\s*/,'').trim(),hs=document.querySelectorAll('#r-doc h2,#r-doc h3,#r-doc h4,#r-doc strong'),hit=null;
+    for(var j=0;j<hs.length;j++){var tx=hs[j].textContent.toLowerCase().replace(/^\d+\.\s*/,'').trim();if(tx.indexOf(want)>=0||(want.length>4&&want.indexOf(tx)>=0&&tx.length>4)){hit=hs[j];break}}
+    if(hit){hit.scrollIntoView({block:'start'});hit.classList.add('exflash');setTimeout(function(){hit.classList.remove('exflash')},1600)}else{$('r-doc').scrollIntoView({block:'start'})}}});
+document.addEventListener('input',function(e){var t=e.target;if(!t.closest||!t.closest('#r-ex'))return;var id=EXID,st=exSt(id);
+  if(t.dataset.exf){st[t.dataset.exf]=t.type==='checkbox'?t.checked:t.value;exSave(id,st)}
+  else if(t.dataset.exo){st.org=st.org||{};st.org[t.dataset.exo]=t.value;exSave(id,st)}
+  else if(t.dataset.exn!=null&&st.done&&st.done[t.dataset.exn]){st.done[t.dataset.exn].note=t.value;exSave(id,st)}});
+document.addEventListener('change',function(e){var t=e.target;if(t.dataset&&t.dataset.exf==='mirror'&&t.closest('#r-ex')){var st=exSt(EXID);st.mirror=t.checked;exSave(EXID,st)}});
+
 function closeReader(){$('reader').hidden=true;document.body.classList.remove('noscroll');RID='';if(!$('v-ruota').hidden)wheelSync()}
 $('r-x').addEventListener('click',closeReader);
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('reader').hidden)closeReader()});
@@ -383,7 +479,7 @@ function libri(){
 function tab(t){[].forEach.call(document.querySelectorAll('.tab'),function(b){b.setAttribute('aria-selected',b.dataset.t===t)});
  ['ruota','corsi','libri'].forEach(function(x){$('v-'+x).hidden=x!==t});if(t==='corsi')corsi();if(t==='libri')libri();if(t==='ruota')render();window.scrollTo(0,0)}
 document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(b)tab(b.dataset.t)});
-render();(function(){var h=/^#m=([\w-]+)/.exec(location.hash);if(h)setTimeout(function(){openReader(h[1])},0)})();$('sync').textContent='Salvato su questo dispositivo · ricordati il backup dalla Home';
+render();(function(){var h=/^#([mx])=([\w-]+)/.exec(location.hash);if(h)setTimeout(function(){openReader(h[2]);if(h[1]==='x'){EXSTEP[h[2]]='1';EXC=null;exRender(h[2]);setTimeout(function(){var e=document.getElementById('r-ex');if(e)e.scrollIntoView({block:'start'})},400)}},0)})();$('sync').textContent='Salvato su questo dispositivo · ricordati il backup dalla Home';
 (async function(){try{
  if(!window.claude||!claude.use)return;
  var db=await claude.use('db'),user=await claude.use('user');if(!db||!user)return;
