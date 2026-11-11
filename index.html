@@ -132,7 +132,7 @@ input[type=file]{display:none}
   <div id="w-msg" style="width:100%"></div>
 </div>
 
-<div class="card welcome" id="upd" hidden><h2>Contenuti da aggiornare</h2><p class="muted">E³ e Matrice sono nella versione nuova di <b>hce-contenuti.json</b>. Importala: i tuoi progressi restano.</p><label class="big g" for="f-pack">IMPORTA IL FILE NUOVO</label><div id="u-msg" style="width:100%"></div></div>
+<div class="card welcome" id="upd" hidden><h2>Contenuti da aggiornare</h2><p class="muted">Gli strumenti nuovi sono nella versione nuova di <b>hce-contenuti.json</b>. Importala: i tuoi progressi restano.</p><label class="big g" for="f-pack">IMPORTA IL FILE NUOVO</label><div id="u-msg" style="width:100%"></div></div>
 <div id="main" hidden style="display:flex;flex-direction:column;gap:18px">
   <div class="hi"><h1 id="hello">Ciao!</h1><p id="hi-s">Ecco il tuo piano di oggi.</p></div>
   <div class="goal"><div class="gbar"><i id="g-bar" style="width:0"></i></div><b id="g-n">0/3</b></div>
@@ -200,7 +200,7 @@ function dayNum(d){return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.get
 function draw(p){
   PACK=p;var S=HCE.stats();
   $('s-streak').textContent=S.streak;$('s-fire').classList.toggle('off',!S.today);$('s-xp').textContent=S.xp;
-  $('welcome').hidden=!!p;$('main').hidden=!p;$('upd').hidden=!p||!!(p.e3&&p.mib);if(!p)return;
+  $('welcome').hidden=!!p;$('main').hidden=!p;$('upd').hidden=!p||!!(p.e3&&p.mib&&p.istair);if(!p)return;
   var D=p.data,done=S.done,today=S.todayKey,now=new Date();
   $('hello').textContent=greet()+'!';
   $('hi-s').textContent=S.goal>=S.goalMax?'Piano di oggi completato. Grande!':S.streak?'Serie di '+S.streak+(S.streak===1?' giorno':' giorni')+(S.today?': continua così.':': fai qualcosa oggi per non perderla.'):'Ecco il tuo piano di oggi.';
@@ -266,7 +266,7 @@ $('f-bk').addEventListener('change',function(){var f=this.files[0];if(!f)return;
  readFile(f).then(function(t){var n=HCE.importBackup(t);msg('b-msg','Backup importato: '+n+' elementi aggiunti o aggiornati.',true);bstat();status()})
  .catch(function(e){msg('b-msg','Non riesco a importare: '+esc(e&&e.message?e.message:'file non valido'))});this.value=''});
 if(location.hash==='#contenuti')setTimeout(function(){$('contenuti').scrollIntoView({block:'center'})},300);
-$('ver').textContent='App versione 2026-11-11-6908f48c';
+$('ver').textContent='App versione 2026-11-11-4aae33aa';
 status();bstat();
 window.addEventListener('pageshow',function(e){if(e.persisted){status();bstat()}});
 })();
