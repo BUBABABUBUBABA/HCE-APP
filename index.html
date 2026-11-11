@@ -115,7 +115,7 @@ input[type=file]{display:none}
 .la .go{color:var(--accent);font-weight:900;font-size:.85rem;white-space:nowrap}
 </style>
 <div class="page">
-<input type="file" id="f-pack" accept=".json,application/json">
+<input type="file" id="f-pack">
 <div class="top">
   <div class="logo" aria-hidden="true">HCE</div>
   <div class="cnt">
@@ -132,6 +132,7 @@ input[type=file]{display:none}
   <div id="w-msg" style="width:100%"></div>
 </div>
 
+<div class="card welcome" id="upd" hidden><h2>Contenuti da aggiornare</h2><p class="muted">E³ e Matrice sono nella versione nuova di <b>hce-contenuti.json</b>. Importala: i tuoi progressi restano.</p><label class="big g" for="f-pack">IMPORTA IL FILE NUOVO</label><div id="u-msg" style="width:100%"></div></div>
 <div id="main" hidden style="display:flex;flex-direction:column;gap:18px">
   <div class="hi"><h1 id="hello">Ciao!</h1><p id="hi-s">Ecco il tuo piano di oggi.</p></div>
   <div class="goal"><div class="gbar"><i id="g-bar" style="width:0"></i></div><b id="g-n">0/3</b></div>
@@ -176,7 +177,7 @@ input[type=file]{display:none}
   <details class="set"><summary>Backup dei tuoi dati</summary>
     <div style="display:flex;flex-direction:column;gap:10px;padding-top:6px">
       <p class="muted">Sessioni, moduli studiati e livello sugli aspetti. Esporta un file e importalo sull'altro dispositivo: i dati si uniscono, non si cancellano.</p>
-      <div class="row"><button class="btn pri" id="b-exp">Esporta backup</button><label class="btn" for="f-bk">Importa backup</label><input type="file" id="f-bk" accept=".json,application/json"></div>
+      <div class="row"><button class="btn pri" id="b-exp">Esporta backup</button><label class="btn" for="f-bk">Importa backup</label><input type="file" id="f-bk"></div>
       <div id="b-msg"></div>
       <p class="muted" id="b-st"></p>
     </div>
@@ -200,7 +201,7 @@ function dayNum(d){return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.get
 function draw(p){
   PACK=p;var S=HCE.stats();
   $('s-streak').textContent=S.streak;$('s-fire').classList.toggle('off',!S.today);$('s-xp').textContent=S.xp;
-  $('welcome').hidden=!!p;$('main').hidden=!p;if(!p)return;
+  $('welcome').hidden=!!p;$('main').hidden=!p;$('upd').hidden=!p||!!(p.e3&&p.mib);if(!p)return;
   var D=p.data,done=S.done,today=S.todayKey,now=new Date();
   $('hello').textContent=greet()+'!';
   $('hi-s').textContent=S.goal>=S.goalMax?'Piano di oggi completato. Grande!':S.streak?'Serie di '+S.streak+(S.streak===1?' giorno':' giorni')+(S.today?': continua così.':': fai qualcosa oggi per non perderla.'):'Ecco il tuo piano di oggi.';
@@ -256,7 +257,7 @@ function status(){return HCE.pack().then(function(p){
 }).catch(function(){$('c-st').textContent='Questo browser non permette di salvare i contenuti (finestra privata?).';draw(null)})}
 function bstat(){var S=HCE.stats();$('b-st').textContent='Su questo dispositivo: '+S.sessions+' sessioni D-P-I, '+S.mods+' moduli studiati.'}
 function readFile(f){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=function(){rej(r.error)};r.readAsText(f)})}
-$('f-pack').addEventListener('change',function(){var f=this.files[0];if(!f)return;var tgt=$('welcome').hidden?'c-msg':'w-msg';msg(tgt,'Importo «'+esc(f.name)+'»… può richiedere qualche secondo.',true);
+$('f-pack').addEventListener('change',function(){var f=this.files[0];if(!f)return;var tgt=!$('welcome').hidden?'w-msg':!$('upd').hidden?'u-msg':'c-msg';msg(tgt,'Importo «'+esc(f.name)+'»… può richiedere qualche secondo.',true);
  readFile(f).then(HCE.importPack).then(function(p){msg(tgt,'Fatto: contenuti versione '+esc(p.version)+' installati.',true);status()})
  .catch(function(e){msg(tgt,'Non riesco a importare: '+esc(e&&e.message?e.message:'file non valido')+'. Scegli il file hce-contenuti.json.')});this.value=''});
 $('b-exp').addEventListener('click',function(){var b=HCE.exportBackup();HCE.save(b.name,b.text).then(function(){msg('b-msg','Backup creato: «'+esc(b.name)+'». Salvalo dove lo ritrovi dall\'altro dispositivo.',true)})});
@@ -264,7 +265,7 @@ $('f-bk').addEventListener('change',function(){var f=this.files[0];if(!f)return;
  readFile(f).then(function(t){var n=HCE.importBackup(t);msg('b-msg','Backup importato: '+n+' elementi aggiunti o aggiornati.',true);bstat();status()})
  .catch(function(e){msg('b-msg','Non riesco a importare: '+esc(e&&e.message?e.message:'file non valido'))});this.value=''});
 if(location.hash==='#contenuti')$('contenuti').open=true;
-$('ver').textContent='App versione 2026-11-11-c9650ca4';
+$('ver').textContent='App versione 2026-11-11-7daeb2e2';
 status();bstat();
 window.addEventListener('pageshow',function(e){if(e.persisted){status();bstat()}});
 })();

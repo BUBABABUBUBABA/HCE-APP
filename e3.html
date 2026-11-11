@@ -124,7 +124,7 @@ textarea{min-height:64px;resize:vertical}
   <p class="lead">Un sistema flessibile per ingaggiare, spiegare e arrivare a un sì: in telefonata, con le slide, in un'e-mail o al bar. Tocca uno strumento per vedere cosa fa e come si usa.</p>
   <div class="flow"><span class="fe">ENGAGE</span><i>→</i><span class="fx">EXPLAIN</span><i>→</i><span class="fc">EXCHANGE</span></div>
 </header>
-<div class="card notice" id="old" hidden><h2>Serve il file dei contenuti aggiornato</h2><p class="muted">I dati dell'E³ sono nella nuova versione di <b>hce-contenuti.json</b>. Importala da Percorso → Impostazioni → Contenuti del corso.</p><a class="btn pri" href="index.html#contenuti" style="text-decoration:none">Vai a Impostazioni</a></div>
+<div class="card notice" id="old" hidden><h2>Serve il file dei contenuti aggiornato</h2><p class="muted">I dati dell'E³ sono nella nuova versione di <b>hce-contenuti.json</b>. Importala qui: i tuoi progressi restano.</p><button class="btn pri" id="old-imp">Importa il file</button><div id="old-msg" style="width:100%"></div></div>
 <div id="app" hidden style="display:flex;flex-direction:column;gap:16px">
   <nav class="tb"><div class="tabs" role="tablist">
     <button class="tab" role="tab" data-t="mappa" aria-selected="true">Mappa</button>
@@ -142,7 +142,7 @@ textarea{min-height:64px;resize:vertical}
 <script>
 HCE.ready(function(PACK){
 var E=PACK.e3,$=function(i){return document.getElementById(i)};
-if(!E){$('old').hidden=false;return}
+if(!E){$('old').hidden=false;HCE.pickButton($('old-imp'),$('old-msg'));return}
 $('app').hidden=false;
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 var PC={engage:['var(--eg)','var(--eg-dk)','var(--eg)','var(--eg-soft)'],explain:['var(--ex)','var(--ex-dk)','var(--ex)','var(--ex-soft)'],exchange:['var(--xc-bg)','var(--xc-dk)','var(--xc)','var(--xc-soft)']};

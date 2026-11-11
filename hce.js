@@ -55,6 +55,24 @@ var HCE = (function () {
       .then(function () { return pack; });
   }
   function pack() { return get('meta', 'pack'); }
+  /* pulsante che sceglie e importa il file dei contenuti, poi ricarica la pagina */
+  function pickButton(btn, out) {
+    btn.addEventListener('click', function () {
+      var inp = document.createElement('input'); inp.type = 'file'; inp.style.display = 'none';
+      document.body.appendChild(inp);
+      inp.addEventListener('change', function () {
+        var f = inp.files[0]; if (!f) return;
+        out.innerHTML = '<p class="muted">Importo «' + f.name + '»… può richiedere qualche secondo.</p>';
+        var r = new FileReader();
+        r.onload = function () {
+          try { importPack(r.result).then(function () { location.reload(); }).catch(function (e) { out.innerHTML = '<p class="muted">Non riesco a importare: ' + (e && e.message || 'file non valido') + '</p>'; }); }
+          catch (e) { out.innerHTML = '<p class="muted">Non riesco a importare: ' + (e && e.message || 'file non valido') + '. Scegli hce-contenuti.json.</p>'; }
+        };
+        r.readAsText(f);
+      });
+      inp.click();
+    });
+  }
   function ready(fn) {
     pack().then(function (p) {
       if (!p) { location.replace('index.html#contenuti'); return; }
@@ -183,5 +201,5 @@ var HCE = (function () {
   }
   if (navigator.storage && navigator.storage.persist) { navigator.storage.persist().catch(function () {}); }
 
-  return { get: get, pack: pack, ready: ready, importPack: importPack, exportBackup: exportBackup, importBackup: importBackup, save: save, nav: nav, stats: stats, dayKey: dayKey, lsJ: lsJ, lsPut: lsPut, USER_KEYS: USER_KEYS };
+  return { get: get, pack: pack, ready: ready, importPack: importPack, exportBackup: exportBackup, importBackup: importBackup, save: save, pickButton: pickButton, nav: nav, stats: stats, dayKey: dayKey, lsJ: lsJ, lsPut: lsPut, USER_KEYS: USER_KEYS };
 })();

@@ -122,7 +122,7 @@ a.src{color:var(--accent)}
   <h1>Matrice Interazionale Biochimica</h1>
   <p class="lead">Riconosci il mix in cui si trova una persona (o tu), scegli quello che serve all'obiettivo e la matrice ti dice cosa fare: prima disinnesca (D), poi innesca (P).</p>
 </header>
-<div class="card notice" id="old" hidden><h2>Serve il file dei contenuti aggiornato</h2><p class="muted">I dati della matrice sono nella nuova versione di <b>hce-contenuti.json</b>. Importala da Home → Impostazioni → Contenuti del corso.</p><a class="btn pri" href="index.html#contenuti" style="text-decoration:none">Vai a Impostazioni</a></div>
+<div class="card notice" id="old" hidden><h2>Serve il file dei contenuti aggiornato</h2><p class="muted">I dati della matrice sono nella nuova versione di <b>hce-contenuti.json</b>. Importala qui: i tuoi progressi restano.</p><button class="btn pri" id="old-imp">Importa il file</button><div id="old-msg" style="width:100%"></div></div>
 <div id="app" hidden style="display:flex;flex-direction:column;gap:16px">
   <nav class="tb"><div class="tabs" role="tablist">
     <button class="tab" role="tab" data-t="matrice" aria-selected="true">Matrice</button>
@@ -144,7 +144,7 @@ a.src{color:var(--accent)}
 <script>
 HCE.ready(function(PACK){
 var M=PACK.mib,$=function(i){return document.getElementById(i)};
-if(!M){$('old').hidden=false;return}
+if(!M){$('old').hidden=false;HCE.pickButton($('old-imp'),$('old-msg'));return}
 $('app').hidden=false;
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function mv(k){return 'var(--m-'+k+')'}function ms(k){return 'var(--m-'+k+'-s)'}
