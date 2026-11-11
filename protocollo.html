@@ -594,7 +594,7 @@ $('wipe-y').addEventListener('click',function(){DATA=[];$('wipeq').hidden=true;p
 function merge(txt){try{var R=JSON.parse(txt),seen={};DATA.forEach(function(s){seen[s.id]=1});R.forEach(function(s){if(!seen[s.id])DATA.push(s)});DATA.sort(function(a,b){return b.id>a.id?1:-1})}catch(e){}}
 function mergeKnow(txt){try{var R=JSON.parse(txt);Object.keys(R).forEach(function(k){var a=KNOW[k],b=R[k];if(b&&typeof b.s==='number'&&(!a||(b.t||0)>(a.t||0)))KNOW[k]=b})}catch(e){}}
 DATA=lsGet(KEY,[]);if(!Array.isArray(DATA))DATA=[];KNOW=lsGet(KKEY,{})||{};
-setSync('Salvato su questo dispositivo');build();mpRender();
+setSync('Salvato su questo dispositivo');build();mpRender();(function(){var h=location.hash||'';if(h==='#prima')tab('prima');else if(h.indexOf('#dopo')===0){tab('dopo');var id=h.split('=')[1];if(id&&DATA.some(function(x){return x.id===id})){$('a-sel').value=id;showPrev()}}})();
 (async function(){try{
  if(!window.claude||!claude.use)return;
  var db=await claude.use('db'),user=await claude.use('user');if(!db||!user)return;

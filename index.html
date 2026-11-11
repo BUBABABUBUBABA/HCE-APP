@@ -80,6 +80,39 @@ ol{margin:6px 0 0;padding-left:20px;display:grid;gap:4px;font-size:.92rem}
 input[type=file]{display:none}
 .welcome{text-align:center;align-items:center}
 .welcome .em{width:96px;height:96px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center;color:var(--accent)}
+.task{display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--fg);padding:10px 4px;border-top:2px solid var(--line2)}
+.task:first-of-type{border-top:0}
+.task .ck{flex:none;width:40px;height:40px;border-radius:50%;border:3px solid var(--line);display:grid;place-items:center;color:transparent}
+.task.ok .ck{background:var(--ok-bg);border-color:var(--ok-bg);color:#fff}
+.task.half .ck{border-color:var(--ok-bg);background:conic-gradient(var(--ok-bg) 0 50%,transparent 50% 100%)}
+.task .tx{flex:1;min-width:0;display:flex;flex-direction:column}
+.task .tx b{font-weight:900}.task .tx span{font-size:.84rem;color:var(--muted);font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.task.ok .tx b{color:var(--ok)}
+.task .go{flex:none;color:var(--accent);font-weight:900;font-size:1.3rem}
+.tod{border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:8px;background:var(--surface);border:2px solid var(--line);box-shadow:0 4px 0 var(--line);position:relative;overflow:hidden}
+.tod::before{content:"";position:absolute;inset:0 0 auto;height:8px;background:var(--pc)}
+.tod .crumb{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;font-weight:900;color:var(--pc2);margin-top:4px}
+.tod h2{font-size:1.6rem;line-height:1.1;color:var(--pc2)}.tod h2 small{font-size:.95rem;color:var(--muted);font-weight:800;margin-left:6px}
+.tod p{font-weight:600;line-height:1.45}
+.tod .hint{font-size:.88rem;color:var(--muted);font-weight:700}
+.btn.done{background:var(--ok-soft)!important;color:var(--ok)!important;border-color:var(--ok-bg)!important;box-shadow:0 3px 0 var(--ok-bg)!important}
+.ri{display:flex;gap:10px;align-items:center;border-top:2px solid var(--line2);padding-top:10px}
+.ri .tx{flex:1;min-width:0;display:flex;flex-direction:column;text-decoration:none;color:var(--fg)}
+.ri .tx small{font-size:.7rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.ri .tx b{font-weight:800;line-height:1.3}.ri .tx span{font-size:.8rem;color:var(--muted);font-weight:700}
+.ri .chk{flex:none;width:44px;height:44px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--muted);font:inherit;font-weight:900;font-size:1.1rem;cursor:pointer;box-shadow:0 3px 0 var(--line)}
+.wk{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;text-align:center}
+.wk div{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.74rem;font-weight:900;color:var(--muted)}
+.wk i{width:34px;height:34px;border-radius:50%;background:var(--line2);display:grid;place-items:center;color:#fff;font-style:normal}
+.wk .on i{background:var(--fire)}.wk .td i{outline:3px solid var(--accent);outline-offset:2px}.wk .fut i{opacity:.45}
+.tot{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.tot div{background:var(--sunk);border-radius:14px;padding:8px 4px;text-align:center;display:flex;flex-direction:column}
+.tot b{font-size:1.2rem;font-weight:900}.tot span{font-size:.7rem;font-weight:800;color:var(--muted)}
+.la{display:flex;gap:10px;align-items:center;text-decoration:none;color:var(--fg);border-top:2px solid var(--line2);padding-top:10px}
+.la:first-of-type{border-top:0;padding-top:0}
+.la .ic{flex:none;width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:var(--c-soft);color:var(--c);font-weight:900}
+.la .tx{flex:1;min-width:0;display:flex;flex-direction:column}.la .tx b{font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.la .tx span{font-size:.82rem;color:var(--muted);font-weight:700}
+.la .go{color:var(--accent);font-weight:900;font-size:.85rem;white-space:nowrap}
 </style>
 <div class="page">
 <input type="file" id="f-pack" accept=".json,application/json">
@@ -99,28 +132,34 @@ input[type=file]{display:none}
   <div id="w-msg" style="width:100%"></div>
 </div>
 
-<div id="main" hidden>
-  <div style="display:flex;flex-direction:column;gap:18px">
-    <div class="hi"><h1 id="hello">Ciao!</h1><p id="goal-t">Obiettivo di oggi: 2 moduli e 1 sessione D-P-I</p></div>
-    <div class="goal"><div class="gbar"><i id="g-bar" style="width:0"></i></div><b id="g-n">0/3</b></div>
+<div id="main" hidden style="display:flex;flex-direction:column;gap:18px">
+  <div class="hi"><h1 id="hello">Ciao!</h1><p id="hi-s">Ecco il tuo piano di oggi.</p></div>
+  <div class="goal"><div class="gbar"><i id="g-bar" style="width:0"></i></div><b id="g-n">0/3</b></div>
 
-    <div class="hero">
-      <small id="h-eb">Continua</small>
-      <h2 id="h-t">…</h2>
-      <p id="h-s"></p>
-      <a class="big w" id="h-go" href="studio.html">CONTINUA</a>
-    </div>
-
-    <div class="quick">
-      <a class="qk" href="protocollo.html" style="--c:var(--c5);--c-soft:var(--warn-soft)"><span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h7"/><circle cx="18" cy="17" r="3"/></svg></span><b>Sessione D-P-I</b><span id="q-dpi">Su un'interazione vera</span></a>
-      <a class="qk" href="e3.html" style="--c:var(--c3);--c-soft:var(--star-soft)"><span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 6h6M5 12h6M5 18h6"/><path d="M15 5h4v4M15 19h4v-4M19 9l-4 3 4 3"/></svg></span><b>Algoritmo E³</b><span id="q-e3">27 strumenti · prepara</span></a>
-      <a class="qk" href="studio.html" style="--c:var(--c1);--c-soft:var(--accent-soft)"><span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/></svg></span><b>Ruota HCE</b><span id="q-mods">Moduli per aspetto</span></a>
-    </div>
+  <div class="card" style="gap:4px">
+    <h2 style="margin-bottom:6px">Il piano di oggi</h2>
+    <a class="task" id="t1" href="percorso.html"><span class="ck"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></span><span class="tx"><b>Studia 2 moduli</b><span id="t1-s">…</span></span><span class="go">›</span></a>
+    <a class="task" id="t2" href="protocollo.html#prima"><span class="ck"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></span><span class="tx"><b>Allenati su un'interazione vera</b><span>Una sessione D-P-I o una preparazione E³</span></span><span class="go">›</span></a>
+    <a class="task" id="t3" href="#tod"><span class="ck"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></span><span class="tx"><b>Prova lo strumento del giorno</b><span id="t3-s">In una conversazione di oggi</span></span><span class="go">›</span></a>
   </div>
 
-  <div style="margin-top:22px">
-    <div class="sec-t">Il tuo percorso</div>
-    <div class="path" id="path"></div>
+  <div class="tod" id="tod"></div>
+
+  <div class="card" id="rip-c">
+    <h2>Ripasso</h2>
+    <p class="muted">I moduli studiati 1, 3 e 7 giorni fa: 5 minuti ciascuno, a voce, senza guardare.</p>
+    <div id="rip" style="display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+
+  <div class="card" id="la-c">
+    <h2>Riprendi</h2>
+    <div id="la" style="display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+
+  <div class="card">
+    <h2>La tua settimana</h2>
+    <div class="wk" id="wk"></div>
+    <div class="tot" id="tot"></div>
   </div>
 </div>
 
@@ -154,47 +193,63 @@ input[type=file]{display:none}
 var $=function(i){return document.getElementById(i)};
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function msg(id,t,ok){$(id).innerHTML='<div class="msg '+(ok?'ok':'err')+'">'+t+'</div>'}
-var PCOL={Connection:'var(--c1)',Improve:'var(--c2)',Inside:'var(--c4)',Persuasion:'var(--c5)',Sales:'var(--c3)',Team:'#0E9AA7',Webinar:'var(--muted)'};
-var OFF=[0,46,70,46,0,-46,-70,-46];
 function greet(){var h=new Date().getHours();return h<5?'Buonanotte':h<13?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera'}
-
+var PC={engage:['var(--i)','var(--i)'],explain:['var(--accent)','var(--accent)'],exchange:['var(--ok-bg)','var(--ok)']};
+var PACK=null;
+function dayNum(d){return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5)}
 function draw(p){
-  var S=HCE.stats(),D=p&&p.data;
-  $('s-streak').textContent=S.streak;$('s-fire').classList.toggle('off',!S.today);
-  $('s-xp').textContent=S.xp;
-  $('welcome').hidden=!!p;$('main').hidden=!p;
-  if(!p)return;
+  PACK=p;var S=HCE.stats();
+  $('s-streak').textContent=S.streak;$('s-fire').classList.toggle('off',!S.today);$('s-xp').textContent=S.xp;
+  $('welcome').hidden=!!p;$('main').hidden=!p;if(!p)return;
+  var D=p.data,done=S.done,today=S.todayKey,now=new Date();
   $('hello').textContent=greet()+'!';
+  $('hi-s').textContent=S.goal>=S.goalMax?'Piano di oggi completato. Grande!':S.streak?'Serie di '+S.streak+(S.streak===1?' giorno':' giorni')+(S.today?': continua così.':': fai qualcosa oggi per non perderla.'):'Ecco il tuo piano di oggi.';
   $('g-bar').style.width=Math.round(S.goal/S.goalMax*100)+'%';$('g-n').textContent=S.goal+'/'+S.goalMax;
-  $('goal-t').textContent=S.goal>=S.goalMax?'Obiettivo di oggi completato. Grande!':'Obiettivo di oggi: '+Math.max(0,2-S.todayMods)+' moduli e '+Math.max(0,1-S.todaySess)+' sessione D-P-I';
-  var done=S.done,LV={},byL={};
-  D.levels.forEach(function(l){LV[l.k]=l;byL[l.k]=[]});
-  D.mods.forEach(function(m){if(byL[m.l])byL[m.l].push(m)});
-  // continua: primo modulo non studiato nel livello in corso
-  var next=null;
-  for(var i=0;i<D.levels.length&&!next;i++){var ms=byL[D.levels[i].k];for(var j=0;j<ms.length;j++){if(!(done[ms[j].id]>0)){next=ms[j];break}}}
-  if(next){var L=LV[next.l],ms2=byL[next.l],n=ms2.filter(function(m){return done[m.id]>0}).length;
-    $('h-eb').textContent=(n?'Continua · ':'Inizia · ')+L.p;
-    $('h-t').textContent=L.n+' · Modulo '+(ms2.indexOf(next)+1);
-    $('h-s').textContent=next.t;
-    $('h-go').href='studio.html#m='+next.id;$('h-go').textContent=n?'CONTINUA':'INIZIA';}
-  else{$('h-eb').textContent='Percorso completato';$('h-t').textContent='Hai studiato tutti i moduli';$('h-s').textContent='Ripassa dalla ruota o allenati con il D-P-I.';$('h-go').href='studio.html';$('h-go').textContent='RIPASSA'}
-  $('q-dpi').textContent=S.sessions?S.sessions+(S.sessions===1?' sessione fatta':' sessioni fatte'):'Su un\'interazione vera';
-  $('q-e3').textContent=S.plans?S.plans+(S.plans===1?' interazione preparata':' interazioni preparate'):'27 strumenti · prepara';
-  $('q-mods').textContent=S.mods+' di '+D.mods.length+' moduli studiati';
-  // percorso
-  var html='',lastP='',k=0,curSet=false;
-  D.levels.forEach(function(l){
-    var ms=byL[l.k],nd=ms.filter(function(m){return done[m.id]>0}).length,tot=ms.length;if(!tot)return;
-    if(l.p!==lastP){lastP=l.p;var pl=D.levels.filter(function(x){return x.p===l.p}),pd=0,pt=0;pl.forEach(function(x){pt+=byL[x.k].length;pd+=byL[x.k].filter(function(m){return done[m.id]>0}).length});
-      html+='<div class="unit" style="--uc:'+(PCOL[l.p]||'var(--accent)')+'"><b>'+esc(l.p)+'</b><span>'+pd+'/'+pt+'</span></div>';k=0}
-    var st=nd===tot?'done':'';var first=ms.filter(function(m){return!(done[m.id]>0)})[0]||ms[0];
-    if(!st&&!curSet&&next&&next.l===l.k){st='cur';curSet=true}else if(!st&&nd)st='prog';
-    var ic=st==='done'?'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg>':st==='cur'?'<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>':esc(l.n.charAt(0));
-    html+='<a class="node '+st+'" href="studio.html#m='+first.id+'" style="transform:translateX('+OFF[k%OFF.length]+'px)"><span class="nd">'+ic+'</span><span class="nl"><b>'+esc(l.n)+'</b><span>'+(st==='cur'?'Sei qui · ':'')+nd+'/'+tot+' moduli</span></span></a>';k++;
-  });
-  $('path').innerHTML=html;
+  // piano
+  var next=null;for(var i=0;i<D.mods.length;i++){if(!(done[D.mods[i].id]>0)){next=D.mods[i];break}}
+  var LV={};D.levels.forEach(function(l){LV[l.k]=l});
+  $('t1').className='task'+(S.plan[0]>=1?' ok':S.plan[0]>0?' half':'');
+  $('t1-s').textContent=(S.T.mod?Math.min(S.T.mod,2)+'/2 · ':'')+(next?'Prossimo: '+next.t:'Hai studiato tutti i moduli');
+  if(next)$('t1').href='studio.html#m='+next.id;
+  $('t2').className='task'+(S.plan[1]>=1?' ok':'');
+  $('t3').className='task'+(S.plan[2]>=1?' ok':'');
+  // strumento del giorno
+  var E=p.e3,tod=$('tod');
+  if(!E){tod.style.cssText='';tod.innerHTML='<h2 style="font-size:1.2rem">Strumento del giorno</h2><p class="muted">Importa la nuova versione di hce-contenuti.json (Impostazioni, qui sotto) per vedere gli strumenti dell\'E³.</p>'}
+  else{var ALL=[];E.phases.forEach(function(ph){ph.aspects.forEach(function(a){a.tools.forEach(function(t){ALL.push({p:ph,a:a,t:t})})})});
+    var o=ALL[dayNum(now)%ALL.length],t=o.t,c=PC[o.p.k],dd=S.daily[today];
+    tod.style.setProperty('--pc',c[0]);tod.style.setProperty('--pc2',c[1]);
+    $('t3-s').textContent=t.n+' · '+t.it;
+    tod.innerHTML='<div class="crumb">Strumento del giorno · '+esc(o.p.n)+' › '+esc(o.a.n)+'</div><h2>'+esc(t.n)+'<small>'+esc(t.it)+'</small></h2><p>'+esc(t.what)+'</p>'+
+      (t.ex?'<p class="hint">'+esc(t.ex)+'</p>':'')+'<p class="hint">Usalo almeno una volta oggi, in una conversazione vera.</p>'+
+      '<div class="row"><button class="btn'+(dd?' done':' pri')+'" id="tod-ok">'+(dd?'✓ Provato oggi':'L\'ho provato')+'</button><a class="btn" href="e3.html#t='+encodeURIComponent(t.n)+'" style="text-decoration:none">Come si usa</a></div>';
+    $('tod-ok').onclick=function(){var d=HCE.lsJ('e3_daily_v1',{});if(d[today])delete d[today];else d[today]={n:t.n,t:Date.now()};HCE.lsPut('e3_daily_v1',d);draw(PACK)}}
+  // ripasso 1-3-7
+  var MOD={};D.mods.forEach(function(m){MOD[m.id]=m});
+  var tn=dayNum(now),rows=[];
+  Object.keys(done).forEach(function(id){var ts=done[id];if(!(ts>1e12)||!MOD[id])return;var ago=tn-dayNum(new Date(ts));if(ago===1||ago===3||ago===7)rows.push({id:id,ago:ago,ts:ts})});
+  rows.sort(function(a,b){return a.ago-b.ago||a.ts-b.ts});
+  var more=rows.length>5?rows.length-5:0;rows=rows.slice(0,5);
+  $('rip').innerHTML=rows.length?rows.map(function(r){var m=MOD[r.id],k=r.id+'@'+today,ok=!!S.rip[k];
+    return '<div class="ri"><a class="tx" href="studio.html#m='+r.id+'"><small>'+(r.ago===1?'Ieri':r.ago+' giorni fa')+'</small><b>'+esc(m.t)+'</b><span>'+esc((LV[m.l]||{}).n||'')+'</span></a><button class="chk'+(ok?' done':'')+'" data-rip="'+k+'" aria-pressed="'+ok+'" aria-label="Ripassato" style="'+(ok?'background:var(--ok-bg);color:#fff;border-color:var(--ok-bg)':'')+'">✓</button></div>'}).join('')+(more?'<p class="muted">E altri '+more+': li trovi domani.</p>':'')
+   :'<p class="muted">Niente da ripassare oggi. I moduli che segni come studiati tornano qui dopo 1, 3 e 7 giorni.</p>';
+  // riprendi
+  var la=[],ses=S.ses.slice().sort(function(a,b){return +b.id-+a.id});
+  var open=ses.filter(function(s){return!s.after})[0];
+  if(open)la.push('<a class="la" href="protocollo.html#dopo='+open.id+'" style="--c:var(--c5);--c-soft:var(--warn-soft)"><span class="ic">D</span><span class="tx"><b>'+esc(open.ctx||'Sessione D-P-I')+'</b><span>Sessione del '+new Date(+open.id).toLocaleDateString('it-IT')+' · manca il «Dopo»</span></span><span class="go">Compila ›</span></a>');
+  var pl=S.planList[0];
+  if(pl)la.push('<a class="la" href="e3.html#p='+pl.id+'" style="--c:var(--i);--c-soft:var(--i-soft)"><span class="ic">E³</span><span class="tx"><b>'+esc(pl.sit||'Preparazione E³')+'</b><span>Preparata il '+new Date(+pl.id).toLocaleDateString('it-IT')+(pl.goal?' · '+esc(pl.goal):'')+'</span></span><span class="go">Apri ›</span></a>');
+  var lm=Object.keys(done).filter(function(k){return done[k]>0&&MOD[k]}).sort(function(a,b){return done[b]-done[a]})[0];
+  if(lm)la.push('<a class="la" href="studio.html#m='+lm+'" style="--c:var(--c1);--c-soft:var(--accent-soft)"><span class="ic">S</span><span class="tx"><b>'+esc(MOD[lm].t)+'</b><span>Ultimo modulo studiato · '+esc((LV[MOD[lm].l]||{}).n||'')+'</span></span><span class="go">Rileggi ›</span></a>');
+  $('la-c').hidden=!la.length;$('la').innerHTML=la.join('');
+  // settimana (lunedì-domenica)
+  var mon=new Date(now);mon.setHours(12,0,0,0);mon.setDate(mon.getDate()-((mon.getDay()+6)%7));
+  var keys=[],LET='LMMGVSD';for(var j=0;j<7;j++){var d=new Date(mon);d.setDate(mon.getDate()+j);keys.push(HCE.dayKey(d.getTime()))}
+  $('wk').innerHTML=keys.map(function(k,j){var cls=(S.days[k]?'on':'')+(k===today?' td':'')+(k>today?' fut':'');return '<div class="'+cls+'"><i>'+(S.days[k]?'✓':'')+'</i>'+LET[j]+'</div>'}).join('');
+  var W={xp:0,mod:0,ses:0,plan:0};S.events.forEach(function(e){if(keys.indexOf(e.d)<0)return;W.xp+=e.xp;if(e.type in W)W[e.type]++});
+  $('tot').innerHTML='<div><b>'+W.xp+'</b><span>XP</span></div><div><b>'+W.mod+'</b><span>moduli</span></div><div><b>'+W.ses+'</b><span>sessioni</span></div><div><b>'+W.plan+'</b><span>prep. E³</span></div>';
 }
+document.addEventListener('click',function(e){var b=e.target.closest('[data-rip]');if(!b)return;var r=HCE.lsJ('ripasso_v1',{}),k=b.dataset.rip;if(r[k])delete r[k];else r[k]=Date.now();HCE.lsPut('ripasso_v1',r);draw(PACK)});
 function status(){return HCE.pack().then(function(p){
   $('c-st').textContent=p?'Installati · versione '+p.version+' · '+p.data.mods.length+' moduli':'Non ancora importati';
   draw(p);
@@ -209,7 +264,7 @@ $('f-bk').addEventListener('change',function(){var f=this.files[0];if(!f)return;
  readFile(f).then(function(t){var n=HCE.importBackup(t);msg('b-msg','Backup importato: '+n+' elementi aggiunti o aggiornati.',true);bstat();status()})
  .catch(function(e){msg('b-msg','Non riesco a importare: '+esc(e&&e.message?e.message:'file non valido'))});this.value=''});
 if(location.hash==='#contenuti')$('contenuti').open=true;
-$('ver').textContent='App versione 2026-11-11-d482ab8d';
+$('ver').textContent='App versione 2026-11-11-fc9118e0';
 status();bstat();
 window.addEventListener('pageshow',function(e){if(e.persisted){status();bstat()}});
 })();
