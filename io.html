@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="it"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Io</title>
+<meta name="theme-color" content="#1f5a5e">
+<link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="HCE">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+.appbar{display:flex;gap:4px;padding:10px 0 2px;max-width:1200px;margin:0 auto;overflow-x:auto}
+.appbar a{font:600 .82rem/1 Inter,system-ui,sans-serif;text-decoration:none;color:var(--muted,#5d6869);padding:9px 12px;border-radius:99px;white-space:nowrap}
+.appbar a[aria-current]{background:var(--accent-soft,#d9e9e7);color:var(--accent,#1f5a5e)}
+.loading{font:15px/1.5 system-ui,sans-serif;padding:40px 16px;text-align:center;color:#5d6869}
+</style>
+<script src="hce.js"></script>
+</head><body>
+<script>HCE.nav("io");</script>
+<style>
+:root{--onp:#FFFFFF;--io:#7048E8;--io-s:#EFE9FF}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--onp:#0B1020;--io:#B4A0FF;--io-s:#261C47}}
+:root[data-theme="dark"]{--onp:#0B1020;--io:#B4A0FF;--io-s:#261C47}
+*{box-sizing:border-box}
+body{margin:0;padding-block:0 110px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.page{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+p{margin:0}
+header{padding-top:22px;display:flex;flex-direction:column;gap:8px}
+.eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--io);font-weight:900}
+h1{font-size:1.9rem;line-height:1.1;margin:0}h2{font-size:1.3rem;margin:0}h3{font-size:1.05rem;margin:0}
+.lead{color:var(--muted);font-weight:600}
+nav.tb{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:8px 0}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}
+.tab{flex:1 0 auto;padding:10px 12px;border:0;background:transparent;color:var(--muted);font:inherit;font-size:.88rem;cursor:pointer;min-height:44px}
+section{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--surface);padding:16px;display:flex;flex-direction:column;gap:12px}
+.lbl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:900;color:var(--muted)}
+.tip{font-size:.84rem;color:var(--muted);font-weight:600;line-height:1.45}
+.note{background:var(--sunk);border-radius:14px;padding:10px 12px;font-size:.88rem;font-weight:600;color:var(--muted);line-height:1.45}
+.src{display:inline-flex;font-size:.74rem;font-weight:800;color:var(--accent);background:var(--sunk);border-radius:99px;padding:3px 9px;text-decoration:none;align-self:flex-start}
+label.f{display:flex;flex-direction:column;gap:6px;font-weight:800;font-size:.92rem}
+textarea,input[type=text],input[type=date],input[type=number],select{width:100%;font:inherit;padding:10px 12px;color:var(--fg)}
+textarea{min-height:60px;resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.ch{border:2px solid var(--line);background:var(--surface);color:var(--fg);border-radius:99px;padding:7px 12px;font:inherit;font-weight:800;font-size:.86rem;cursor:pointer;min-height:40px}
+.ch[aria-pressed="true"]{background:var(--io);border-color:var(--io);color:var(--onp)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 16px;font:inherit;cursor:pointer;background:var(--surface);color:var(--fg);min-height:46px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.btn.io{background:var(--io);color:var(--onp);border-color:var(--io);font-weight:900}
+.msg{border-radius:12px;padding:9px 12px;font-weight:800;font-size:.88rem;background:var(--ok-soft);color:var(--ok)}
+.hero{border-radius:22px;padding:16px;background:var(--io);color:var(--onp);display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 0 rgba(0,0,0,.18)}
+.hero b{font-size:1.3rem;font-weight:900}.hero .st{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.hero .st div{background:rgba(255,255,255,.18);border-radius:14px;padding:8px;text-align:center}.hero .st b{display:block;font-size:1.3rem}.hero .st span{font-size:.74rem;font-weight:800}
+.item{display:flex;gap:10px;align-items:center;border:2px solid var(--line);border-radius:16px;padding:10px 12px;background:var(--surface)}
+.item .tx{flex:1;min-width:0}.item .tx b{display:block;font-weight:900;overflow-wrap:anywhere}.item .tx span{font-size:.8rem;color:var(--muted);font-weight:700}
+.tick{flex:none;width:46px;height:46px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--muted);font:inherit;font-weight:900;font-size:1.2rem;cursor:pointer}
+.tick[aria-pressed="true"]{background:var(--ok-bg);border-color:var(--ok-bg);color:#fff}
+.ph{border-radius:20px;border:2px solid var(--line);background:var(--surface);overflow:hidden;box-shadow:0 3px 0 var(--line)}
+.ph summary{list-style:none;cursor:pointer;display:flex;gap:12px;align-items:center;padding:12px 14px;min-height:62px}
+.ph summary::-webkit-details-marker{display:none}
+.ph .L{flex:none;width:44px;height:44px;border-radius:14px;background:var(--io-s);color:var(--io);display:grid;place-items:center;font-weight:900;font-size:1.2rem}
+.ph.dn .L{background:var(--ok-bg);color:#fff}
+.ph summary b{font-weight:900;font-size:1.05rem;display:block}.ph summary small{display:block;color:var(--muted);font-weight:700;font-size:.82rem}
+.ph .chev{margin-left:auto;color:var(--muted);transition:transform .15s;flex:none}.ph[open] .chev{transform:rotate(90deg)}
+.pb{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px}
+.tool{display:flex;flex-direction:column;gap:6px;border-top:2px solid var(--line2);padding-top:10px}.tool b{font-weight:900}
+.bar{height:12px;border-radius:99px;background:var(--sunk);overflow:hidden}.bar i{display:block;height:100%;background:var(--io);border-radius:99px}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.week div{border-radius:12px;background:var(--sunk);padding:6px 2px;text-align:center;font-size:.72rem;font-weight:800;color:var(--muted);display:flex;flex-direction:column;gap:2px;min-width:0}
+.week div b{font-size:1rem;color:var(--fg)}.week div.on{background:var(--io-s)}
+.timer{font-size:4rem;font-weight:900;text-align:center;font-variant-numeric:tabular-nums;color:var(--io);line-height:1}
+.steps{display:flex;flex-direction:column;gap:8px}
+.stp{display:flex;gap:10px;align-items:flex-start;line-height:1.45}.stp b{flex:none;width:28px;height:28px;border-radius:9px;background:var(--io-s);color:var(--io);display:grid;place-items:center;font-weight:900;font-size:.85rem}
+.stp span{min-width:0}.stp span strong{font-weight:900}
+.qs{display:flex;flex-direction:column;gap:6px}.qs span{background:var(--sunk);border-left:4px solid var(--io);border-radius:10px;padding:8px 12px;font-weight:700}
+input[type=range]{width:100%;accent-color:var(--io)}
+.muted{color:var(--muted);font-size:.86rem;font-weight:600}
+.notice{text-align:center;align-items:center}
+</style>
+<div class="page">
+<header>
+  <div class="eyebrow">HCE · Improve · Inside</div>
+  <h1>Io</h1>
+  <p class="lead">Gli strumenti del corso usati su di te: stato, obiettivi, abitudini, focus, emozioni e bias. Tutto resta su questo dispositivo.</p>
+</header>
+<div class="card notice" id="old" hidden><h2>Serve il file dei contenuti aggiornato</h2><p class="muted">Importa la versione nuova di hce-contenuti.json dalla Home, in Impostazioni.</p><a class="btn pri" href="index.html#contenuti">Vai alla Home</a></div>
+<div id="app" hidden style="display:flex;flex-direction:column;gap:16px">
+  <nav class="tb"><div class="tabs">
+    <button class="tab" data-t="oggi" aria-selected="true">Oggi</button>
+    <button class="tab" data-t="obiettivi" aria-selected="false">Obiettivi</button>
+    <button class="tab" data-t="abitudini" aria-selected="false">Abitudini</button>
+    <button class="tab" data-t="focus" aria-selected="false">Focus</button>
+    <button class="tab" data-t="emozioni" aria-selected="false">Emozioni</button>
+    <button class="tab" data-t="bias" aria-selected="false">Bias</button>
+    <button class="tab" data-t="settimana" aria-selected="false">Settimana</button>
+  </div></nav>
+  <section id="v-oggi"></section>
+  <section id="v-obiettivi" hidden></section>
+  <section id="v-abitudini" hidden></section>
+  <section id="v-focus" hidden></section>
+  <section id="v-emozioni" hidden></section>
+  <section id="v-bias" hidden></section>
+  <section id="v-settimana" hidden></section>
+</div>
+</div>
+<script>
+HCE.ready(function(PACK){
+var Z=PACK.io,MB=PACK.mib,$=function(i){return document.getElementById(i)};
+if(!Z||!MB){$('old').hidden=false;return}
+$('app').hidden=false;
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var MODT={},LV={};PACK.data.mods.forEach(function(m){MODT[m.id]=m.t});PACK.data.levels.forEach(function(l){LV[l.k]=l.n});
+function ml(id){return id?'<a class="src" href="studio.html#m='+id+'">↗ '+esc(LV[id.slice(0,2)]||'')+' '+id.slice(2)+' · '+esc(MODT[id]||'')+'</a>':''}
+function G(k,d){return HCE.lsJ(k,d)}function P(k,v){HCE.lsPut(k,v)}
+var today=HCE.dayKey(Date.now());
+function dk(off){var d=new Date();d.setDate(d.getDate()+off);return HCE.dayKey(d.getTime())}
+function dShort(k){var d=new Date(k+'T12:00:00');return d.toLocaleDateString('it-IT',{weekday:'short'}).slice(0,3)}
+function flash(id,t){var e=$(id);if(e)e.innerHTML='<div class="msg">'+esc(t)+'</div>'}
+function newId(){return String(Date.now())}
+var MX=MB.mix;
+
+/* ---------- OGGI ---------- */
+var CK=null;
+function ckGet(){var a=G('io_check_v1',{});return a[today]?JSON.parse(JSON.stringify(a[today])):{now:'',need:'',help:'',emo:'',int:5,body:'',en:'',note:''}}
+function habitsActive(){return G('io_habits_v1',[]).filter(function(h){return !h.arch})}
+function streakOf(h){var n=0,d=new Date();if(!(h.log||{})[HCE.dayKey(d.getTime())])d.setDate(d.getDate()-1);while((h.log||{})[HCE.dayKey(d.getTime())]){n++;d.setDate(d.getDate()-1)}return n}
+function renderOggi(){if(!CK)CK=ckGet();var C=Z.check,all=G('io_check_v1',{}),hs=habitsActive(),fs=G('io_focus_v1',[]);
+  var hd=hs.filter(function(h){return (h.log||{})[today]}).length,fm=fs.filter(function(x){return HCE.dayKey(+x.id)===today}).reduce(function(a,x){return a+(x.min||0)},0);
+  var h='<div class="hero"><b>'+new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'})+'</b><div class="st"><div><b>'+(all[today]?'✓':'—')+'</b><span>check-in</span></div><div><b>'+hd+'/'+hs.length+'</b><span>abitudini</span></div><div><b>'+fm+'′</b><span>focus</span></div></div></div>';
+  // check-in
+  h+='<div class="card"><h3>Check-in</h3><p class="tip">'+esc(C.intro)+'</p>'+
+   '<div class="lbl">In che mix sono adesso?</div><div class="chips">'+MX.map(function(m,i){return '<button class="ch" data-ck="now" data-v="'+i+'" aria-pressed="'+(String(CK.now)===String(i))+'">'+esc(m.n)+'</button>'}).join('')+'</div>'+
+   '<div class="lbl">Di che mix ho bisogno oggi?</div><div class="chips">'+MX.map(function(m,i){return '<button class="ch" data-ck="need" data-v="'+i+'" aria-pressed="'+(String(CK.need)===String(i))+'">'+esc(m.n)+'</button>'}).join('')+'</div>'+
+   (CK.now!==''&&CK.need!==''&&CK.now!==CK.need?'<a class="src" href="mib.html#m='+CK.now+','+CK.need+'">↗ Matrice IBM: da '+esc(MX[CK.now].n)+' a '+esc(MX[CK.need].n)+'</a>':'')+
+   '<div class="lbl">Questo stato mi aiuta?</div><div class="chips">'+[['si','Sì'],['parte','In parte'],['no','No']].map(function(o){return '<button class="ch" data-ck="help" data-v="'+o[0]+'" aria-pressed="'+(CK.help===o[0])+'">'+o[1]+'</button>'}).join('')+'</div>'+
+   '<label class="f">Cosa provo, con la parola più precisa che trovo<input type="text" data-ckt="emo" value="'+esc(CK.emo)+'" placeholder="Es. impaziente, sollevato, inquieto"></label><p class="tip">'+esc(C.emo_tip)+'</p>'+
+   '<label class="f"><span>Intensità: <b id="ck-int">'+CK.int+'</b>/10</span><input type="range" min="0" max="10" step="1" data-ckt="int" value="'+CK.int+'"></label>'+
+   '<label class="f">Dove lo sento nel corpo<input type="text" data-ckt="body" value="'+esc(CK.body)+'" placeholder="Es. spalle rigide, respiro corto"></label><p class="tip">'+esc(C.int_tip)+'</p>'+
+   '<div class="lbl">Energia</div><div class="chips">'+[['+','+ alta'],['=','= media'],['-','− bassa']].map(function(o){return '<button class="ch" data-ck="en" data-v="'+o[0]+'" aria-pressed="'+(CK.en===o[0])+'">'+o[1]+'</button>'}).join('')+'</div><p class="tip">'+esc(C.en_tip)+'</p>'+
+   '<label class="f">Nota (facoltativa)<textarea data-ckt="note" placeholder="Cosa mi serve oggi per stare nel mix giusto?">'+esc(CK.note)+'</textarea></label>'+
+   '<div class="row"><button class="btn io" id="ck-save">'+(all[today]?'Aggiorna':'Salva il check-in')+'</button></div><div id="ck-msg"></div>'+
+   '<a class="src" href="mib.html">↗ Matrice IBM</a></div>';
+  // ultimi 7 giorni
+  h+='<div class="card"><h3>Ultimi 7 giorni</h3><div class="week">'+[-6,-5,-4,-3,-2,-1,0].map(function(o){var k=dk(o),c=all[k];return '<div class="'+(c?'on':'')+'"><span>'+dShort(k)+'</span><b>'+(c?(c.en==='+'?'+':c.en==='-'?'−':c.en?'=':'✓'):'·')+'</b><span>'+(c&&c.now!==''&&MX[c.now]?esc(MX[c.now].n.slice(0,4)):'')+'</span></div>'}).join('')+'</div><p class="tip">Energia (+ = −) e mix del giorno.</p></div>';
+  // abitudini di oggi
+  if(hs.length)h+='<div class="card"><h3>Abitudini di oggi</h3>'+hs.map(function(x){return habitRow(x)}).join('')+'</div>';
+  h+='<div class="card"><h3>Anche su di te</h3><div class="row"><a class="btn" href="protocollo.html">Protocollo D-P-I</a><a class="btn" href="palestra.html">Palestra</a><a class="btn" href="dizionario.html#mie">Le mie espressioni</a></div></div>';
+  $('v-oggi').innerHTML=h}
+$('v-oggi').addEventListener('click',function(e){var b,t=e.target;
+  if(b=t.closest('[data-ck]')){var k=b.dataset.ck,v=b.dataset.v;if(k==='now'||k==='need')v=+v;CK[k]=(CK[k]===v?'':v);renderOggi();return}
+  if(t.id==='ck-save'){var a=G('io_check_v1',{}),first=!a[today];CK.t=(a[today]&&a[today].t)||Date.now();CK.u=Date.now();a[today]=CK;P('io_check_v1',a);CK=null;renderOggi();flash('ck-msg',first?'Check-in salvato · +10 XP':'Aggiornato');return}
+  if(b=t.closest('[data-tick]'))tickHabit(b.dataset.tick)});
+$('v-oggi').addEventListener('input',function(e){var t=e.target,k=t.dataset.ckt;if(!k)return;CK[k]=k==='int'?+t.value:t.value;if(k==='int')$('ck-int').textContent=t.value});
+
+/* ---------- OBIETTIVI (REACH) ---------- */
+var R=Z.reach,GOAL=null,gTimer=null;
+function goals(){return G('io_goals_v1',[])}
+function saveGoal(){var a=goals(),i=a.findIndex(function(x){return x.id===GOAL.id});GOAL.u=Date.now();if(i>=0)a[i]=GOAL;else a.unshift(GOAL);P('io_goals_v1',a)}
+function renderObiettivi(){var h='';
+  if(!GOAL){var a=goals();
+    h+='<div class="card"><h3>REACH</h3><p>'+esc(R.intro)+'</p><div class="steps">'+R.phases.map(function(p){return '<div class="stp"><b>'+p.k+'</b><span><strong>'+esc(p.n)+'</strong> · '+esc(p.it)+'</span></div>'}).join('')+'</div><p class="note">'+esc(R.note)+'</p>'+ml(R.m)+'</div>'+
+     '<div class="card"><label class="f">Nuovo obiettivo<input type="text" id="g-new" placeholder="Es. parlare in pubblico senza leggere"></label><div class="row"><button class="btn io" id="g-add">Crea</button></div></div>';
+    if(a.length)h+='<div class="card"><h3>I miei obiettivi</h3>'+a.map(function(g){var n=Object.keys(g.done||{}).length;return '<div class="item"><div class="tx"><b>'+esc(g.t)+'</b><span>'+R.phases.map(function(p){return (g.done||{})[p.k]?'✓'+p.k:p.k}).join(' · ')+'</span><div class="bar" style="margin-top:6px"><i style="width:'+(n/5*100)+'%"></i></div></div><button class="btn" data-gopen="'+g.id+'">Apri</button></div>'}).join('')+'</div>';
+    $('v-obiettivi').innerHTML=h;return}
+  var g=GOAL,n=Object.keys(g.done||{}).length,next=R.phases.filter(function(p){return !(g.done||{})[p.k]})[0];
+  h+='<div class="row"><button class="btn" id="g-back">← Obiettivi</button></div><div class="card"><label class="f">Obiettivo<input type="text" data-gt="t" value="'+esc(g.t)+'"></label><div class="bar"><i style="width:'+(n/5*100)+'%"></i></div><p class="muted">'+(next?'Prossima fase: '+next.n+' ('+next.it+')':'Tutte le fasi completate. Dopo Hold, si rilancia: nuovo obiettivo.')+'</p></div>';
+  h+=R.phases.map(function(p){var dn=(g.done||{})[p.k];return '<details class="ph'+(dn?' dn':'')+'"'+(next===p?' open':'')+'><summary><span class="L">'+(dn?'✓':p.k)+'</span><span><b>'+esc(p.n)+'</b><small>'+esc(p.it)+(dn?' · fatta il '+new Date(dn).toLocaleDateString('it-IT'):'')+'</small></span><span class="chev">›</span></summary><div class="pb">'+
+    '<p style="line-height:1.5;font-weight:600">'+esc(p.d)+'</p>'+
+    p.tools.map(function(t){return '<div class="tool"><b>'+esc(t.n)+'</b><span class="tip">'+esc(t.d)+'</span><textarea data-gf="'+p.k+'.'+t.k+'" placeholder="'+esc(t.p)+'">'+esc((g.f||{})[p.k+'.'+t.k]||'')+'</textarea></div>'}).join('')+
+    '<div class="row"><button class="btn'+(dn?'':' io')+'" data-gdone="'+p.k+'">'+(dn?'Riapri la fase':(p.k==='C'?'Ho celebrato · +30 XP':'Fase completata · +10 XP'))+'</button></div>'+ml(p.m)+'</div></details>'}).join('');
+  h+='<div class="row"><button class="btn" id="g-del">Elimina obiettivo</button></div><div id="g-msg"></div>';
+  $('v-obiettivi').innerHTML=h}
+$('v-obiettivi').addEventListener('click',function(e){var b,t=e.target;
+  if(t.id==='g-add'){var v=$('g-new').value.trim();if(!v)return;GOAL={id:newId(),t:v,f:{},done:{}};saveGoal();renderObiettivi();window.scrollTo(0,0);return}
+  if(b=t.closest('[data-gopen]')){GOAL=goals().filter(function(x){return x.id===b.dataset.gopen})[0]||null;renderObiettivi();window.scrollTo(0,0);return}
+  if(t.id==='g-back'){GOAL=null;renderObiettivi();return}
+  if(b=t.closest('[data-gdone]')){var k=b.dataset.gdone;GOAL.done=GOAL.done||{};if(GOAL.done[k])delete GOAL.done[k];else GOAL.done[k]=Date.now();saveGoal();renderObiettivi();return}
+  if(t.id==='g-del'){if(t.textContent!=='Elimina?'){t.textContent='Elimina?';return}P('io_goals_v1',goals().filter(function(x){return x.id!==GOAL.id}));GOAL=null;renderObiettivi()}});
+$('v-obiettivi').addEventListener('input',function(e){var t=e.target;if(!GOAL)return;if(t.dataset.gt)GOAL.t=t.value;else if(t.dataset.gf){GOAL.f=GOAL.f||{};GOAL.f[t.dataset.gf]=t.value}else return;clearTimeout(gTimer);gTimer=setTimeout(saveGoal,400)});
+
+/* ---------- ABITUDINI ---------- */
+var HB=Z.habits,HE=null,hTimer=null;
+function habits(){return G('io_habits_v1',[])}
+function saveHabit(){var a=habits(),i=a.findIndex(function(x){return x.id===HE.id});HE.u=Date.now();if(i>=0)a[i]=HE;else a.unshift(HE);P('io_habits_v1',a)}
+function habitRow(x){var on=!!(x.log||{})[today],s=streakOf(x),tot=Object.keys(x.log||{}).length;
+  return '<div class="item"><button class="tick" data-tick="'+x.id+'" aria-pressed="'+on+'" aria-label="Fatta oggi">✓</button><div class="tx"><b>'+esc(x.f&&x.f.idea||x.f&&x.f.replace||x.t)+'</b><span>'+(x.type==='old'?'Sostituisce: '+esc(x.t)+' · ':'')+(s?s+' '+(s===1?'giorno':'giorni')+' di fila · ':'')+tot+' in tutto'+(tot?' · '+Math.min(100,Math.round(tot/66*100))+'% di 66':'')+'</span></div><button class="btn" data-hopen="'+x.id+'">Apri</button></div>'}
+function tickHabit(id){var a=habits(),x=a.filter(function(h){return h.id===id})[0];if(!x)return;x.log=x.log||{};if(x.log[today])delete x.log[today];else x.log[today]=Date.now();x.u=Date.now();P('io_habits_v1',a);renderOggi();if(!$('v-abitudini').hidden)renderAbitudini()}
+function renderAbitudini(){var h='';
+  if(!HE){var a=habits(),act=a.filter(function(x){return !x.arch});
+    h+='<div class="card"><h3>Come si costruisce un\'abitudine</h3><p>'+esc(HB.intro)+'</p><p class="note">'+esc(HB.time)+'</p><div class="row">'+ml(HB.m)+ml(HB.time_m)+'</div></div>'+
+     '<div class="card"><h3>Nuova</h3><div class="row"><button class="btn io" data-hnew="new">Crea un\'abitudine</button><button class="btn" data-hnew="old">Sostituisci un\'abitudine vecchia</button></div>'+(act.length>=3?'<p class="note">Hai già '+act.length+' abitudini attive: il corso consiglia di partire con 2-3 e aggiungerne quando le prime non costano più fatica (ab21).</p>':'')+'</div>';
+    if(act.length)h+='<div class="card"><h3>Attive</h3>'+act.map(habitRow).join('')+'</div>';
+    var ar=a.filter(function(x){return x.arch});if(ar.length)h+='<div class="card"><h3>Archiviate</h3>'+ar.map(habitRow).join('')+'</div>';
+    h+='<p class="note">'+esc(HB.chem)+' '+'</p>';
+    $('v-abitudini').innerHTML=h;return}
+  var x=HE,steps=x.type==='old'?HB.old.concat(HB['new'].filter(function(s){return s.k!=='idea'})):HB['new'];
+  h+='<div class="row"><button class="btn" id="h-back">← Abitudini</button></div><div class="card">'+(x.type==='old'?'<label class="f">Abitudine da sostituire<input type="text" data-ht="t" value="'+esc(x.t)+'" placeholder="Es. controllare il telefono appena sveglio"></label>':'<p class="muted">Compila i cinque passaggi: l\'idea chiara diventa il nome dell\'abitudine.</p>')+'</div>';
+  h+=steps.map(function(s,i){return '<details class="ph"'+(i<1?' open':'')+'><summary><span class="L">'+(i+1)+'</span><span><b>'+esc(s.n)+'</b></span><span class="chev">›</span></summary><div class="pb"><p class="tip">'+esc(s.d)+'</p><textarea data-hf="'+s.k+'" placeholder="'+esc(s.ph)+'">'+esc((x.f||{})[s.k]||'')+'</textarea>'+ml(s.m)+'</div></details>'}).join('');
+  h+='<div class="row"><button class="btn io" id="h-done">Salva</button><button class="btn" id="h-arch">'+(x.arch?'Riattiva':'Archivia')+'</button><button class="btn" id="h-del">Elimina</button></div><div id="h-msg"></div>';
+  $('v-abitudini').innerHTML=h}
+$('v-abitudini').addEventListener('click',function(e){var b,t=e.target;
+  if(b=t.closest('[data-hnew]')){HE={id:newId(),type:b.dataset.hnew,t:'',f:{},log:{}};renderAbitudini();window.scrollTo(0,0);return}
+  if(b=t.closest('[data-hopen]')){HE=habits().filter(function(x){return x.id===b.dataset.hopen})[0]||null;renderAbitudini();window.scrollTo(0,0);return}
+  if(b=t.closest('[data-tick]')){tickHabit(b.dataset.tick);return}
+  if(t.id==='h-back'){HE=null;renderAbitudini();return}
+  if(t.id==='h-done'){var name=HE.type==='old'?(HE.f.replace||''):(HE.f.idea||'');if(!name.trim()||(HE.type==='old'&&!HE.t.trim())){flash('h-msg',HE.type==='old'?'Scrivi l\'abitudine da sostituire e la sostituta.':'Scrivi almeno l\'idea chiara.');return}HE.t=HE.t||name;saveHabit();HE=null;renderAbitudini();renderOggi();return}
+  if(t.id==='h-arch'){HE.arch=!HE.arch;saveHabit();HE=null;renderAbitudini();renderOggi();return}
+  if(t.id==='h-del'){if(t.textContent!=='Elimina?'){t.textContent='Elimina?';return}P('io_habits_v1',habits().filter(function(x){return x.id!==HE.id}));HE=null;renderAbitudini();renderOggi()}});
+$('v-abitudini').addEventListener('input',function(e){var t=e.target;if(!HE)return;if(t.dataset.ht)HE.t=t.value;else if(t.dataset.hf){HE.f[t.dataset.hf]=t.value}});
+
+/* ---------- FOCUS ---------- */
+var FZ=Z.focus,FR={min:15,obj:'',ritual:'',empty:''},RUN=null,TICK=null,WL=null;
+function renderFocus(){var h='';
+  if(RUN){var left=Math.max(0,RUN.end-Date.now()),mm=Math.floor(left/60000),ss=Math.floor(left%60000/1000);
+    h+='<div class="card" style="align-items:stretch;text-align:center"><div class="lbl">'+esc(RUN.obj||'In focus')+'</div><div class="timer" id="f-t">'+mm+':'+('0'+ss).slice(-2)+'</div><p class="muted">'+esc(RUN.ritual)+'</p>'+
+     '<div class="row" style="justify-content:center"><button class="btn" id="f-dis">Distrazione ('+RUN.distr+')</button><button class="btn" id="f-stop">Termina</button></div>'+
+     '<div id="f-dbox" hidden><label class="f" style="text-align:left">Annota la distrazione, se vuoi tenerla<input type="text" id="f-dn" placeholder="Es. chiamare il commercialista"></label><div class="row"><button class="btn io" id="f-dok">Fatto, rifocalizzo</button></div></div></div>'+
+     '<div class="card"><div class="lbl">Se arriva una distrazione</div><div class="steps">'+FZ.steps.slice(3).map(function(s,i){return '<div class="stp"><b>'+(i+4)+'</b><span><strong>'+esc(s.n)+'</strong> · '+esc(s.d)+'</span></div>'}).join('')+'</div></div>';
+    $('v-focus').innerHTML=h;return}
+  var fs=G('io_focus_v1',[]),tm=fs.filter(function(x){return HCE.dayKey(+x.id)===today}).reduce(function(a,x){return a+(x.min||0)},0);
+  h+='<div class="card"><h3>Sessione di focus</h3><p>'+esc(FZ.intro)+'</p><div class="steps">'+FZ.steps.map(function(s,i){return '<div class="stp"><b>'+(i+1)+'</b><span><strong>'+esc(s.n)+'</strong> · '+esc(s.d)+'</span></div>'}).join('')+'</div>'+ml(FZ.m)+'</div>';
+  h+='<div class="card"><label class="f">0 · Svuota la testa<textarea id="f-empty" placeholder="Le cose in sospeso, una per riga">'+esc(FR.empty)+'</textarea></label><p class="tip">'+esc(FZ.empty)+'</p>'+ml(FZ.empty_m)+
+   '<label class="f">Su cosa resto<input type="text" id="f-obj" value="'+esc(FR.obj)+'" placeholder="Es. il capitolo 3"></label>'+
+   '<div class="lbl">Per quanto (tempo preciso)</div><div class="chips">'+FZ.durations.map(function(d){return '<button class="ch" data-fmin="'+d+'" aria-pressed="'+(FR.min===d)+'">'+d+' min</button>'}).join('')+'</div><p class="tip">'+esc(FZ.dur_tip)+'</p>'+
+   '<label class="f">La frase rituale, da dire ad alta voce<input type="text" id="f-rit" value="'+esc(FR.ritual||('Per '+FR.min+' minuti resto in focus'+(FR.obj?' su '+FR.obj:'')))+'"></label>'+
+   '<div class="row"><button class="btn io" id="f-go">Respira e inizia</button></div><div id="f-msg"></div></div>';
+  h+='<div class="card"><h3>Oggi: '+tm+' minuti</h3>'+(fs.length?fs.slice(0,6).map(function(x){return '<div class="item"><div class="tx"><b>'+esc(x.obj||'Focus')+' · '+x.min+' min</b><span>'+new Date(+x.id).toLocaleString('it-IT',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})+' · distrazioni: '+(x.distr||0)+(x.notes&&x.notes.length?' · annotate: '+esc(x.notes.join(', ')):'')+'</span></div></div>'}).join(''):'<p class="muted">Nessuna sessione ancora.</p>')+'</div>';
+  h+='<div class="card"><h3>I cinque fattori</h3><p class="tip">'+esc(FZ.factors_d)+'</p><div class="chips">'+FZ.factors.map(function(f){return '<span class="ch" style="cursor:default">'+esc(f)+'</span>'}).join('')+'</div>'+ml(FZ.factors_m)+'</div>';
+  $('v-focus').innerHTML=h}
+function tickF(){if(!RUN)return;var left=RUN.end-Date.now();if(left<=0){finishFocus(true);return}var el=$('f-t');if(el){var mm=Math.floor(left/60000),ss=Math.floor(left%60000/1000);el.textContent=mm+':'+('0'+ss).slice(-2)}}
+function finishFocus(full){clearInterval(TICK);var min=Math.max(1,Math.round((Math.min(Date.now(),RUN.end)-RUN.start)/60000));
+  var a=G('io_focus_v1',[]);a.unshift({id:String(RUN.start),min:min,obj:RUN.obj,distr:RUN.distr,notes:RUN.notes,full:!!full,u:Date.now()});P('io_focus_v1',a.slice(0,500));
+  try{sessionStorage.removeItem('io_run')}catch(e){}try{WL&&WL.release()}catch(e){}RUN=null;renderFocus();renderOggi();flash('f-msg',(full?'Sessione completata: ':'Sessione salvata: ')+min+' min · +10 XP. '+FZ.pause)}
+$('v-focus').addEventListener('click',function(e){var b,t=e.target;
+  if(b=t.closest('[data-fmin]')){FR.min=+b.dataset.fmin;FR.ritual='';renderFocus();return}
+  if(t.id==='f-go'){FR.ritual=$('f-rit').value;var s=Date.now();RUN={start:s,end:s+FR.min*60000,obj:FR.obj,ritual:FR.ritual,distr:0,notes:[]};try{sessionStorage.setItem('io_run',JSON.stringify(RUN))}catch(x){}
+    try{navigator.wakeLock&&navigator.wakeLock.request('screen').then(function(w){WL=w}).catch(function(){})}catch(x){}
+    FR.empty='';renderFocus();clearInterval(TICK);TICK=setInterval(tickF,1000);window.scrollTo(0,0);return}
+  if(t.id==='f-dis'){RUN.distr++;$('f-dis').textContent='Distrazione ('+RUN.distr+')';$('f-dbox').hidden=false;$('f-dn').focus();try{sessionStorage.setItem('io_run',JSON.stringify(RUN))}catch(x){}return}
+  if(t.id==='f-dok'){var v=$('f-dn').value.trim();if(v)RUN.notes.push(v);$('f-dn').value='';$('f-dbox').hidden=true;try{sessionStorage.setItem('io_run',JSON.stringify(RUN))}catch(x){}return}
+  if(t.id==='f-stop'){finishFocus(false)}});
+$('v-focus').addEventListener('input',function(e){var t=e.target;if(t.id==='f-obj'){FR.obj=t.value;if(!FR.ritual){var r=$('f-rit');if(r)r.value='Per '+FR.min+' minuti resto in focus'+(FR.obj?' su '+FR.obj:'')}}if(t.id==='f-empty')FR.empty=t.value;if(t.id==='f-rit')FR.ritual=t.value});
+try{var rr=JSON.parse(sessionStorage.getItem('io_run')||'null');if(rr&&rr.end){RUN=rr;TICK=setInterval(tickF,1000)}}catch(e){}
+
+/* ---------- EMOZIONI ---------- */
+var EM=Z.emo,EP={f:{},name:'',int:5};
+function renderEmozioni(){var list=G('io_emo_v1',[]),tr=G('io_trig_v1',[]);
+  var h='<div class="card"><h3>Un episodio in 7 fasi</h3><p>'+esc(EM.intro)+'</p>'+ml(EM.m)+'</div>';
+  h+=EM.phases.map(function(p,i){return '<details class="ph"'+(i?'':' open')+'><summary><span class="L">'+(i+1)+'</span><span><b>'+esc(p.n)+'</b><small>'+esc(p.q)+'</small></span><span class="chev">›</span></summary><div class="pb"><p class="tip">'+esc(p.d)+'</p><textarea data-ef="'+i+'" placeholder="'+esc(p.q)+'">'+esc(EP.f[i]||'')+'</textarea>'+ml(p.m)+'</div></details>'}).join('');
+  h+='<div class="card"><label class="f">Il nome dell\'emozione<input type="text" data-et="name" value="'+esc(EP.name)+'"></label><label class="f"><span>Intensità al picco: <b id="ep-int">'+EP.int+'</b>/10</span><input type="range" min="0" max="10" data-et="int" value="'+EP.int+'"></label><div class="row"><button class="btn io" id="ep-save">Salva l\'episodio · +15 XP</button></div><div id="ep-msg"></div><p class="tip">Scrivere completa il processo: crea distanza (pe23).</p></div>';
+  if(list.length)h+='<div class="card"><h3>I miei episodi</h3>'+list.slice(0,20).map(function(x){return '<details class="ph"><summary><span class="L">'+(x.int!=null?x.int:'·')+'</span><span><b>'+esc(x.name||'Episodio')+'</b><small>'+new Date(+x.id).toLocaleDateString('it-IT')+(x.f&&x.f[1]?' · '+esc(x.f[1]).slice(0,60):'')+'</small></span><span class="chev">›</span></summary><div class="pb">'+EM.phases.map(function(p,i){return x.f&&x.f[i]?'<div class="tool"><b>'+esc(p.n)+'</b><span>'+esc(x.f[i])+'</span></div>':''}).join('')+'<div class="row"><button class="btn" data-epdel="'+x.id+'">Elimina</button></div></div></details>'}).join('')+'</div>';
+  var T=EM.trig;
+  h+='<div class="card" id="trig"><h3>La mia collezione di trigger disattivanti</h3><p>'+esc(T.intro)+'</p><div class="steps">'+T.rules.map(function(r,i){return '<div class="stp"><b>'+(i+1)+'</b><span><strong>'+esc(r[0])+'</strong> · '+esc(r[1])+'</span></div>'}).join('')+'</div><p class="tip">'+esc(T.ex)+'</p>'+
+   '<label class="f">Aggiungi un trigger<input type="text" id="tr-new" placeholder="Es. la mia canzone del mare"></label><div class="chips">'+['È accessibile','È personale','È ecologico'].map(function(r,i){return '<button class="ch" data-trc="'+i+'" aria-pressed="false">'+r+'</button>'}).join('')+'</div><div class="row"><button class="btn io" id="tr-add">Aggiungi</button></div><div id="tr-msg"></div>'+
+   (tr.length?tr.map(function(x){return '<div class="item"><div class="tx"><b>'+esc(x.t)+'</b><span>'+(x.used?'usato '+x.used+' '+(x.used===1?'volta':'volte'):'mai usato')+'</span></div><button class="btn" data-truse="'+x.id+'" aria-label="L\'ho usato" style="padding:8px 10px">Usato</button><button class="btn" data-trdel="'+x.id+'" aria-label="Elimina">✕</button></div>'}).join(''):'')+ml(T.m)+'</div>';
+  h+='<p class="note">'+esc(EM.care)+'</p>';
+  $('v-emozioni').innerHTML=h}
+var TRC={};
+$('v-emozioni').addEventListener('input',function(e){var t=e.target;if(t.dataset.ef!=null)EP.f[t.dataset.ef]=t.value;else if(t.dataset.et==='name')EP.name=t.value;else if(t.dataset.et==='int'){EP.int=+t.value;$('ep-int').textContent=t.value}});
+$('v-emozioni').addEventListener('click',function(e){var b,t=e.target;
+  if(t.id==='ep-save'){if(!Object.keys(EP.f).some(function(k){return EP.f[k].trim()})&&!EP.name.trim()){flash('ep-msg','Scrivi almeno una fase.');return}var a=G('io_emo_v1',[]);a.unshift({id:newId(),f:EP.f,name:EP.name,int:EP.int,u:Date.now()});P('io_emo_v1',a);EP={f:{},name:'',int:5};renderEmozioni();flash('ep-msg','Episodio salvato · +15 XP');return}
+  if(b=t.closest('[data-epdel]')){if(b.textContent!=='Elimina?'){b.textContent='Elimina?';return}P('io_emo_v1',G('io_emo_v1',[]).filter(function(x){return x.id!==b.dataset.epdel}));renderEmozioni();return}
+  if(b=t.closest('[data-trc]')){var on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);TRC[b.dataset.trc]=on;return}
+  if(t.id==='tr-add'){var v=$('tr-new').value.trim();if(!v)return;if(!(TRC[0]&&TRC[1]&&TRC[2])){flash('tr-msg','Spunta le tre regole: un trigger va bene solo se è accessibile, personale ed ecologico.');return}var a2=G('io_trig_v1',[]);a2.unshift({id:newId(),t:v,used:0,u:Date.now()});P('io_trig_v1',a2);TRC={};renderEmozioni();$('trig').scrollIntoView();return}
+  if(b=t.closest('[data-truse]')){var a3=G('io_trig_v1',[]);a3.forEach(function(x){if(x.id===b.dataset.truse){x.used=(x.used||0)+1;x.u=Date.now()}});P('io_trig_v1',a3);renderEmozioni();$('trig').scrollIntoView();return}
+  if(b=t.closest('[data-trdel]')){P('io_trig_v1',G('io_trig_v1',[]).filter(function(x){return x.id!==b.dataset.trdel}));renderEmozioni();$('trig').scrollIntoView()}});
+
+/* ---------- BIAS ---------- */
+var BZ=Z.bias,BD={pred:'',prob:70,by:'',dec:'',a:{},self:'',sa:{}};
+function renderBias(){var a=G('io_pred_v1',[]),pr=a.filter(function(x){return x.kind==='pred'}),open=pr.filter(function(x){return !x.res}),done=pr.filter(function(x){return x.res});
+  var hit=done.filter(function(x){return (x.res==='si')===(x.prob>=50)}).length;
+  var h='<div class="card"><h3>'+esc(BZ.pred.n)+'</h3><p class="tip">'+esc(BZ.pred.d)+'</p>'+
+   '<label class="f">Prevedo che…<input type="text" id="p-t" value="'+esc(BD.pred)+'" placeholder="Es. il cliente accetterà entro venerdì"></label>'+
+   '<label class="f"><span>Quanto ne sono sicuro: <b id="p-pv">'+BD.prob+'</b>%</span><input type="range" min="0" max="100" step="5" id="p-p" value="'+BD.prob+'"></label>'+
+   '<label class="f">Lo verifico il<input type="date" id="p-by" value="'+esc(BD.by)+'"></label><div class="row"><button class="btn io" id="p-add">Registra · +5 XP</button></div><div id="p-msg"></div>'+ml(BZ.pred.m)+'</div>';
+  if(open.length)h+='<div class="card"><h3>Da verificare</h3>'+open.map(function(x){var due=x.by&&x.by<=today;return '<div class="item"><div class="tx"><b>'+esc(x.t)+'</b><span>Ho scritto il '+new Date(+x.id).toLocaleDateString('it-IT')+': sicuro al '+x.prob+'%'+(x.by?' · verifica '+new Date(x.by+'T12:00:00').toLocaleDateString('it-IT')+(due?' · è il momento':''):'')+'</span></div><button class="btn" data-pres="'+x.id+'" data-v="si">Successo</button><button class="btn" data-pres="'+x.id+'" data-v="no">No</button></div>'}).join('')+'</div>';
+  if(done.length)h+='<div class="card"><h3>Verificate: '+done.length+'</h3><p class="muted">Previsioni con fiducia oltre il 50% andate come pensavi, o sotto il 50% che non si sono avverate: '+hit+' su '+done.length+'.</p>'+done.slice(0,10).map(function(x){return '<div class="item"><div class="tx"><b>'+(x.res==='si'?'✓ ':'✗ ')+esc(x.t)+'</b><span>Pensavo '+x.prob+'% · verificata il '+new Date(x.rt).toLocaleDateString('it-IT')+'</span></div></div>'}).join('')+'</div>';
+  h+='<div class="card"><h3>'+esc(BZ.over.n)+'</h3><p class="tip">'+esc(BZ.over.d)+'</p><label class="f">La decisione<input type="text" id="d-t" value="'+esc(BD.dec)+'"></label>'+BZ.over.q.map(function(q,i){return '<label class="f">'+esc(q)+'<textarea data-da="'+i+'">'+esc(BD.a[i]||'')+'</textarea></label>'}).join('')+'<div class="row"><button class="btn io" id="d-add">Salva · +5 XP</button></div><div id="d-msg"></div>'+ml(BZ.over.m)+'</div>';
+  h+='<div class="card"><h3>'+esc(BZ.self.n)+'</h3><p class="tip">'+esc(BZ.self.d)+'</p><label class="f">Cosa è successo<input type="text" id="s-t" value="'+esc(BD.self)+'"></label>'+BZ.self.q.map(function(q,i){return '<label class="f">'+esc(q)+'<textarea data-sa="'+i+'">'+esc(BD.sa[i]||'')+'</textarea></label>'}).join('')+'<div class="row"><button class="btn io" id="s-add">Salva · +5 XP</button></div><div id="s-msg"></div>'+ml(BZ.self.m)+'</div>';
+  var rest=a.filter(function(x){return x.kind!=='pred'});
+  if(rest.length)h+='<div class="card"><h3>Le mie riflessioni</h3>'+rest.slice(0,15).map(function(x){var qs=x.kind==='over'?BZ.over.q:BZ.self.q;return '<details class="ph"><summary><span class="L">'+(x.kind==='over'?'?':'↺')+'</span><span><b>'+esc(x.t||'')+'</b><small>'+new Date(+x.id).toLocaleDateString('it-IT')+'</small></span><span class="chev">›</span></summary><div class="pb">'+qs.map(function(q,i){return x.a&&x.a[i]?'<div class="tool"><b>'+esc(q)+'</b><span>'+esc(x.a[i])+'</span></div>':''}).join('')+'</div></details>'}).join('')+'</div>';
+  $('v-bias').innerHTML=h}
+$('v-bias').addEventListener('input',function(e){var t=e.target;
+  if(t.id==='p-t')BD.pred=t.value;if(t.id==='p-p'){BD.prob=+t.value;$('p-pv').textContent=t.value}if(t.id==='p-by')BD.by=t.value;
+  if(t.id==='d-t')BD.dec=t.value;if(t.dataset.da!=null)BD.a[t.dataset.da]=t.value;if(t.id==='s-t')BD.self=t.value;if(t.dataset.sa!=null)BD.sa[t.dataset.sa]=t.value});
+$('v-bias').addEventListener('change',function(e){if(e.target.id==='p-by')BD.by=e.target.value});
+$('v-bias').addEventListener('click',function(e){var b,t=e.target,a;
+  if(t.id==='p-add'){if(!BD.pred.trim())return;a=G('io_pred_v1',[]);a.unshift({id:newId(),kind:'pred',t:BD.pred.trim(),prob:BD.prob,by:BD.by,u:Date.now()});P('io_pred_v1',a);BD.pred='';BD.by='';renderBias();flash('p-msg','Registrata · +5 XP');return}
+  if(b=t.closest('[data-pres]')){a=G('io_pred_v1',[]);a.forEach(function(x){if(x.id===b.dataset.pres){x.res=b.dataset.v;x.rt=Date.now();x.u=Date.now()}});P('io_pred_v1',a);renderBias();return}
+  if(t.id==='d-add'){if(!BD.dec.trim())return;a=G('io_pred_v1',[]);a.unshift({id:newId(),kind:'over',t:BD.dec.trim(),a:BD.a,u:Date.now()});P('io_pred_v1',a);BD.dec='';BD.a={};renderBias();flash('d-msg','Salvata · +5 XP');return}
+  if(t.id==='s-add'){if(!BD.self.trim())return;a=G('io_pred_v1',[]);a.unshift({id:newId(),kind:'self',t:BD.self.trim(),a:BD.sa,u:Date.now()});P('io_pred_v1',a);BD.self='';BD.sa={};renderBias();flash('s-msg','Salvata · +5 XP')}});
+
+/* ---------- SETTIMANA ---------- */
+var WZ=Z.week,WD=null;
+function monday(off){var d=new Date();d.setHours(12,0,0,0);var w=(d.getDay()+6)%7;d.setDate(d.getDate()-w+7*(off||0));return d}
+function weekKey(d){return HCE.dayKey(d.getTime())}
+function renderSettimana(){var m=monday(0),wk=weekKey(m),all=G('io_week_v1',{});if(!WD)WD=all[wk]?JSON.parse(JSON.stringify(all[wk])):{a:{}};
+  var days=[];for(var i=0;i<7;i++){var d=new Date(m);d.setDate(m.getDate()+i);days.push(HCE.dayKey(d.getTime()))}
+  function inW(ts){return days.indexOf(HCE.dayKey(+ts))>=0}
+  var ck=G('io_check_v1',{}),cks=days.filter(function(k){return ck[k]}),en={'+':0,'=':0,'-':0};cks.forEach(function(k){if(en[ck[k].en]!=null)en[ck[k].en]++});
+  var hb=habits(),ticks=0;hb.forEach(function(h){days.forEach(function(k){if((h.log||{})[k])ticks++})});
+  var fm=G('io_focus_v1',[]).filter(function(x){return inW(x.id)}).reduce(function(a,x){return a+(x.min||0)},0);
+  var ep=G('io_emo_v1',[]).filter(function(x){return inW(x.id)}).length,pr=G('io_pred_v1',[]).filter(function(x){return inW(x.id)}).length;
+  var gl=goals(),gd=0;gl.forEach(function(g){Object.keys(g.done||{}).forEach(function(k){if(inW(g.done[k]))gd++})});
+  var h='<div class="card"><h3>Settimana dal '+m.toLocaleDateString('it-IT',{day:'numeric',month:'long'})+'</h3><div class="week">'+days.map(function(k){return '<div class="'+(ck[k]?'on':'')+'"><span>'+dShort(k)+'</span><b>'+(ck[k]?(ck[k].en==='+'?'+':ck[k].en==='-'?'−':'✓'):'·')+'</b></div>'}).join('')+'</div>'+
+   '<div class="steps">'+[['Check-in',cks.length+' su 7 · energia + '+en['+']+', = '+en['=']+', − '+en['-']],['Abitudini',ticks+' spunte'],['Focus',fm+' minuti'],['Obiettivi',gd+' fasi REACH completate'],['Emozioni',ep+' episodi scritti'],['Bias',pr+' tra previsioni e riflessioni']].map(function(r){return '<div class="stp"><b>·</b><span><strong>'+r[0]+'</strong> · '+r[1]+'</span></div>'}).join('')+'</div></div>';
+  h+='<div class="card"><h3>Debriefing</h3><p class="tip">'+esc(WZ.intro)+'</p>'+WZ.q.map(function(q,i){return '<label class="f">'+esc(q)+'<textarea data-wa="'+i+'">'+esc(WD.a[i]||'')+'</textarea></label>'}).join('')+'<div class="row"><button class="btn io" id="w-save">'+(all[wk]?'Aggiorna':'Salva · +20 XP')+'</button></div><div id="w-msg"></div>'+ml(WZ.m)+'</div>';
+  var past=Object.keys(all).filter(function(k){return k!==wk}).sort().reverse();
+  if(past.length)h+='<div class="card"><h3>Settimane passate</h3>'+past.slice(0,12).map(function(k){var x=all[k];return '<details class="ph"><summary><span class="L">'+new Date(k+'T12:00:00').getDate()+'</span><span><b>Dal '+new Date(k+'T12:00:00').toLocaleDateString('it-IT',{day:'numeric',month:'long'})+'</b></span><span class="chev">›</span></summary><div class="pb">'+WZ.q.map(function(q,i){return x.a&&x.a[i]?'<div class="tool"><b>'+esc(q)+'</b><span>'+esc(x.a[i])+'</span></div>':''}).join('')+'</div></details>'}).join('')+'</div>';
+  $('v-settimana').innerHTML=h}
+$('v-settimana').addEventListener('input',function(e){var t=e.target;if(t.dataset.wa!=null)WD.a[t.dataset.wa]=t.value});
+$('v-settimana').addEventListener('click',function(e){if(e.target.id!=='w-save')return;var all=G('io_week_v1',{}),wk=weekKey(monday(0)),first=!all[wk];WD.t=(all[wk]&&all[wk].t)||Date.now();WD.u=Date.now();all[wk]=WD;P('io_week_v1',all);WD=null;renderSettimana();flash('w-msg',first?'Salvato · +20 XP':'Aggiornato')});
+
+/* ---------- tab ---------- */
+var R_={oggi:renderOggi,obiettivi:renderObiettivi,abitudini:renderAbitudini,focus:renderFocus,emozioni:renderEmozioni,bias:renderBias,settimana:renderSettimana};
+function show(t){document.querySelectorAll('.tab').forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===t?'true':'false')});
+  Object.keys(R_).forEach(function(x){$('v-'+x).hidden=x!==t});R_[t]();window.scrollTo(0,0)}
+document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(b)show(b.dataset.t)});
+var h0=(location.hash||'').slice(1);
+if(RUN)show('focus');else if(R_[h0])show(h0);else renderOggi();
+});
+</script>
+
+<style>
+/* Tema "gioco": colori, caratteri arrotondati, pulsanti in rilievo. Caricato dopo gli stili di ogni pagina. */
+:root{
+ --bg:#F7F8FC;--surface:#FFFFFF;--sunk:#F1F3F9;--fg:#1B2240;--muted:#5A6385;--line:#E3E7F0;--line2:#EDF0F6;
+ --accent:#2F6BFF;--accent-dk:#1E4FD6;--accent-fg:#FFFFFF;--accent-soft:#EAF0FF;
+ --star:#F5A524;--star-dk:#C98408;--star-soft:#FFF4DE;--warn:#C2410C;--warn-soft:#FFEDE3;
+ --ok:#12805A;--ok-bg:#1FB37A;--ok-dk:#138A5C;--ok-soft:#E3F7EE;--fire:#FF8A3D;
+ --c1:#2F6BFF;--c2:#16A06B;--c3:#E08E0B;--c4:#8B5CF6;--c5:#EF5350;
+ --d:#2F6BFF;--d-soft:#EAF0FF;--p:#8B5CF6;--p-soft:#F3EEFF;--i:#E8590C;--i-soft:#FFEDE3;
+ --shadow:none;--lift:0 3px 0 var(--line);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#0F1426;--surface:#182038;--sunk:#131A30;--fg:#EEF1FA;--muted:#A3ACC9;--line:#2A3459;--line2:#222B4A;
+ --accent:#6F97FF;--accent-dk:#3F66D6;--accent-fg:#0B1020;--accent-soft:#1D2A52;
+ --star:#FFC247;--star-dk:#B88310;--star-soft:#3A2F14;--warn:#FF9B6A;--warn-soft:#3B2318;
+ --ok:#4FD69C;--ok-bg:#2FBF83;--ok-dk:#1B7F56;--ok-soft:#14352A;--fire:#FF9D5C;
+ --c1:#7EA2FF;--c2:#4FD69C;--c3:#FFC247;--c4:#B69CFF;--c5:#FF8A80;
+ --d:#7EA2FF;--d-soft:#1D2A52;--p:#B69CFF;--p-soft:#2A2350;--i:#FF9B6A;--i-soft:#3B2318;
+ --shadow:none;--lift:0 3px 0 var(--line);color-scheme:dark}}
+:root[data-theme="dark"]{
+ --bg:#0F1426;--surface:#182038;--sunk:#131A30;--fg:#EEF1FA;--muted:#A3ACC9;--line:#2A3459;--line2:#222B4A;
+ --accent:#6F97FF;--accent-dk:#3F66D6;--accent-fg:#0B1020;--accent-soft:#1D2A52;
+ --star:#FFC247;--star-dk:#B88310;--star-soft:#3A2F14;--warn:#FF9B6A;--warn-soft:#3B2318;
+ --ok:#4FD69C;--ok-bg:#2FBF83;--ok-dk:#1B7F56;--ok-soft:#14352A;--fire:#FF9D5C;
+ --c1:#7EA2FF;--c2:#4FD69C;--c3:#FFC247;--c4:#B69CFF;--c5:#FF8A80;
+ --d:#7EA2FF;--d-soft:#1D2A52;--p:#B69CFF;--p-soft:#2A2350;--i:#FF9B6A;--i-soft:#3B2318;
+ --shadow:none;--lift:0 3px 0 var(--line);color-scheme:dark}
+
+html body,html body *:not(svg):not(svg *):not(code):not(pre){font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif}
+html body svg text{font-family:Nunito,system-ui,sans-serif!important}
+body{background:var(--bg);color:var(--fg);padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))!important}
+h1,h2,h3{font-weight:900!important;letter-spacing:-.01em}
+h1{font-size:1.9rem}
+.eyebrow,.ph,.area{font-weight:800!important}
+
+/* schede */
+.card,.hist,.mod,details.lv,.ig{border:2px solid var(--line)!important;border-radius:20px!important;box-shadow:var(--lift)!important}
+.mod.done{background:var(--ok-soft)!important;border-color:var(--ok-bg)!important;box-shadow:0 3px 0 var(--ok-bg)!important}
+
+/* pulsanti in rilievo */
+.btn{border-radius:14px!important;font-weight:800!important;letter-spacing:.02em;border:2px solid var(--line)!important;box-shadow:0 4px 0 var(--line);transition:transform .06s,box-shadow .06s}
+.btn.pri,.dpi .btn:not(.sec):not(.on){background:var(--accent)!important;color:var(--accent-fg)!important;border-color:var(--accent)!important;box-shadow:0 4px 0 var(--accent-dk)}
+.btn:active,.chk:active,.star:active,.ch:active,.scale button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.btn.pri:active{box-shadow:0 1px 0 var(--accent-dk)}
+.chk,.star{border:2px solid var(--line)!important;border-radius:14px!important;box-shadow:0 3px 0 var(--line)}
+.chk[aria-pressed="true"]{background:var(--ok-bg)!important;border-color:var(--ok-bg)!important;color:#fff!important;box-shadow:0 3px 0 var(--ok-dk)}
+.star[aria-pressed="true"]{background:var(--star)!important;border-color:var(--star)!important;box-shadow:0 3px 0 var(--star-dk)}
+.scale button,.ch{border:2px solid var(--line)!important;border-radius:14px!important;font-weight:800!important;box-shadow:0 3px 0 var(--line)}
+.ch{border-radius:99px!important}
+.scale button[aria-pressed="true"]{background:var(--accent)!important;border-color:var(--accent)!important;color:var(--accent-fg)!important;box-shadow:0 3px 0 var(--accent-dk)}
+
+/* schede (tabs) */
+.tabs,.seg{background:var(--sunk)!important;border-radius:16px!important;padding:5px!important}
+.tab,.seg button{font-weight:800!important;border-radius:12px!important}
+.tab[aria-selected="true"],.seg button[aria-pressed="true"]{background:var(--accent)!important;color:var(--accent-fg)!important;box-shadow:0 3px 0 var(--accent-dk)!important}
+
+/* campi */
+textarea,input[type=text],input[type=search],select{border:2px solid var(--line)!important;border-radius:14px!important;background:var(--sunk)!important;font-weight:600}
+textarea:focus,input:focus,select:focus{outline:none!important;border-color:var(--accent)!important}
+.pill,.tag{font-weight:800!important}
+.bar{height:10px!important;border-radius:99px}.bar i{background:var(--ok-bg)!important;border-radius:99px}
+
+/* barra di navigazione in basso */
+.appbar{position:fixed!important;left:0;right:0;bottom:0;top:auto!important;z-index:15;max-width:none!important;margin:0!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px!important;
+ background:var(--surface);border-top:2px solid var(--line);padding:8px max(10px,env(safe-area-inset-left,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-right,0px))!important}
+.appbar a{display:flex!important;flex-direction:column;align-items:center;gap:2px;padding:6px 0!important;border-radius:14px!important;font-weight:800!important;font-size:.76rem!important;color:var(--muted)!important;background:none!important;max-width:160px;width:100%;justify-self:center}
+.appbar a svg{width:26px;height:26px}
+.appbar a[aria-current]{color:var(--accent)!important;background:var(--accent-soft)!important}
+</style>
+</body></html>

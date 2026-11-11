@@ -1,7 +1,7 @@
 /* HCE app: database locale, pacchetto contenuti, backup, barra di navigazione */
 var HCE = (function () {
   var DBN = 'hce-app', DBV = 1, dbp = null;
-  var USER_KEYS = ['dpi_su_di_me_v1', 'dpi_know_v1', 'studio_hce_v1', 'e3_plans_v1', 'e3_daily_v1', 'ripasso_v1', 'mib_log_v1', 'prep_v1', 'fb_v1', 'gym_v1', 'gym_err_v1', 'diz_my_v1'];
+  var USER_KEYS = ['dpi_su_di_me_v1', 'dpi_know_v1', 'studio_hce_v1', 'e3_plans_v1', 'e3_daily_v1', 'ripasso_v1', 'mib_log_v1', 'prep_v1', 'fb_v1', 'gym_v1', 'gym_err_v1', 'diz_my_v1', 'io_check_v1', 'io_goals_v1', 'io_habits_v1', 'io_focus_v1', 'io_emo_v1', 'io_trig_v1', 'io_pred_v1', 'io_week_v1'];
 
   function open() {
     if (dbp) return dbp;
@@ -48,7 +48,7 @@ var HCE = (function () {
   function importPack(text) {
     var p = JSON.parse(text);
     if (!p || p.app !== 'hce-contenuti') throw new Error('Questo non è il file dei contenuti HCE.');
-    var pack = { version: p.version, vs: p.vs, vd: p.vd, data: p.data, areas: p.areas, sys: p.sys, toolnames: p.toolnames, unp: p.unp, books: p.books, e3: p.e3, mib: p.mib, istair: p.istair, feedback: p.feedback, diz: p.diz };
+    var pack = { version: p.version, vs: p.vs, vd: p.vd, data: p.data, areas: p.areas, sys: p.sys, toolnames: p.toolnames, unp: p.unp, books: p.books, e3: p.e3, mib: p.mib, istair: p.istair, feedback: p.feedback, diz: p.diz, io: p.io };
     return clear('appunti')
       .then(function () { return putAll('appunti', p.appunti); })
       .then(function () { return putAll('meta', { pack: pack, cerca: p.cerca }); })
@@ -164,6 +164,17 @@ var HCE = (function () {
       Object.keys(y).forEach(function (q) { if (!(q in x)) { x[q] = y[q]; n++; } });
       lsSet(k, JSON.stringify(x));
     });
+    // scheda Io: liste unite per id (vince la versione aggiornata per ultima), oggetti uniti per chiave
+    USER_KEYS.filter(function (k) { return k.indexOf('io_') === 0; }).forEach(function (k) {
+      var y = J(b.data[k], null); if (y == null) return;
+      var x = J(lsGet(k), Array.isArray(y) ? [] : {});
+      if (Array.isArray(y)) {
+        var ix = {}; x.forEach(function (e, i) { if (e) ix[e.id] = i; });
+        y.forEach(function (e) { if (!e) return; if (!(e.id in ix)) { x.push(e); n++; } else if ((e.u || 0) > (x[ix[e.id]].u || 0)) { x[ix[e.id]] = e; n++; } });
+        x.sort(function (p, q) { return +q.id - +p.id; });
+      } else { Object.keys(y).forEach(function (q) { if (!(q in x) || ((y[q] && y[q].u) || 0) > ((x[q] && x[q].u) || 0)) { x[q] = y[q]; n++; } }); }
+      lsSet(k, JSON.stringify(x));
+    });
     return n;
   }
   function save(name, text) {
@@ -189,10 +200,11 @@ var HCE = (function () {
     e3: '<path d="M5 6h6M5 12h6M5 18h6"/><path d="M15 5h4v4M15 19h4v-4M19 9l-4 3 4 3"/>',
     prep: '<path d="M9 4h6v3H9z"/><path d="M7 5H5v16h14V5h-2"/><path d="M9 12h6M9 16h4"/>',
     tools: '<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
+    io: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/>',
     mib: '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 3v18"/>'
   };
   function nav(cur) {
-    var items = [['index.html', 'Home', 'home'], ['percorso.html', 'Percorso', 'percorso'], ['prep.html', 'Prepara', 'prep'], ['strumenti.html', 'Strumenti', 'tools']];
+    var items = [['index.html', 'Home', 'home'], ['percorso.html', 'Percorso', 'percorso'], ['prep.html', 'Prepara', 'prep'], ['strumenti.html', 'Strumenti', 'tools'], ['io.html', 'Io', 'io']];
     var on = cur === 'studio' ? 'percorso' : (cur === 'e3' || cur === 'mib' || cur === 'tool' || cur === 'dpi') ? 'tools' : cur;
     document.body.classList.add(cur);
     var bar = document.createElement('div');
@@ -209,6 +221,7 @@ var HCE = (function () {
   function stats() {
     var done = J(lsGet('studio_hce_v1'), {}) || {}, ses = J(lsGet('dpi_su_di_me_v1'), []) || [],
       plans = J(lsGet('e3_plans_v1'), []) || [], daily = J(lsGet('e3_daily_v1'), {}) || {}, rip = J(lsGet('ripasso_v1'), {}) || {}, mlog = J(lsGet('mib_log_v1'), []) || [], preps = J(lsGet('prep_v1'), []) || [], fbs = J(lsGet('fb_v1'), []) || [], gym = J(lsGet('gym_v1'), []) || [];
+    function L(k, d) { return J(lsGet(k), d) || d; }
     var ev = [], nm = 0;
     function add(t, type, xp, ref) { if (t > 1e12) ev.push({ t: t, d: dayKey(t), type: type, xp: xp, ref: ref }); }
     Object.keys(done).forEach(function (k) { var t = done[k]; if (t > 0) { nm++; add(t, 'mod', 10, k); } });
@@ -219,13 +232,21 @@ var HCE = (function () {
     mlog.forEach(function (x) { add(+x.id, 'mib', 15, x.id); });
     fbs.forEach(function (x) { add(+x.id, 'fb', 20, x.id); });
     gym.forEach(function (x) { add(+x.id, 'gym', 5 + 2 * (x.ok || 0), x.id); });
+    // scheda Io
+    var ck = L('io_check_v1', {}); Object.keys(ck).forEach(function (k) { if (ck[k] && ck[k].t) add(ck[k].t, 'io', 10, 'check'); });
+    L('io_goals_v1', []).forEach(function (g) { add(+g.id, 'io', 10, 'goal'); Object.keys(g.done || {}).forEach(function (p) { add(g.done[p], 'io', p === 'C' ? 30 : 10, 'reach'); }); });
+    L('io_habits_v1', []).forEach(function (h) { Object.keys(h.log || {}).forEach(function (d) { add(h.log[d], 'io', 3, 'habit'); }); });
+    L('io_focus_v1', []).forEach(function (x) { add(+x.id, 'io', 10, 'focus'); });
+    L('io_emo_v1', []).forEach(function (x) { add(+x.id, 'io', 15, 'emo'); });
+    L('io_pred_v1', []).forEach(function (x) { add(+x.id, 'io', 5, 'pred'); if (x.rt) add(x.rt, 'io', 5, 'pred'); });
+    var wk = L('io_week_v1', {}); Object.keys(wk).forEach(function (k) { if (wk[k] && wk[k].t) add(wk[k].t, 'io', 20, 'week'); });
     preps.forEach(function (x) { add(+x.id, 'prep', 20, x.id); if (x.after && x.after.t) add(x.after.t, 'prepafter', 10, x.id); });
-    var days = {}, xp = 0, today = dayKey(Date.now()), T = { mod: 0, ses: 0, plan: 0, tool: 0, rip: 0, after: 0, mib: 0, prep: 0, prepafter: 0, fb: 0, gym: 0 };
+    var days = {}, xp = 0, today = dayKey(Date.now()), T = { mod: 0, ses: 0, plan: 0, tool: 0, rip: 0, after: 0, mib: 0, prep: 0, prepafter: 0, fb: 0, gym: 0, io: 0 };
     ev.forEach(function (e) { days[e.d] = 1; xp += e.xp; if (e.d === today) T[e.type]++; });
     var streak = 0, d = new Date();
     if (!days[dayKey(d)]) d.setDate(d.getDate() - 1);
     while (days[dayKey(d)]) { streak++; d.setDate(d.getDate() - 1); }
-    var plan = [Math.min(T.mod, 2) / 2, (T.ses + T.after + T.plan + T.mib + T.prep + T.prepafter + T.fb + T.gym) ? 1 : 0, T.tool ? 1 : 0];
+    var plan = [Math.min(T.mod, 2) / 2, (T.ses + T.after + T.plan + T.mib + T.prep + T.prepafter + T.fb + T.gym + T.io) ? 1 : 0, T.tool ? 1 : 0];
     return { xp: xp, streak: streak, today: !!days[today], todayKey: today, days: days, events: ev, T: T,
       mods: nm, sessions: ses.length, plans: plans.length, preps: preps, done: done, ses: ses, planList: plans, daily: daily, rip: rip,
       goal: plan.filter(function (x) { return x >= 1; }).length, goalMax: 3, plan: plan };
