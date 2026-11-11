@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="it"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Matrice biochimica</title>
+<meta name="theme-color" content="#1f5a5e">
+<link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="HCE">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+.appbar{display:flex;gap:4px;padding:10px 0 2px;max-width:1200px;margin:0 auto;overflow-x:auto}
+.appbar a{font:600 .82rem/1 Inter,system-ui,sans-serif;text-decoration:none;color:var(--muted,#5d6869);padding:9px 12px;border-radius:99px;white-space:nowrap}
+.appbar a[aria-current]{background:var(--accent-soft,#d9e9e7);color:var(--accent,#1f5a5e)}
+.loading{font:15px/1.5 system-ui,sans-serif;padding:40px 16px;text-align:center;color:#5d6869}
+</style>
+<script src="hce.js"></script>
+</head><body>
+<script>HCE.nav("mib");</script>
+<style>
+:root{--onp:#FFFFFF;
+ --m-att:#D9480F;--m-att-s:#FFE8D9;--m-fid:#1C5BD9;--m-fid-s:#E3ECFF;--m-ten:#C2255C;--m-ten-s:#FFE3EC;--m-rel:#0B7F6B;--m-rel-s:#DDF5EF;
+ --m-ecc:#B35C00;--m-ecc-s:#FFF0D6;--m-dis:#6741D9;--m-dis-s:#EDE7FF;--m-fel:#2B8A3E;--m-fel-s:#E3F6E5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--onp:#0B1020;
+ --m-att:#FF9F6E;--m-att-s:#3B2318;--m-fid:#8AAEFF;--m-fid-s:#1D2A52;--m-ten:#FF8FB3;--m-ten-s:#3D1A28;--m-rel:#5CDDC3;--m-rel-s:#12332D;
+ --m-ecc:#FFC266;--m-ecc-s:#3A2C12;--m-dis:#B5A1FF;--m-dis-s:#2A2350;--m-fel:#7EDC8F;--m-fel-s:#173320}}
+:root[data-theme="dark"]{--onp:#0B1020;
+ --m-att:#FF9F6E;--m-att-s:#3B2318;--m-fid:#8AAEFF;--m-fid-s:#1D2A52;--m-ten:#FF8FB3;--m-ten-s:#3D1A28;--m-rel:#5CDDC3;--m-rel-s:#12332D;
+ --m-ecc:#FFC266;--m-ecc-s:#3A2C12;--m-dis:#B5A1FF;--m-dis-s:#2A2350;--m-fel:#7EDC8F;--m-fel-s:#173320}
+*{box-sizing:border-box}
+body{margin:0;padding-block:0 110px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.page{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+p{margin:0}
+header{padding-top:22px;display:flex;flex-direction:column;gap:8px}
+.eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:900}
+h1{font-size:1.9rem;line-height:1.1;margin:0}h2{font-size:1.25rem;margin:0}h3{font-size:1.05rem;margin:0}
+.lead{color:var(--muted);font-weight:600;max-width:62ch}
+nav.tb{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:8px 0}
+.tabs{display:flex;gap:4px}
+.tab{flex:1;border:0;background:transparent;color:var(--muted);padding:10px 4px;font:inherit;font-size:.86rem;cursor:pointer;min-height:44px}
+.card{background:var(--surface);padding:16px;display:flex;flex-direction:column;gap:12px}
+.lbl{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;font-weight:900;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.mc{border:2px solid var(--line);background:var(--surface);color:var(--mc);border-radius:99px;padding:8px 14px;font:inherit;font-weight:900;font-size:.88rem;cursor:pointer;min-height:42px;box-shadow:0 3px 0 var(--line)}
+.mc[aria-pressed="true"]{background:var(--mc);border-color:var(--mc);color:var(--onp);box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.mc:active{transform:translateY(2px);box-shadow:none}
+.arrow{display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:900}
+.res{border-radius:22px;border:2px solid var(--line);background:var(--surface);overflow:hidden;box-shadow:0 4px 0 var(--line)}
+.res-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;flex-wrap:wrap;background:linear-gradient(90deg,var(--a-s),var(--b-s))}
+.res-h .pair{display:flex;align-items:center;gap:8px;font-weight:900;font-size:1.1rem;flex-wrap:wrap}
+.res-h .pair span{color:var(--a)}.res-h .pair span+i+span{color:var(--b)}.res-h i{font-style:normal;color:var(--muted)}
+.code{font-weight:900;font-size:1.4rem;letter-spacing:.02em}
+.stp{padding:14px 16px;border-top:2px solid var(--line2);display:flex;flex-direction:column;gap:8px}
+.stp-h{display:flex;gap:10px;align-items:center}
+.stp-h .n{flex:none;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;font-weight:900;background:var(--sc);color:var(--onp)}
+.stp-h b{font-weight:900}.stp-h small{color:var(--muted);font-weight:800;margin-left:auto;font-size:.8rem}
+.blk h4{margin:6px 0 4px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:900}
+.blk ul{margin:0;padding-left:20px;display:grid;gap:5px;line-height:1.45}
+.blk .say{background:var(--sunk);border-left:4px solid var(--sc);border-radius:10px;padding:8px 12px;font-weight:700;display:grid;gap:4px}
+.blk .no{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:8px 12px;font-weight:700;display:grid;gap:4px}
+.why{font-weight:700;color:var(--muted);font-size:.9rem}
+.tw{overflow-x:auto;border-radius:16px;border:2px solid var(--line)}
+table.mx{border-collapse:collapse;width:100%;min-width:640px;font-size:.8rem;background:var(--surface)}
+.mx th,.mx td{border:1px solid var(--line2);padding:7px 4px;text-align:center}
+.mx th{font-weight:900;font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;color:var(--mc)}
+.mx thead th{background:var(--sunk)}.mx tbody th{text-align:left;padding-left:8px;background:var(--sunk)}
+.mx td button{border:0;background:none;font:inherit;font-weight:800;color:var(--fg);cursor:pointer;min-height:34px;width:100%;border-radius:8px}
+.mx td.dg button{color:var(--muted)}
+.mx td.hl{background:var(--accent-soft)}.mx td.sel button{background:var(--accent);color:var(--accent-fg)}
+.mixc{border-radius:22px;border:2px solid var(--line);background:var(--surface);overflow:hidden;box-shadow:0 3px 0 var(--line)}
+.mixc summary{list-style:none;cursor:pointer;display:flex;gap:12px;align-items:center;padding:14px 16px;min-height:64px}
+.mixc summary::-webkit-details-marker{display:none}
+.mixc .dot{flex:none;width:40px;height:40px;border-radius:14px;background:var(--mc);color:var(--onp);display:grid;place-items:center;font-weight:900}
+.mixc summary b{font-size:1.15rem;font-weight:900;color:var(--mc)}
+.mixc summary .s{font-size:.8rem;color:var(--muted);font-weight:700}
+.mixc .chev{margin-left:auto;color:var(--muted);transition:transform .15s}.mixc[open] .chev{transform:rotate(90deg)}
+.mixb{padding:0 16px 16px;display:flex;flex-direction:column;gap:12px}
+.sub{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sub div{border-radius:14px;padding:10px;background:var(--sunk);display:flex;flex-direction:column;gap:4px}
+.sub small{font-size:.7rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sub b{font-weight:900}
+.scale{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
+.scale span{font-size:.66rem;font-weight:800;text-align:center;padding:8px 2px;border-radius:8px;background:var(--mc);color:var(--onp);overflow-wrap:anywhere;line-height:1.15}
+@media(max-width:520px){.scale{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 16px;font:inherit;cursor:pointer;background:var(--surface);color:var(--fg);min-height:44px}
+.muted{color:var(--muted);font-size:.86rem;font-weight:600}
+.src{display:inline-flex;font-size:.74rem;font-weight:800;color:var(--muted);background:var(--sunk);border-radius:99px;padding:3px 9px;text-decoration:none}
+a.src{color:var(--accent)}
+.step{display:flex;gap:12px;background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 3px 0 var(--line)}
+.step .k{flex:none;width:38px;height:38px;border-radius:12px;background:var(--accent);color:var(--accent-fg);display:grid;place-items:center;font-weight:900}
+.step .tx{display:flex;flex-direction:column;gap:4px;min-width:0}.step b{font-weight:900;font-size:1.05rem}
+.step .tip{font-size:.86rem;color:var(--muted);font-weight:700}
+.note{background:var(--sunk);border-radius:14px;padding:12px 14px;font-weight:600;line-height:1.45}
+.warnb{background:var(--warn-soft);color:var(--warn);border-radius:14px;padding:12px 14px;font-weight:700;line-height:1.45}
+.li{display:flex;flex-direction:column;gap:2px;border-top:2px solid var(--line2);padding-top:10px}.li b{font-weight:900}
+.msg{border-radius:12px;padding:9px 12px;font-weight:800;font-size:.88rem;background:var(--ok-soft);color:var(--ok)}
+.sh-bg{position:fixed;inset:0;background:rgba(10,15,30,.45);z-index:30;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:620px;max-height:88vh;overflow-y:auto;border-radius:26px 26px 0 0;padding:18px max(18px,env(safe-area-inset-left,0px)) calc(22px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:10px}
+@media(min-width:700px){.sh-bg{align-items:center}.sheet{border-radius:26px;max-height:84vh}}
+.notice{text-align:center;align-items:center}
+</style>
+<div class="page">
+<header>
+  <div class="eyebrow">Strumento HCE · mix chimici</div>
+  <h1>Matrice Interazionale Biochimica</h1>
+  <p class="lead">Riconosci il mix in cui si trova una persona (o tu), scegli quello che serve all'obiettivo e la matrice ti dice cosa fare: prima disinnesca (D), poi innesca (P).</p>
+</header>
+<div class="card notice" id="old" hidden><h2>Serve il file dei contenuti aggiornato</h2><p class="muted">I dati della matrice sono nella nuova versione di <b>hce-contenuti.json</b>. Importala da Home → Impostazioni → Contenuti del corso.</p><a class="btn pri" href="index.html#contenuti" style="text-decoration:none">Vai a Impostazioni</a></div>
+<div id="app" hidden style="display:flex;flex-direction:column;gap:16px">
+  <nav class="tb"><div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-t="matrice" aria-selected="true">Matrice</button>
+    <button class="tab" role="tab" data-t="mix" aria-selected="false">I 7 mix</button>
+    <button class="tab" role="tab" data-t="procedura" aria-selected="false">Procedura</button>
+    <button class="tab" role="tab" data-t="regole" aria-selected="false">Regole</button>
+  </div></nav>
+  <section id="v-matrice" style="display:flex;flex-direction:column;gap:14px"></section>
+  <section id="v-mix" hidden style="display:flex;flex-direction:column;gap:12px"></section>
+  <section id="v-procedura" hidden style="display:flex;flex-direction:column;gap:10px"></section>
+  <section id="v-regole" hidden style="display:flex;flex-direction:column;gap:12px"></section>
+</div>
+</div>
+<div class="sh-bg" id="sh" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t"></div></div>
+<script>
+HCE.ready(function(PACK){
+var M=PACK.mib,$=function(i){return document.getElementById(i)};
+if(!M){$('old').hidden=false;return}
+$('app').hidden=false;
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function mv(k){return 'var(--m-'+k+')'}function ms(k){return 'var(--m-'+k+'-s)'}
+function src(s){var o=M.src[s];if(!o)return '';return o.m?'<a class="src" href="studio.html#m='+o.m+'">↗ '+esc(o.n)+'</a>':'<span class="src">'+esc(o.n)+'</span>'}
+var MX=M.mix,IDX={};MX.forEach(function(m,i){IDX[m.k]=i});
+function ul(a){return '<ul>'+a.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>'}
+function block(o){var h='<p class="why">'+esc(o.why)+'</p>';
+  if(o.avoid.length)h+='<div class="blk"><h4>Da evitare</h4><div class="no">'+o.avoid.map(function(x){return '<span>✗ '+esc(x)+'</span>'}).join('')+'</div></div>';
+  if(o.say.length)h+='<div class="blk"><h4>Frasi e mosse</h4><div class="say">'+o.say.map(function(x){return '<span>'+esc(x)+'</span>'}).join('')+'</div></div>';
+  if(o.lang.length)h+='<div class="blk"><h4>Parole</h4>'+ul(o.lang)+'</div>';
+  if(o.comp.length)h+='<div class="blk"><h4>Corpo e voce</h4>'+ul(o.comp)+'</div>';
+  if(o.env.length)h+='<div class="blk"><h4>Ambiente e look</h4>'+ul(o.env)+'</div>';
+  if(o.self.length)h+='<div class="blk"><h4>Su di te</h4>'+ul(o.self)+'</div>';
+  return h}
+
+// matrice
+var FROM=5,TO=4; // esempio del libro: dissenso -> eccitazione
+var LOG='mib_log_v1';
+function chips(id,sel){return '<div class="chips" id="'+id+'">'+MX.map(function(m,i){return '<button class="mc" data-i="'+i+'" aria-pressed="'+(i===sel)+'" style="--mc:'+mv(m.k)+'">'+esc(m.n)+'</button>'}).join('')+'</div>'}
+function renderMat(){
+  var a=MX[FROM],b=MX[TO],same=FROM===TO,d=M.D[String(FROM+1)],p=M.P[String(TO+1)];
+  var h='<div class="card"><div class="lbl">1 · In che mix è adesso?</div>'+chips('c-from',FROM)+
+   '<div class="lbl" style="margin-top:4px">2 · In che mix ti serve per il tuo obiettivo?</div>'+chips('c-to',TO)+'</div>';
+  h+='<div class="res" style="--a:'+mv(a.k)+';--b:'+mv(b.k)+';--a-s:'+ms(a.k)+';--b-s:'+ms(b.k)+'"><div class="res-h"><div class="pair"><span>'+esc(a.n)+'</span><i>→</i><span>'+esc(b.n)+'</span></div><div class="code">'+(same?'⇅ P'+(TO+1):'D'+(FROM+1)+' + P'+(TO+1))+'</div></div>';
+  if(same){h+='<div class="stp" style="--sc:'+mv(b.k)+'"><div class="stp-h"><span class="n">⇅</span><b>È già nel mix che ti serve</b></div><p class="why">Salta il depotenziamento: verifica e, se è davvero lì, potenzialo con P'+(TO+1)+'.</p></div>';
+    h+='<div class="stp" style="--sc:'+mv(b.k)+'"><div class="stp-h"><span class="n">P'+(TO+1)+'</span><b>'+esc(p.t)+'</b></div><div class="blk">'+block(p)+'</div></div>'}
+  else{h+='<div class="stp" style="--sc:'+mv(a.k)+'"><div class="stp-h"><span class="n">1</span><b>Disinnesca · '+esc(d.t.replace('Depotenziare ',''))+'</b><small>D'+(FROM+1)+'</small></div><div class="blk">'+block(d)+'</div></div>'+
+     '<div class="stp" style="--sc:'+mv(b.k)+'"><div class="stp-h"><span class="n">2</span><b>Innesca · '+esc(p.t.replace('Innescare ',''))+'</b><small>P'+(TO+1)+'</small></div><div class="blk">'+block(p)+'</div></div>'}
+  h+='<div class="stp" style="--sc:var(--accent)"><div class="stp-h"><span class="n">'+(same?'✓':'3')+'</span><b>Verifica, poi potenzia</b></div><p class="why">Se il mix è raggiunto, aumentane l\'intensità con le stesse azioni P; se qualcosa va storto, ricomincia. Nel dubbio, chiedi all\'altro come si sente.</p>'+
+     '<div class="row"><button class="btn pri" id="m-log">Usata in un\'interazione vera</button></div><div id="m-msg"></div></div></div>';
+  h+='<div class="card"><h3>La tabella completa</h3><p class="muted">Righe: il mix di partenza. Colonne: il mix di destinazione. Tocca una casella.</p><div class="tw"><table class="mx"><thead><tr><th></th>'+
+   MX.map(function(m,j){return '<th style="--mc:'+mv(m.k)+'">'+esc(m.n)+'</th>'}).join('')+'</tr></thead><tbody>'+
+   MX.map(function(m,i){return '<tr><th style="--mc:'+mv(m.k)+'">'+esc(m.n)+'</th>'+MX.map(function(n,j){var cls=(i===j?'dg ':'')+(i===FROM&&j===TO?'sel':(i===FROM||j===TO?'hl':''));
+     return '<td class="'+cls+'"><button data-cell="'+i+','+j+'" aria-label="'+esc(m.n+' verso '+n.n)+'">'+(i===j?'⇅':'D'+(i+1)+'+P'+(j+1))+'</button></td>'}).join('')+'</tr>'}).join('')+'</tbody></table></div>'+
+   '<p class="muted">'+esc(M.notes.example)+'</p><div>'+src('B4')+'</div></div>';
+  $('v-matrice').innerHTML=h;
+}
+$('v-matrice').addEventListener('click',function(e){var b;
+  if(b=e.target.closest('#c-from .mc')){FROM=+b.dataset.i;renderMat();return}
+  if(b=e.target.closest('#c-to .mc')){TO=+b.dataset.i;renderMat();var r=document.querySelector('.res');if(r)r.scrollIntoView({behavior:'smooth',block:'start'});return}
+  if(b=e.target.closest('[data-cell]')){var q=b.dataset.cell.split(',');FROM=+q[0];TO=+q[1];renderMat();window.scrollTo({top:0,behavior:'smooth'});return}
+  if(e.target.id==='m-log'){var l=HCE.lsJ(LOG,[]);l.unshift({id:String(Date.now()),from:MX[FROM].k,to:MX[TO].k});HCE.lsPut(LOG,l);$('m-msg').innerHTML='<div class="msg">Registrata · +15 XP</div>'}
+});
+
+// i 7 mix
+$('v-mix').innerHTML='<p class="muted">Per ogni mix: le sostanze che lo sostengono (+) e quelle che lo frenano (−), la scala d\'intensità, come riconoscerlo e quando serve.</p>'+
+ MX.map(function(m,i){return '<details class="mixc" style="--mc:'+mv(m.k)+'"><summary><span class="dot">'+(i+1)+'</span><span><b>'+esc(m.n)+'</b><br><span class="s">+ '+esc(m.plus.join(', '))+' · − '+esc(m.minus.join(', '))+'</span></span><span class="chev">›</span></summary><div class="mixb">'+
+   '<div class="sub"><div><small>+ Aiuta</small><b>'+esc(m.plus.join(' · '))+'</b></div><div><small>− Non aiuta</small><b>'+esc(m.minus.join(' · '))+'</b></div></div>'+
+   '<div class="lbl">Intensità, dalla più bassa</div><div class="scale">'+m.levels.map(function(l,j){return '<span style="opacity:'+(.45+j*.09).toFixed(2)+'">'+esc(l)+'</span>'}).join('')+'</div>'+
+   '<div class="blk"><h4>Come riconoscerlo</h4>'+ul(m.rec)+'</div><div class="blk"><h4>Quando serve</h4>'+ul(m.use)+'</div><div class="blk"><h4>Quando non serve</h4>'+ul(m.nouse)+'</div>'+
+   '<div class="row"><button class="btn" data-sheet="D'+(i+1)+'">Disinnesca · D'+(i+1)+'</button><button class="btn pri" data-sheet="P'+(i+1)+'">Innesca · P'+(i+1)+'</button></div><div>'+src('B3')+'</div></div></details>'}).join('')+
+ '<div class="note">'+esc(M.notes.indiff)+'</div><div class="warnb">'+esc(M.notes.simpl)+'</div>';
+
+// scheda D/P
+function openSheet(code){var t=code[0],n=code.slice(1),o=(t==='D'?M.D:M.P)[n],m=MX[+n-1];if(!o)return;
+  $('sheet').innerHTML='<div style="font-size:.76rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:'+mv(m.k)+'">'+code+' · mix '+esc(m.n)+'</div><h2 id="sh-t">'+esc(o.t)+'</h2><div class="blk" style="--sc:'+mv(m.k)+'">'+block(o)+'</div><div>'+src('B4')+'</div><button class="btn" data-close style="align-self:center">Chiudi</button>';
+  $('sh').hidden=false;$('sheet').scrollTop=0;document.body.style.overflow='hidden'}
+function closeSheet(){$('sh').hidden=true;document.body.style.overflow=''}
+document.addEventListener('click',function(e){var b=e.target.closest('[data-sheet]');if(b){openSheet(b.dataset.sheet)}});
+$('sh').addEventListener('click',function(e){if(e.target===$('sh')||e.target.closest('[data-close]'))closeSheet()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('sh').hidden)closeSheet()});
+
+// procedura
+$('v-procedura').innerHTML='<p class="muted">I 5 passi del libro, ogni volta che usi la matrice.</p>'+M.steps.map(function(s,i){return '<div class="step"><span class="k">'+(i+1)+'</span><div class="tx"><b>'+esc(s.n)+'</b><p>'+esc(s.d)+'</p><p class="tip">'+esc(s.tip)+'</p></div></div>'}).join('')+
+ '<div class="note">'+esc(M.notes.example)+'</div><div class="note">'+esc(M.notes.limit)+'</div><div>'+src('B4')+'</div>';
+
+// regole
+$('v-regole').innerHTML='<div class="card"><h3>Cose da tenere a mente</h3>'+M.notes.keep.map(function(k){return '<div class="li"><b>'+esc(k[0])+'</b><span class="muted">'+esc(k[1])+'</span></div>'}).join('')+'</div>'+
+ '<div class="card"><h3>Errori da evitare</h3>'+M.notes.avoid.map(function(k){return '<div class="li"><b>'+esc(k[0])+'</b><span class="muted">'+esc(k[1])+'</span></div>'}).join('')+'</div>'+
+ '<div class="card"><h3>Etica</h3><p>'+esc(M.notes.ethics)+'</p></div><div class="warnb">'+esc(M.notes.simpl)+'</div>'+
+ '<div class="card"><h3>Nel corso</h3>'+M.links.map(function(l){return '<div style="display:flex;flex-direction:column;gap:4px">'+src(l.s)+'<p class="muted">'+esc(l.d)+'</p></div>'}).join('')+'<div>'+src('B4')+'</div></div>';
+
+function show(t){document.querySelectorAll('.tab').forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===t?'true':'false')});
+  ['matrice','mix','procedura','regole'].forEach(function(x){$('v-'+x).hidden=x!==t});window.scrollTo(0,0)}
+document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(b)show(b.dataset.t)});
+renderMat();
+var h0=(location.hash||'').slice(1);if(['mix','procedura','regole'].indexOf(h0)>=0)show(h0);
+});
+</script>
+
+<style>
+/* Tema "gioco": colori, caratteri arrotondati, pulsanti in rilievo. Caricato dopo gli stili di ogni pagina. */
+:root{
+ --bg:#F7F8FC;--surface:#FFFFFF;--sunk:#F1F3F9;--fg:#1B2240;--muted:#5A6385;--line:#E3E7F0;--line2:#EDF0F6;
+ --accent:#2F6BFF;--accent-dk:#1E4FD6;--accent-fg:#FFFFFF;--accent-soft:#EAF0FF;
+ --star:#F5A524;--star-dk:#C98408;--star-soft:#FFF4DE;--warn:#C2410C;--warn-soft:#FFEDE3;
+ --ok:#12805A;--ok-bg:#1FB37A;--ok-dk:#138A5C;--ok-soft:#E3F7EE;--fire:#FF8A3D;
+ --c1:#2F6BFF;--c2:#16A06B;--c3:#E08E0B;--c4:#8B5CF6;--c5:#EF5350;
+ --d:#2F6BFF;--d-soft:#EAF0FF;--p:#8B5CF6;--p-soft:#F3EEFF;--i:#E8590C;--i-soft:#FFEDE3;
+ --shadow:none;--lift:0 3px 0 var(--line);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#0F1426;--surface:#182038;--sunk:#131A30;--fg:#EEF1FA;--muted:#A3ACC9;--line:#2A3459;--line2:#222B4A;
+ --accent:#6F97FF;--accent-dk:#3F66D6;--accent-fg:#0B1020;--accent-soft:#1D2A52;
+ --star:#FFC247;--star-dk:#B88310;--star-soft:#3A2F14;--warn:#FF9B6A;--warn-soft:#3B2318;
+ --ok:#4FD69C;--ok-bg:#2FBF83;--ok-dk:#1B7F56;--ok-soft:#14352A;--fire:#FF9D5C;
+ --c1:#7EA2FF;--c2:#4FD69C;--c3:#FFC247;--c4:#B69CFF;--c5:#FF8A80;
+ --d:#7EA2FF;--d-soft:#1D2A52;--p:#B69CFF;--p-soft:#2A2350;--i:#FF9B6A;--i-soft:#3B2318;
+ --shadow:none;--lift:0 3px 0 var(--line);color-scheme:dark}}
+:root[data-theme="dark"]{
+ --bg:#0F1426;--surface:#182038;--sunk:#131A30;--fg:#EEF1FA;--muted:#A3ACC9;--line:#2A3459;--line2:#222B4A;
+ --accent:#6F97FF;--accent-dk:#3F66D6;--accent-fg:#0B1020;--accent-soft:#1D2A52;
+ --star:#FFC247;--star-dk:#B88310;--star-soft:#3A2F14;--warn:#FF9B6A;--warn-soft:#3B2318;
+ --ok:#4FD69C;--ok-bg:#2FBF83;--ok-dk:#1B7F56;--ok-soft:#14352A;--fire:#FF9D5C;
+ --c1:#7EA2FF;--c2:#4FD69C;--c3:#FFC247;--c4:#B69CFF;--c5:#FF8A80;
+ --d:#7EA2FF;--d-soft:#1D2A52;--p:#B69CFF;--p-soft:#2A2350;--i:#FF9B6A;--i-soft:#3B2318;
+ --shadow:none;--lift:0 3px 0 var(--line);color-scheme:dark}
+
+html body,html body *:not(svg):not(svg *):not(code):not(pre){font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif}
+html body svg text{font-family:Nunito,system-ui,sans-serif!important}
+body{background:var(--bg);color:var(--fg);padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))!important}
+h1,h2,h3{font-weight:900!important;letter-spacing:-.01em}
+h1{font-size:1.9rem}
+.eyebrow,.ph,.area{font-weight:800!important}
+
+/* schede */
+.card,.hist,.mod,details.lv,.ig{border:2px solid var(--line)!important;border-radius:20px!important;box-shadow:var(--lift)!important}
+.mod.done{background:var(--ok-soft)!important;border-color:var(--ok-bg)!important;box-shadow:0 3px 0 var(--ok-bg)!important}
+
+/* pulsanti in rilievo */
+.btn{border-radius:14px!important;font-weight:800!important;letter-spacing:.02em;border:2px solid var(--line)!important;box-shadow:0 4px 0 var(--line);transition:transform .06s,box-shadow .06s}
+.btn.pri,.dpi .btn:not(.sec):not(.on){background:var(--accent)!important;color:var(--accent-fg)!important;border-color:var(--accent)!important;box-shadow:0 4px 0 var(--accent-dk)}
+.btn:active,.chk:active,.star:active,.ch:active,.scale button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.btn.pri:active{box-shadow:0 1px 0 var(--accent-dk)}
+.chk,.star{border:2px solid var(--line)!important;border-radius:14px!important;box-shadow:0 3px 0 var(--line)}
+.chk[aria-pressed="true"]{background:var(--ok-bg)!important;border-color:var(--ok-bg)!important;color:#fff!important;box-shadow:0 3px 0 var(--ok-dk)}
+.star[aria-pressed="true"]{background:var(--star)!important;border-color:var(--star)!important;box-shadow:0 3px 0 var(--star-dk)}
+.scale button,.ch{border:2px solid var(--line)!important;border-radius:14px!important;font-weight:800!important;box-shadow:0 3px 0 var(--line)}
+.ch{border-radius:99px!important}
+.scale button[aria-pressed="true"]{background:var(--accent)!important;border-color:var(--accent)!important;color:var(--accent-fg)!important;box-shadow:0 3px 0 var(--accent-dk)}
+
+/* schede (tabs) */
+.tabs,.seg{background:var(--sunk)!important;border-radius:16px!important;padding:5px!important}
+.tab,.seg button{font-weight:800!important;border-radius:12px!important}
+.tab[aria-selected="true"],.seg button[aria-pressed="true"]{background:var(--accent)!important;color:var(--accent-fg)!important;box-shadow:0 3px 0 var(--accent-dk)!important}
+
+/* campi */
+textarea,input[type=text],input[type=search],select{border:2px solid var(--line)!important;border-radius:14px!important;background:var(--sunk)!important;font-weight:600}
+textarea:focus,input:focus,select:focus{outline:none!important;border-color:var(--accent)!important}
+.pill,.tag{font-weight:800!important}
+.bar{height:10px!important;border-radius:99px}.bar i{background:var(--ok-bg)!important;border-radius:99px}
+
+/* barra di navigazione in basso */
+.appbar{position:fixed!important;left:0;right:0;bottom:0;top:auto!important;z-index:15;max-width:none!important;margin:0!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px!important;
+ background:var(--surface);border-top:2px solid var(--line);padding:8px max(10px,env(safe-area-inset-left,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-right,0px))!important}
+.appbar a{display:flex!important;flex-direction:column;align-items:center;gap:2px;padding:6px 0!important;border-radius:14px!important;font-weight:800!important;font-size:.76rem!important;color:var(--muted)!important;background:none!important;max-width:160px;width:100%;justify-self:center}
+.appbar a svg{width:26px;height:26px}
+.appbar a[aria-current]{color:var(--accent)!important;background:var(--accent-soft)!important}
+</style>
+</body></html>
