@@ -140,7 +140,7 @@ input[type=file]{display:none}
   <div class="card" style="gap:4px">
     <h2 style="margin-bottom:6px">Il piano di oggi</h2>
     <a class="task" id="t1" href="percorso.html"><span class="ck"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></span><span class="tx"><b>Studia 2 moduli</b><span id="t1-s">…</span></span><span class="go">›</span></a>
-    <a class="task" id="t2" href="prep.html#nuova"><span class="ck"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></span><span class="tx"><b>Allenati su un'interazione vera</b><span>Prepara un'interazione, o usa D-P-I, E³ o IBM</span></span><span class="go">›</span></a>
+    <a class="task" id="t2" href="prep.html#nuova"><span class="ck"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></span><span class="tx"><b>Allenati su un'interazione vera</b><span>Prepara un'interazione, usa D-P-I, E³, IBM o fai un giro in Palestra</span></span><span class="go">›</span></a>
     <a class="task" id="t3" href="#tod"><span class="ck"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></span><span class="tx"><b>Prova lo strumento del giorno</b><span id="t3-s">In una conversazione di oggi</span></span><span class="go">›</span></a>
   </div>
 
@@ -266,7 +266,7 @@ $('f-bk').addEventListener('change',function(){var f=this.files[0];if(!f)return;
  readFile(f).then(function(t){var n=HCE.importBackup(t);msg('b-msg','Backup importato: '+n+' elementi aggiunti o aggiornati.',true);bstat();status()})
  .catch(function(e){msg('b-msg','Non riesco a importare: '+esc(e&&e.message?e.message:'file non valido'))});this.value=''});
 if(location.hash==='#contenuti')setTimeout(function(){$('contenuti').scrollIntoView({block:'center'})},300);
-$('ver').textContent='App versione 2026-11-11b-d1ba09db';
+$('ver').textContent='App versione 2026-11-11b-a4142340';
 status();bstat();
 window.addEventListener('pageshow',function(e){if(e.persisted){status();bstat()}});
 })();

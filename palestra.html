@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="it"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Palestra</title>
+<meta name="theme-color" content="#1f5a5e">
+<link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="HCE">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+.appbar{display:flex;gap:4px;padding:10px 0 2px;max-width:1200px;margin:0 auto;overflow-x:auto}
+.appbar a{font:600 .82rem/1 Inter,system-ui,sans-serif;text-decoration:none;color:var(--muted,#5d6869);padding:9px 12px;border-radius:99px;white-space:nowrap}
+.appbar a[aria-current]{background:var(--accent-soft,#d9e9e7);color:var(--accent,#1f5a5e)}
+.loading{font:15px/1.5 system-ui,sans-serif;padding:40px 16px;text-align:center;color:#5d6869}
+</style>
+<script src="hce.js"></script>
+</head><body>
+<script>HCE.nav("tool");</script>
+<style>
+:root{--onp:#FFFFFF;--gy:#E8590C;--okc:#2B8A3E;--okb:#E3F6E5;--koc:#C92A2A;--kob:#FFE3E3}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--onp:#0B1020;--gy:#FFA94D;--okc:#7EDC8F;--okb:#173320;--koc:#FF8787;--kob:#3D1A1A}}
+:root[data-theme="dark"]{--onp:#0B1020;--gy:#FFA94D;--okc:#7EDC8F;--okb:#173320;--koc:#FF8787;--kob:#3D1A1A}
+*{box-sizing:border-box}
+body{margin:0;padding-block:0 110px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.page{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+p{margin:0}
+header{padding-top:22px;display:flex;flex-direction:column;gap:8px}
+.eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:900}
+h1{font-size:1.9rem;line-height:1.1;margin:0}h2{font-size:1.3rem;margin:0}h3{font-size:1.05rem;margin:0}
+.lead{color:var(--muted);font-weight:600}
+.card{background:var(--surface);padding:16px;display:flex;flex-direction:column;gap:12px}
+.lbl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:900;color:var(--muted)}
+.topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.tp{border:2px solid var(--line);background:var(--surface);color:var(--fg);border-radius:18px;padding:12px;font:inherit;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px;box-shadow:0 3px 0 var(--line);min-height:72px}
+.tp b{font-weight:900;font-size:1rem}.tp span{font-size:.8rem;color:var(--muted);font-weight:700}
+.tp[aria-pressed="true"]{border-color:var(--gy);box-shadow:0 3px 0 var(--gy)}.tp[aria-pressed="true"] b{color:var(--gy)}
+.big{display:flex;justify-content:center;align-items:center;width:100%;border:0;border-radius:18px;padding:15px;font:inherit;font-weight:900;font-size:1.05rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;min-height:56px;background:var(--gy);color:var(--onp);box-shadow:0 4px 0 color-mix(in srgb,var(--gy) 65%,#000)}
+.big:active{transform:translateY(3px);box-shadow:none}
+.big.sec{background:var(--surface);color:var(--fg);border:2px solid var(--line);box-shadow:0 3px 0 var(--line)}
+.big:disabled{opacity:.45;cursor:default}
+.stats{display:flex;gap:10px}.st{flex:1;border:2px solid var(--line);border-radius:16px;padding:10px;text-align:center}.st b{display:block;font-size:1.4rem;font-weight:900}.st span{font-size:.76rem;color:var(--muted);font-weight:800}
+.top{display:flex;gap:12px;align-items:center;padding-top:18px}
+.x{border:0;background:transparent;color:var(--muted);font:inherit;font-size:1.5rem;font-weight:900;cursor:pointer;width:44px;height:44px;flex:none}
+.bar{flex:1;height:16px;border-radius:99px;background:var(--sunk);overflow:hidden}.bar i{display:block;height:100%;background:var(--gy);border-radius:99px;transition:width .3s}
+.qtp{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;font-weight:900;color:var(--gy)}
+.q{font-size:1.3rem;font-weight:900;line-height:1.3;text-wrap:balance}
+.quote{background:var(--sunk);border-left:4px solid var(--gy);border-radius:12px;padding:12px 14px;font-weight:700;line-height:1.5}
+.opts{display:flex;flex-direction:column;gap:10px}
+.op{border:2px solid var(--line);background:var(--surface);color:var(--fg);border-radius:16px;padding:13px 14px;font:inherit;font-weight:800;text-align:left;cursor:pointer;box-shadow:0 3px 0 var(--line);line-height:1.35;min-height:54px}
+.op[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 3px 0 var(--accent);background:var(--sunk)}
+.op.ok{border-color:var(--okc);background:var(--okb);box-shadow:0 3px 0 var(--okc)}
+.op.ko{border-color:var(--koc);background:var(--kob);box-shadow:0 3px 0 var(--koc)}
+.fbk{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:16px max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:var(--bg);border-top:2px solid var(--line)}
+.fbk .in{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.fbk.ok{background:var(--okb)}.fbk.ko{background:var(--kob)}
+.fbk h3{font-size:1.2rem;font-weight:900}.fbk.ok h3{color:var(--okc)}.fbk.ko h3{color:var(--koc)}
+.fbk p{font-weight:700;line-height:1.45;max-height:30vh;overflow:auto}
+.fbk.ok .big{background:var(--okc);box-shadow:0 4px 0 color-mix(in srgb,var(--okc) 65%,#000)}.fbk.ko .big{background:var(--koc);box-shadow:0 4px 0 color-mix(in srgb,var(--koc) 65%,#000)}
+.src{display:inline-flex;font-size:.78rem;font-weight:800;color:var(--fg);background:color-mix(in srgb,var(--surface) 70%,transparent);border-radius:99px;padding:4px 10px;text-decoration:none;align-self:flex-start}
+body.quiz .appbar{display:none}
+.end{align-items:center;text-align:center;padding-top:30px}
+.end .score{font-size:3rem;font-weight:900;color:var(--gy)}
+.rv{display:flex;flex-direction:column;gap:6px;border-top:2px solid var(--line2);padding-top:10px;text-align:left;width:100%}
+.rv b{font-weight:900}.rv span{color:var(--muted);font-weight:700;font-size:.88rem;line-height:1.4}
+.muted{color:var(--muted);font-size:.86rem;font-weight:600}
+.notice{text-align:center;align-items:center}
+.btn{padding:10px 16px;font:inherit;cursor:pointer;background:var(--surface);color:var(--fg);min-height:46px;text-decoration:none;display:inline-flex;align-items:center}
+</style>
+<div class="page" id="home">
+<header>
+  <div class="eyebrow">HCE · Allenamento</div>
+  <h1>Palestra</h1>
+  <p class="lead">Domande veloci su E³, IBM, I-STAIR, feedback e Dizionario. Risposte e distrattori vengono tutti dai contenuti del corso.</p>
+</header>
+<div class="card notice" id="old" hidden><h2>Serve il file dei contenuti aggiornato</h2><p class="muted">Importa la versione nuova di hce-contenuti.json dalla Home, in Impostazioni.</p><a class="btn pri" href="index.html#contenuti">Vai alla Home</a></div>
+<div id="app" hidden style="display:flex;flex-direction:column;gap:16px">
+  <div class="stats" id="stats"></div>
+  <div class="card"><div class="lbl">Su cosa ti alleni</div><div class="topics" id="topics"></div>
+    <button class="big" id="go">Inizia · 10 domande</button>
+    <button class="big sec" id="err" hidden></button>
+  </div>
+  <p class="muted">Ogni allenamento finito vale 5 XP più 2 per ogni risposta giusta, e tiene viva la serie di giorni. Le domande sbagliate tornano in «Ripassa gli errori» finché non le indovini.</p>
+</div>
+</div>
+<div class="page" id="quiz" hidden></div>
+<div class="fbk" id="fbk" hidden></div>
+<script>
+HCE.ready(function(PACK){
+var $=function(i){return document.getElementById(i)};
+var E=PACK.e3,M=PACK.mib,I=PACK.istair,F=PACK.feedback,Z=PACK.diz;
+if(!(E&&M&&I&&F&&Z)){$('old').hidden=false;return}
+$('app').hidden=false;
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function shuf(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+function uniq(a){var s={};return a.filter(function(x){if(s[x])return false;s[x]=1;return true})}
+var MODT={};PACK.data.mods.forEach(function(m){MODT[m.id]=m.t});
+function mod(id){return id?['studio.html#m='+id,'Modulo: '+(MODT[id]||id)]:null}
+
+// BANCA DOMANDE (tutto dal pacchetto)
+var B=[];
+function add(tp,id,q,sub,ans,pool,exp,link,min){pool=uniq(pool.filter(function(x){return x&&x!==ans}));if(pool.length>=(min||2))B.push({tp:tp,id:tp+':'+id,q:q,sub:sub,ans:ans,pool:pool,exp:exp,link:link})}
+// E3
+var TOOLS=[],ASP=[];
+E.phases.forEach(function(ph){ph.aspects.forEach(function(a){var an=a.n+' · '+a.it;ASP.push({a:a,ph:ph,n:an});a.tools.forEach(function(t){TOOLS.push({t:t,a:a,ph:ph,an:an,tn:t.n+' · '+t.it})})})});
+var TN=TOOLS.map(function(x){return x.tn}),AN=ASP.map(function(x){return x.n});
+TOOLS.forEach(function(x){var t=x.t,same=TOOLS.filter(function(y){return y.ph===x.ph}).map(function(y){return y.tn}),lk=['e3.html#t='+encodeURIComponent(t.n),'Apri '+t.n+' in E³'];
+  if(t.ex)add('e3','ex-'+t.n,'Quale strumento usa questa frase?',t.ex,x.tn,same.concat(TN),t.what,lk);
+  add('e3','what-'+t.n,'Quale strumento è questo?',t.what,x.tn,same.concat(TN),'Aspetto '+x.an+', fase '+x.ph.n+'.',lk);
+  add('e3','asp-'+t.n,'A quale aspetto appartiene '+t.n+' ('+t.it+')?','',x.an,AN,'Gli strumenti di '+x.an+' sono: '+x.a.tools.map(function(y){return y.n}).join(', ')+'.',lk)});
+ASP.forEach(function(x){add('e3','ph-'+x.a.n,'In che fase sta l\'aspetto '+x.n+'?','',x.ph.n+' · '+x.ph.it,E.phases.map(function(p){return p.n+' · '+p.it}),x.a.goal,['e3.html','Apri E³'])});
+// IBM
+var MXN=M.mix.map(function(x){return x.n}),MXP=M.mix.map(function(x){return x.plus.join(' + ')});
+M.mix.forEach(function(x,i){add('ibm','plus-'+x.k,'Nel mix «'+x.n+'» quali sostanze salgono?','',MXP[i],MXP,'Salgono '+x.plus.join(' e ')+', scendono '+x.minus.join(' e ')+'.',['mib.html#mix','I 7 mix in IBM']);
+  if(x.levels&&x.levels.length)add('ibm','lv-'+x.k,'A quale mix appartiene questa scala di intensità?',x.levels.join(' → '),x.n,MXN,'È la scala del mix '+x.n+'.',['mib.html#mix','I 7 mix in IBM'])});
+M.subst.forEach(function(s){add('ibm','nick-'+s.n,'Quale sostanza è «'+s.nick+'»?','',s.n,M.subst.map(function(y){return y.n}),s.what,['mib.html#sostanze','Sostanze in IBM'])});
+var MXK={};M.mix.forEach(function(x){MXK[x.k]=x.n});
+M.cases.forEach(function(c){add('ibm','case-'+c.n,'Caso «'+c.t+'»: da quale mix parte l\'altro?',c.sit,MXK[c.from],MXN,'Da '+MXK[c.from]+' a '+MXK[c.to]+'. Primo passo: '+(c.s1&&c.s1[0]||''),['mib.html#casi','Casi in IBM'])});
+var DT=[],PT=[];Object.keys(M.D).forEach(function(k){DT.push(M.D[k].t)});Object.keys(M.P).forEach(function(k){PT.push(M.P[k].t)});
+function okWhy(s){return s&&!/specular|\b[DP]\d/i.test(s)}
+Object.keys(M.D).forEach(function(k){var d=M.D[k],p=M.P[k];
+  if(okWhy(d.why))add('ibm','dwhy-'+k,'A cosa serve questa azione?',d.why,d.t,DT.concat(PT),'È '+d.t+'.',['mib.html','Matrice IBM']);
+  if(okWhy(p.why))add('ibm','pwhy-'+k,'A cosa serve questa azione?',p.why,p.t,PT.concat(DT),'È '+p.t+'.',['mib.html','Matrice IBM'])});
+// I-STAIR
+var SN=I.steps.map(function(s){return s.n+' · '+s.it}),SK={};I.steps.forEach(function(s,i){SK[s.k]=SN[i]});
+I.recog.forEach(function(r,i){add('ist','rec-'+i,'Su che gradino è il cliente?',r.q,SK[r.s],SN,r.a,mod(r.m))});
+I.steps.forEach(function(s,i){add('ist','th-'+s.k,'Su che gradino pensa così?',s.thinks,SN[i],SN,'Obiettivo del gradino: '+s.goal,mod(s.mod));
+  add('ist','lv-'+s.k,'Su che gradino vive questo?',s.lives,SN[i],SN,'Obiettivo del gradino: '+s.goal,mod(s.mod))});
+var IT=[];I.steps.forEach(function(s){(s.tools||[]).forEach(function(t){IT.push({t:t,s:s})})});
+var ITN=IT.map(function(x){return x.t.n+' · '+x.t.it});
+IT.forEach(function(x,i){add('ist','tool-'+x.t.n,'Quale strumento I-STAIR è questo?',x.t.c,ITN[i],ITN,'Si usa sul gradino '+x.s.n+'.',mod(x.t.m))});
+// FEEDBACK
+var FS=[];['rings','arise'].forEach(function(k){F[k].steps.forEach(function(s){FS.push({s:s,m:F[k],n:s.k+' · '+s.n+' ('+F[k].n+')'})})});
+var FN=FS.map(function(x){return x.n});
+FS.forEach(function(x){var lk=mod(x.s.m);
+  add('fb','what-'+x.n,'Quale passo è questo?',x.s.what,x.n,FN,F[x.m.n.toLowerCase()].n+' è il feedback '+x.m.kind+'.',lk);
+  if(x.s.say&&x.s.say[0])add('fb','say-'+x.n,'A quale passo appartiene questa frase?',x.s.say[0],x.n,FN,x.s.what,lk)});
+add('fb','kind-r','Che feedback è RINGS?','',F.rings.kind,[F.arise.kind],F.rings.what,mod(F.rings.m),1);
+add('fb','kind-a','Che feedback è ARISE?','',F.arise.kind,[F.rings.kind],F.arise.what,mod(F.arise.m),1);
+// DIZIONARIO
+var CN=Z.met.map(function(c){return c.n});
+Z.met.forEach(function(c){c.vocab.forEach(function(v){add('diz','v-'+c.k+'-'+v,'A quale categoria metaforica appartiene «'+v+'»?','',c.n,CN,c.n+' ('+c.g+'): '+c.eff,mod(c.m))});
+  add('diz','g-'+c.k,'La metafora «'+c.n+'» è…','','di tipo '+c.g,['di tipo '+(c.g==='ancestrale'?'moderna':'ancestrale')],'Ancestrali: guerra, natura, viaggio, cibo, corpo. Moderne: trasporti, sport, tecnologia, medicina, denaro.',mod('op19'),1);
+  add('diz','e-'+c.k,'Quale metafora ha questo effetto?',c.eff,c.n,CN,'Vocabolario: '+c.vocab.slice(0,5).join(', ')+'…',mod(c.m))});
+var BN=Z.bias.map(function(b){return b.n}),BCN={};Z.biascats.forEach(function(c){BCN[c[0]]=c[1]});var BCL=Z.biascats.map(function(c){return c[1]});
+Z.bias.forEach(function(b){b.ex.forEach(function(x,i){add('diz','bx-'+b.k+i,'Quale bias c\'è dietro?',x,b.n,BN,b.d,mod(b.m))});
+  add('diz','bd-'+b.k,'Quale bias è questo?',b.d,b.n,BN,'Detto anche: '+b.alt+'.',mod(b.m));
+  add('diz','bc-'+b.k,'In quale categoria HCE sta '+b.n+'?','',BCN[b.cat],BCL,b.note||b.d,mod(b.m));
+  if(b.manage[0])add('diz','bm-'+b.k,'Questo antidoto è per quale bias?',b.manage[0],b.n,BN,b.d,mod(b.m))});
+var KN=Z.conc.map(function(c){return c[1]});
+Z.conc.forEach(function(c){add('diz','c-'+c[1],'Di quale concetto si parla?',c[2].replace(new RegExp(c[1].split(' ')[0],'ig'),'…'),c[1],KN,c[3]||c[2],mod(c[4]))});
+
+var TPS=[['all','Tutto','mix di tutti gli strumenti'],['e3','E³','27 strumenti, 9 aspetti'],['ibm','IBM','mix, sostanze, casi'],['ist','I-STAIR','gradini e strumenti'],['fb','Feedback','RINGS e ARISE'],['diz','Dizionario','metafore, bias, concetti']];
+var tp=(function(){try{return localStorage.getItem('gym_tp')||'all'}catch(e){return 'all'}})();
+function count(t){return B.filter(function(q){return t==='all'||q.tp===t}).length}
+function renderHome(){var log=HCE.lsJ('gym_v1',[]),errs=HCE.lsJ('gym_err_v1',{}),ne=Object.keys(errs).filter(function(k){return B.some(function(q){return q.id===k})}).length,today=HCE.dayKey(Date.now());
+  var tot=log.reduce(function(a,x){return a+x.ok},0),td=log.filter(function(x){return HCE.dayKey(+x.id)===today}).length,st=HCE.stats();
+  $('stats').innerHTML='<div class="st"><b>'+st.streak+'</b><span>giorni di fila</span></div><div class="st"><b>'+td+'</b><span>allenamenti oggi</span></div><div class="st"><b>'+tot+'</b><span>risposte giuste</span></div>';
+  $('topics').innerHTML=TPS.map(function(t){return '<button class="tp" data-tp="'+t[0]+'" aria-pressed="'+(tp===t[0])+'"><b>'+t[1]+'</b><span>'+t[2]+' · '+count(t[0])+' domande</span></button>'}).join('');
+  $('err').hidden=!ne;$('err').textContent='Ripassa gli errori · '+ne}
+$('topics').addEventListener('click',function(e){var b=e.target.closest('[data-tp]');if(!b)return;tp=b.dataset.tp;try{localStorage.setItem('gym_tp',tp)}catch(x){}renderHome()});
+
+// SESSIONE
+var S=null;
+function pick(list,n){
+  if(tp==='all'&&!S_err){var by={};list.forEach(function(q){(by[q.tp]=by[q.tp]||[]).push(q)});var ks=Object.keys(by),out=[],i=0;ks.forEach(function(k){by[k]=shuf(by[k])});while(out.length<n&&ks.some(function(k){return by[k].length})){var k=ks[i++%ks.length];if(by[k].length)out.push(by[k].pop())}return shuf(out)}
+  return shuf(list).slice(0,n)}
+var S_err=false;
+function start(errMode){S_err=errMode;var errs=HCE.lsJ('gym_err_v1',{});
+  var list=errMode?B.filter(function(q){return errs[q.id]}):B.filter(function(q){return tp==='all'||q.tp===tp});
+  var qs=pick(list,10).map(function(q){var o=shuf([q.ans].concat(shuf(q.pool).slice(0,3)));return {q:q,opts:o,ans:o.indexOf(q.ans),sel:-1,ok:null}});
+  if(!qs.length)return;S={qs:qs,i:0,t:tp,err:errMode};
+  $('home').hidden=true;$('quiz').hidden=false;document.body.classList.add('quiz');renderQ();window.scrollTo(0,0)}
+$('go').addEventListener('click',function(){start(false)});$('err').addEventListener('click',function(){start(true)});
+var TPN={e3:'E³',ibm:'IBM',ist:'I-STAIR',fb:'Feedback',diz:'Dizionario'};
+function renderQ(){var x=S.qs[S.i],q=x.q;
+  $('quiz').innerHTML='<div class="top"><button class="x" id="qx" aria-label="Esci">✕</button><div class="bar"><i style="width:'+(S.i/S.qs.length*100)+'%"></i></div></div>'+
+   '<div class="qtp">'+TPN[q.tp]+(S.err?' · ripasso errori':'')+'</div><div class="q">'+esc(q.q)+'</div>'+(q.sub?'<div class="quote">'+esc(q.sub)+'</div>':'')+
+   '<div class="opts">'+x.opts.map(function(o,i){return '<button class="op" data-o="'+i+'" aria-pressed="false">'+esc(o)+'</button>'}).join('')+'</div>'+
+   '<button class="big" id="chk" disabled>Controlla</button>';
+  $('fbk').hidden=true}
+$('quiz').addEventListener('click',function(e){var b,t=e.target,x=S&&S.qs[S.i];
+  if(t.id==='qx'){end(true);return}
+  if(!x||x.ok!==null)return;
+  if(b=t.closest('[data-o]')){x.sel=+b.dataset.o;document.querySelectorAll('.op').forEach(function(o){o.setAttribute('aria-pressed',o===b?'true':'false')});$('chk').disabled=false;return}
+  if(t.id==='chk'&&x.sel>=0)check()});
+function check(){var x=S.qs[S.i],q=x.q;x.ok=x.sel===x.ans;
+  var ops=document.querySelectorAll('.op');ops[x.ans].classList.add('ok');if(!x.ok)ops[x.sel].classList.add('ko');$('chk').hidden=true;
+  var errs=HCE.lsJ('gym_err_v1',{});if(x.ok)delete errs[q.id];else errs[q.id]=Date.now();HCE.lsPut('gym_err_v1',errs);
+  var f=$('fbk');f.className='fbk '+(x.ok?'ok':'ko');f.hidden=false;
+  f.innerHTML='<div class="in"><h3>'+(x.ok?'Giusto!':'Risposta giusta: '+esc(q.ans))+'</h3><p>'+esc(q.exp)+'</p>'+(q.link?'<a class="src" href="'+q.link[0]+'">↗ '+esc(q.link[1])+'</a>':'')+'<button class="big" id="nx">'+(S.i+1<S.qs.length?'Continua':'Fine')+'</button></div>'}
+$('fbk').addEventListener('click',function(e){if(e.target.id!=='nx')return;S.i++;if(S.i<S.qs.length){renderQ();window.scrollTo(0,0)}else end(false)});
+function end(quit){$('fbk').hidden=true;var done=S.qs.filter(function(x){return x.ok!==null}),ok=done.filter(function(x){return x.ok}).length;
+  if(quit&&!done.length){back();return}
+  var saved=false;
+  if(!quit){var log=HCE.lsJ('gym_v1',[]);log.unshift({id:String(Date.now()),tp:S.err?'err':S.t,n:S.qs.length,ok:ok});HCE.lsPut('gym_v1',log.slice(0,500));saved=true}
+  var st=HCE.stats(),wrong=done.filter(function(x){return !x.ok});
+  $('quiz').innerHTML='<div class="card end"><div class="lbl">'+(quit?'Allenamento interrotto':'Allenamento finito')+'</div><div class="score">'+ok+' / '+done.length+'</div>'+
+   (saved?'<p style="font-weight:900">+'+(5+2*ok)+' XP · serie di '+st.streak+' '+(st.streak===1?'giorno':'giorni')+'</p>':'<p class="muted">Gli allenamenti interrotti non danno XP.</p>')+
+   (wrong.length?'<div class="rv" style="border:0;padding:0"><div class="lbl">Da rivedere</div></div>'+wrong.map(function(x){return '<div class="rv"><b>'+esc(x.q.q)+'</b>'+(x.q.sub?'<span>'+esc(x.q.sub)+'</span>':'')+'<span>→ '+esc(x.q.ans)+'</span>'+(x.q.link?'<a class="src" href="'+x.q.link[0]+'">↗ '+esc(x.q.link[1])+'</a>':'')+'</div>'}).join(''):'<p class="muted">Nessun errore.</p>')+
+   '<button class="big" id="again">Ancora 10</button><button class="big sec" id="bk">Torna alla Palestra</button></div>';
+  $('again').onclick=function(){start(S.err)};$('bk').onclick=back;S.i=S.qs.length;window.scrollTo(0,0)}
+function back(){S=null;$('quiz').hidden=true;$('home').hidden=false;document.body.classList.remove('quiz');renderHome();window.scrollTo(0,0)}
+renderHome();
+if(location.hash==='#errori'&&!$('err').hidden)start(true);
+});
+</script>
+
+<style>
+/* Tema "gioco": colori, caratteri arrotondati, pulsanti in rilievo. Caricato dopo gli stili di ogni pagina. */
+:root{
+ --bg:#F7F8FC;--surface:#FFFFFF;--sunk:#F1F3F9;--fg:#1B2240;--muted:#5A6385;--line:#E3E7F0;--line2:#EDF0F6;
+ --accent:#2F6BFF;--accent-dk:#1E4FD6;--accent-fg:#FFFFFF;--accent-soft:#EAF0FF;
+ --star:#F5A524;--star-dk:#C98408;--star-soft:#FFF4DE;--warn:#C2410C;--warn-soft:#FFEDE3;
+ --ok:#12805A;--ok-bg:#1FB37A;--ok-dk:#138A5C;--ok-soft:#E3F7EE;--fire:#FF8A3D;
+ --c1:#2F6BFF;--c2:#16A06B;--c3:#E08E0B;--c4:#8B5CF6;--c5:#EF5350;
+ --d:#2F6BFF;--d-soft:#EAF0FF;--p:#8B5CF6;--p-soft:#F3EEFF;--i:#E8590C;--i-soft:#FFEDE3;
+ --shadow:none;--lift:0 3px 0 var(--line);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#0F1426;--surface:#182038;--sunk:#131A30;--fg:#EEF1FA;--muted:#A3ACC9;--line:#2A3459;--line2:#222B4A;
+ --accent:#6F97FF;--accent-dk:#3F66D6;--accent-fg:#0B1020;--accent-soft:#1D2A52;
+ --star:#FFC247;--star-dk:#B88310;--star-soft:#3A2F14;--warn:#FF9B6A;--warn-soft:#3B2318;
+ --ok:#4FD69C;--ok-bg:#2FBF83;--ok-dk:#1B7F56;--ok-soft:#14352A;--fire:#FF9D5C;
+ --c1:#7EA2FF;--c2:#4FD69C;--c3:#FFC247;--c4:#B69CFF;--c5:#FF8A80;
+ --d:#7EA2FF;--d-soft:#1D2A52;--p:#B69CFF;--p-soft:#2A2350;--i:#FF9B6A;--i-soft:#3B2318;
+ --shadow:none;--lift:0 3px 0 var(--line);color-scheme:dark}}
+:root[data-theme="dark"]{
+ --bg:#0F1426;--surface:#182038;--sunk:#131A30;--fg:#EEF1FA;--muted:#A3ACC9;--line:#2A3459;--line2:#222B4A;
+ --accent:#6F97FF;--accent-dk:#3F66D6;--accent-fg:#0B1020;--accent-soft:#1D2A52;
+ --star:#FFC247;--star-dk:#B88310;--star-soft:#3A2F14;--warn:#FF9B6A;--warn-soft:#3B2318;
+ --ok:#4FD69C;--ok-bg:#2FBF83;--ok-dk:#1B7F56;--ok-soft:#14352A;--fire:#FF9D5C;
+ --c1:#7EA2FF;--c2:#4FD69C;--c3:#FFC247;--c4:#B69CFF;--c5:#FF8A80;
+ --d:#7EA2FF;--d-soft:#1D2A52;--p:#B69CFF;--p-soft:#2A2350;--i:#FF9B6A;--i-soft:#3B2318;
+ --shadow:none;--lift:0 3px 0 var(--line);color-scheme:dark}
+
+html body,html body *:not(svg):not(svg *):not(code):not(pre){font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif}
+html body svg text{font-family:Nunito,system-ui,sans-serif!important}
+body{background:var(--bg);color:var(--fg);padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))!important}
+h1,h2,h3{font-weight:900!important;letter-spacing:-.01em}
+h1{font-size:1.9rem}
+.eyebrow,.ph,.area{font-weight:800!important}
+
+/* schede */
+.card,.hist,.mod,details.lv,.ig{border:2px solid var(--line)!important;border-radius:20px!important;box-shadow:var(--lift)!important}
+.mod.done{background:var(--ok-soft)!important;border-color:var(--ok-bg)!important;box-shadow:0 3px 0 var(--ok-bg)!important}
+
+/* pulsanti in rilievo */
+.btn{border-radius:14px!important;font-weight:800!important;letter-spacing:.02em;border:2px solid var(--line)!important;box-shadow:0 4px 0 var(--line);transition:transform .06s,box-shadow .06s}
+.btn.pri,.dpi .btn:not(.sec):not(.on){background:var(--accent)!important;color:var(--accent-fg)!important;border-color:var(--accent)!important;box-shadow:0 4px 0 var(--accent-dk)}
+.btn:active,.chk:active,.star:active,.ch:active,.scale button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.btn.pri:active{box-shadow:0 1px 0 var(--accent-dk)}
+.chk,.star{border:2px solid var(--line)!important;border-radius:14px!important;box-shadow:0 3px 0 var(--line)}
+.chk[aria-pressed="true"]{background:var(--ok-bg)!important;border-color:var(--ok-bg)!important;color:#fff!important;box-shadow:0 3px 0 var(--ok-dk)}
+.star[aria-pressed="true"]{background:var(--star)!important;border-color:var(--star)!important;box-shadow:0 3px 0 var(--star-dk)}
+.scale button,.ch{border:2px solid var(--line)!important;border-radius:14px!important;font-weight:800!important;box-shadow:0 3px 0 var(--line)}
+.ch{border-radius:99px!important}
+.scale button[aria-pressed="true"]{background:var(--accent)!important;border-color:var(--accent)!important;color:var(--accent-fg)!important;box-shadow:0 3px 0 var(--accent-dk)}
+
+/* schede (tabs) */
+.tabs,.seg{background:var(--sunk)!important;border-radius:16px!important;padding:5px!important}
+.tab,.seg button{font-weight:800!important;border-radius:12px!important}
+.tab[aria-selected="true"],.seg button[aria-pressed="true"]{background:var(--accent)!important;color:var(--accent-fg)!important;box-shadow:0 3px 0 var(--accent-dk)!important}
+
+/* campi */
+textarea,input[type=text],input[type=search],select{border:2px solid var(--line)!important;border-radius:14px!important;background:var(--sunk)!important;font-weight:600}
+textarea:focus,input:focus,select:focus{outline:none!important;border-color:var(--accent)!important}
+.pill,.tag{font-weight:800!important}
+.bar{height:10px!important;border-radius:99px}.bar i{background:var(--ok-bg)!important;border-radius:99px}
+
+/* barra di navigazione in basso */
+.appbar{position:fixed!important;left:0;right:0;bottom:0;top:auto!important;z-index:15;max-width:none!important;margin:0!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px!important;
+ background:var(--surface);border-top:2px solid var(--line);padding:8px max(10px,env(safe-area-inset-left,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-right,0px))!important}
+.appbar a{display:flex!important;flex-direction:column;align-items:center;gap:2px;padding:6px 0!important;border-radius:14px!important;font-weight:800!important;font-size:.76rem!important;color:var(--muted)!important;background:none!important;max-width:160px;width:100%;justify-self:center}
+.appbar a svg{width:26px;height:26px}
+.appbar a[aria-current]{color:var(--accent)!important;background:var(--accent-soft)!important}
+</style>
+</body></html>
