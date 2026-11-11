@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="it"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Dizionario</title>
+<meta name="theme-color" content="#1f5a5e">
+<link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="HCE">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+.appbar{display:flex;gap:4px;padding:10px 0 2px;max-width:1200px;margin:0 auto;overflow-x:auto}
+.appbar a{font:600 .82rem/1 Inter,system-ui,sans-serif;text-decoration:none;color:var(--muted,#5d6869);padding:9px 12px;border-radius:99px;white-space:nowrap}
+.appbar a[aria-current]{background:var(--accent-soft,#d9e9e7);color:var(--accent,#1f5a5e)}
+.loading{font:15px/1.5 system-ui,sans-serif;padding:40px 16px;text-align:center;color:#5d6869}
+</style>
+<script src="hce.js"></script>
+</head><body>
+<script>HCE.nav("tool");</script>
+<style>
+:root{--onp:#FFFFFF;--anc:#2B8A3E;--anc-s:#E3F6E5;--mod:#1C7ED6;--mod-s:#E3F0FF;--bi:#7048E8;--bi-s:#EFE9FF}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--onp:#0B1020;--anc:#7EDC8F;--anc-s:#173320;--mod:#74B9FF;--mod-s:#14273F;--bi:#B4A0FF;--bi-s:#261C47}}
+:root[data-theme="dark"]{--onp:#0B1020;--anc:#7EDC8F;--anc-s:#173320;--mod:#74B9FF;--mod-s:#14273F;--bi:#B4A0FF;--bi-s:#261C47}
+*{box-sizing:border-box}
+body{margin:0;padding-block:0 110px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.page{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+p{margin:0}
+header{padding-top:22px;display:flex;flex-direction:column;gap:8px}
+.eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:900}
+h1{font-size:1.9rem;line-height:1.1;margin:0}h2{font-size:1.3rem;margin:0}h3{font-size:1.05rem;margin:0}
+.lead{color:var(--muted);font-weight:600}
+nav.tb{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:8px 0;display:flex;flex-direction:column;gap:8px}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}
+.tab{flex:1 0 auto;padding:10px 12px;border:0;background:transparent;color:var(--muted);font:inherit;font-size:.88rem;cursor:pointer;min-height:44px}
+input[type=search]{width:100%;font:inherit;padding:11px 14px;color:var(--fg)}
+.card{background:var(--surface);padding:16px;display:flex;flex-direction:column;gap:10px}
+.lbl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:900;color:var(--muted)}
+ul{margin:0;padding-left:20px;display:grid;gap:5px;line-height:1.45}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.fb{border:2px solid var(--line);background:var(--surface);color:var(--fg);border-radius:99px;padding:7px 14px;font:inherit;font-weight:800;font-size:.86rem;cursor:pointer;min-height:40px}
+.fb[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.ent{border-radius:20px;border:2px solid var(--line);background:var(--surface);overflow:hidden;box-shadow:0 3px 0 var(--line)}
+.ent summary{list-style:none;cursor:pointer;display:flex;gap:12px;align-items:center;padding:12px 14px;min-height:64px}
+.ent summary::-webkit-details-marker{display:none}
+.ent .L{flex:none;width:46px;height:46px;border-radius:14px;background:var(--mc);color:var(--onp);display:grid;place-items:center;font-weight:900;font-size:1.1rem}
+.ent summary .tx{min-width:0}.ent summary b{font-size:1.08rem;font-weight:900;display:block}
+.ent summary small{display:block;color:var(--muted);font-weight:700;font-size:.84rem;line-height:1.3}
+.ent .chev{margin-left:auto;color:var(--muted);transition:transform .15s;flex:none}.ent[open] .chev{transform:rotate(90deg)}
+.sb{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
+.tag{display:inline-block;font-size:.7rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;border-radius:99px;padding:2px 8px;background:var(--ms);color:var(--mc);margin-left:6px;vertical-align:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--ms);color:var(--fg);border-radius:10px;padding:5px 10px;font-weight:700;font-size:.88rem}
+.chip mark{background:transparent;color:var(--mc);font-weight:900}
+.say{background:var(--sunk);border-left:4px solid var(--mc);border-radius:10px;padding:10px 12px;font-weight:700;line-height:1.45;display:grid;gap:6px}
+.note{background:var(--sunk);border-radius:14px;padding:10px 12px;font-size:.88rem;font-weight:600;color:var(--muted);line-height:1.45}
+.src{display:inline-flex;font-size:.74rem;font-weight:800;color:var(--accent);background:var(--sunk);border-radius:99px;padding:3px 9px;text-decoration:none}
+.muted{color:var(--muted);font-size:.86rem;font-weight:600}
+.rule{display:flex;flex-direction:column;gap:4px;border-top:2px solid var(--line2);padding-top:10px}.rule b{font-weight:900}
+.cat{border-radius:18px;padding:12px 14px;background:var(--ms);display:flex;flex-direction:column;gap:4px}
+.cat b{color:var(--mc);font-weight:900}.cat span{font-weight:600;line-height:1.4}.cat small{color:var(--muted);font-weight:700;line-height:1.35}
+.grp{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;font-weight:900;color:var(--muted);margin-top:6px}
+.hit{display:flex;gap:10px;align-items:center;border:2px solid var(--line);border-radius:16px;padding:10px 12px;background:var(--surface);text-align:left;font:inherit;color:var(--fg);cursor:pointer;width:100%}
+.hit .d{flex:none;width:12px;height:12px;border-radius:99px;background:var(--mc)}.hit b{font-weight:900}.hit span{color:var(--muted);font-weight:700;font-size:.84rem}
+.empty{text-align:center;padding:24px 8px;color:var(--muted);font-weight:700}
+.notice{text-align:center;align-items:center}
+.btn{padding:10px 16px;font:inherit;cursor:pointer;background:var(--surface);color:var(--fg);min-height:46px;text-decoration:none;display:inline-flex;align-items:center}
+</style>
+<div class="page">
+<header>
+  <div class="eyebrow">HCE · Oltre la parola · Bias</div>
+  <h1>Dizionario</h1>
+  <p class="lead">Metafore, bias e concetti del corso, con il modulo da cui vengono. Scrivi una parola e trovi a che categoria appartiene.</p>
+</header>
+<div class="card notice" id="old" hidden><h2>Serve il file dei contenuti aggiornato</h2><p class="muted">Importa la versione nuova di hce-contenuti.json dalla Home, in Impostazioni.</p><a class="btn pri" href="index.html#contenuti">Vai alla Home</a></div>
+<div id="app" hidden style="display:flex;flex-direction:column;gap:16px">
+  <nav class="tb">
+    <input type="search" id="q" placeholder="Cerca: «bivio», «Forer», «frame»…" aria-label="Cerca nel dizionario" autocomplete="off">
+    <div class="tabs">
+      <button class="tab" data-t="met" aria-selected="true">Metafore</button>
+      <button class="tab" data-t="bias" aria-selected="false">Bias</button>
+      <button class="tab" data-t="conc" aria-selected="false">Concetti</button>
+    </div>
+  </nav>
+  <section id="v-res" hidden style="display:flex;flex-direction:column;gap:8px"></section>
+  <section id="v-met" style="display:flex;flex-direction:column;gap:12px"></section>
+  <section id="v-bias" hidden style="display:flex;flex-direction:column;gap:12px"></section>
+  <section id="v-conc" hidden style="display:flex;flex-direction:column;gap:12px"></section>
+</div>
+</div>
+<script>
+HCE.ready(function(PACK){
+var Z=PACK.diz,$=function(i){return document.getElementById(i)};
+if(!Z){$('old').hidden=false;return}
+$('app').hidden=false;
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var MODT={};PACK.data.mods.forEach(function(m){MODT[m.id]=m.t});
+var LV={op:'Oltre la parola',bi:'Bias'};
+function ml(id){return id?'<a class="src" href="studio.html#m='+id+'">↗ '+(LV[id.slice(0,2)]||'')+' '+id.slice(2)+' · '+esc(MODT[id]||'')+'</a>':''}
+function ul(a){return '<ul>'+a.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>'}
+function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[«»"']/g,' ')}
+var GC={ancestrale:['var(--anc)','var(--anc-s)'],moderna:['var(--mod)','var(--mod-s)']};
+var BC={memoria:'#0E9AA7',predizione:'#E8590C',valutazione:'var(--bi)',giudizio:'#C2255C',gruppo:'#2F6BFF'};
+var BCN={};Z.biascats.forEach(function(c){BCN[c[0]]=c[1]});
+
+// METAFORE
+var mf='all';
+function metCard(c,open){var g=GC[c.g];
+  return '<details class="ent" id="met-'+c.k+'" style="--mc:'+g[0]+';--ms:'+g[1]+'"'+(open?' open':'')+'><summary><span class="L">'+esc(c.n.slice(0,2))+'</span><span class="tx"><b>'+esc(c.n)+'<span class="tag">'+c.g+'</span></b><small>'+esc(c.eff)+'</small></span><span class="chev">›</span></summary><div class="sb">'+
+   '<div class="lbl">Vocabolario del corso</div><div class="chips">'+c.vocab.map(function(v){return '<span class="chip">'+esc(v)+'</span>'}).join('')+'</div>'+
+   '<div class="lbl">Da sapere</div>'+ul(c.tips)+'<div>'+ml(c.m)+'</div></div></details>'}
+function renderMet(){
+  var h='<div class="filters">'+[['all','Tutte'],['ancestrale','Ancestrali'],['moderna','Moderne']].map(function(f){return '<button class="fb" data-mf="'+f[0]+'" aria-pressed="'+(mf===f[0])+'">'+f[1]+'</button>'}).join('')+'</div>';
+  h+=Z.met.filter(function(c){return mf==='all'||c.g===mf}).map(function(c){return metCard(c)}).join('');
+  h+='<div class="card"><h3>Come usarle</h3>'+Z.metrules.map(function(r){return '<div class="rule"><b>'+esc(r[0])+'</b><span>'+esc(r[1])+'</span><div>'+ml(r[2])+'</div></div>'}).join('')+'</div>'+
+     '<p class="note">Le 10 categorie sono raggruppamenti pratici del corso, non una classificazione scientifica: la stessa espressione può stare in più categorie, conta il frame prevalente. Gli effetti ormonali attribuiti alle singole metafore sono ipotesi del corso.</p>';
+  $('v-met').innerHTML=h}
+
+// BIAS
+var bf='all';
+function biasCard(b,open){var c=BC[b.cat];
+  return '<details class="ent" id="bias-'+b.k+'" style="--mc:'+c+';--ms:var(--sunk)"'+(open?' open':'')+'><summary><span class="L">'+esc(b.n.replace(/[^A-Z]/g,'').slice(0,2)||b.n[0])+'</span><span class="tx"><b>'+esc(b.n)+'</b><small>'+esc(b.alt)+' · '+esc(BCN[b.cat]||b.cat)+'</small></span><span class="chev">›</span></summary><div class="sb">'+
+   '<p style="line-height:1.5;font-weight:600">'+esc(b.d)+'</p><div class="lbl">Esempi</div><div class="say">'+b.ex.map(function(x){return '<span>'+esc(x)+'</span>'}).join('')+'</div>'+
+   '<div class="lbl">Come riconoscerlo</div>'+ul(b.recog)+'<div class="lbl">Come gestirlo</div>'+ul(b.manage)+
+   (b.note?'<p class="note">'+esc(b.note)+'</p>':'')+(b.src?'<p class="muted">Fonti: '+esc(b.src)+'</p>':'')+'<div>'+ml(b.m)+'</div></div></details>'}
+function renderBias(){
+  var h='<div class="filters"><button class="fb" data-bf="all" aria-pressed="'+(bf==='all')+'">Tutti</button>'+Z.biascats.map(function(c){return '<button class="fb" data-bf="'+c[0]+'" aria-pressed="'+(bf===c[0])+'">'+c[0][0].toUpperCase()+c[0].slice(1)+'</button>'}).join('')+'</div>';
+  if(bf!=='all'){var c=Z.biascats.filter(function(x){return x[0]===bf})[0];h+='<div class="cat" style="--mc:'+BC[bf]+';--ms:var(--sunk)"><b>'+esc(c[1])+'</b><span>'+esc(c[2])+'</span><small>Esempio: '+esc(c[3])+'</small></div>'}
+  h+=Z.bias.filter(function(b){return bf==='all'||b.cat===bf}).map(function(b){return biasCard(b)}).join('');
+  h+='<div class="card"><h3>Le 5 categorie HCE</h3>'+Z.biascats.map(function(c){return '<div class="rule"><b style="color:'+BC[c[0]]+'">'+esc(c[1])+'</b><span>'+esc(c[2])+'</span><span class="muted">'+esc(c[3])+'</span></div>'}).join('')+'<div>'+ml('bi03')+'</div></div>';
+  h+='<div class="card"><h3>Basi</h3>'+Z.biasbase.map(function(r){return '<div class="rule"><b>'+esc(r[0])+'</b><span>'+esc(r[1])+'</span><div>'+ml(r[2])+'</div></div>'}).join('')+'</div>';
+  $('v-bias').innerHTML=h}
+
+// CONCETTI
+var CG={Frame:['#E8590C','Frame e framing'],Metafore:['var(--anc)','Metafore'],Figure:['var(--mod)','Altre figure retoriche']};
+function concCard(c,i,open){var g=CG[c[0]];
+  return '<details class="ent" id="conc-'+i+'" style="--mc:'+g[0]+';--ms:var(--sunk)"'+(open?' open':'')+'><summary><span class="L">'+esc(c[1][0])+'</span><span class="tx"><b>'+esc(c[1])+'</b><small>'+esc(g[1])+'</small></span><span class="chev">›</span></summary><div class="sb">'+
+   '<p style="line-height:1.5;font-weight:600">'+esc(c[2])+'</p>'+(c[3]?'<div class="say">'+esc(c[3])+'</div>':'')+'<div>'+ml(c[4])+'</div></div></details>'}
+function renderConc(){var h='',last='';
+  Z.conc.forEach(function(c,i){if(c[0]!==last){h+='<div class="grp">'+CG[c[0]][1]+'</div>';last=c[0]}h+=concCard(c,i)});
+  h+='<div class="card"><h3>Riconoscere una metafora</h3><p>Paragone: termini intercambiabili. Similitudine: c\'è un marcatore (come, sembra). Metafora: identificazione diretta, senza marcatori. Analogia (HCE): concetti lontani, scopo esplicativo, frase lunga.</p><div class="say" style="--mc:var(--anc)">«Claudio è Dotto dei sette nani»: metafora.</div><div>'+ml('op28')+'</div></div>';
+  $('v-conc').innerHTML=h}
+
+// RICERCA
+var IDX=[];
+Z.met.forEach(function(c){IDX.push({t:'met',id:'met-'+c.k,n:c.n,s:'Metafora '+c.g,col:GC[c.g][0],txt:norm(c.n+' '+c.eff+' '+c.tips.join(' '))});
+  c.vocab.forEach(function(v){IDX.push({t:'met',id:'met-'+c.k,n:'«'+v+'»',s:'Metafora '+c.n.toLowerCase()+' ('+c.g+')',col:GC[c.g][0],txt:norm(v),v:1})})});
+Z.bias.forEach(function(b){IDX.push({t:'bias',id:'bias-'+b.k,n:b.n,s:b.alt+' · '+(BCN[b.cat]||''),col:BC[b.cat],txt:norm(b.n+' '+b.alt+' '+b.d+' '+b.ex.join(' ')+' '+b.recog.join(' ')+' '+b.src)})});
+Z.biascats.forEach(function(c){IDX.push({t:'bias',id:'',n:c[1],s:c[3],col:BC[c[0]],txt:norm(c[1]+' '+c[2]+' '+c[3]),bf:c[0]})});
+Z.conc.forEach(function(c,i){IDX.push({t:'conc',id:'conc-'+i,n:c[1],s:CG[c[0]][1],col:CG[c[0]][0],txt:norm(c[1]+' '+c[2]+' '+c[3])})});
+function search(q){var n=norm(q).trim();
+  if(n.length<2){$('v-res').hidden=true;return}
+  var STOP={di:1,da:1,il:1,lo:1,la:1,le:1,gli:1,un:1,una:1,uno:1,che:1,del:1,della:1,per:1,con:1,in:1,a:1,e:1,al:1,sul:1};
+  var words=n.split(/\s+/).filter(function(w){return w&&!STOP[w]});if(!words.length)words=[n];
+  var r=IDX.map(function(x){var sc=0,all=true,nn=norm(x.n);words.forEach(function(w){var a=x.txt.indexOf(w)>=0,t=nn.indexOf(w)>=0;if(!a&&!t)all=false;if(a)sc+=x.v?3:1;if(t)sc+=4});return [all?sc:0,x]}).filter(function(a){return a[0]>0}).sort(function(a,b){return b[0]-a[0]}).slice(0,12);
+  $('v-res').hidden=false;
+  $('v-res').innerHTML='<div class="lbl">Risultati</div>'+(r.length?r.map(function(a,i){var x=a[1];return '<button class="hit" data-go="'+i+'" style="--mc:'+x.col+'"><span class="d"></span><span><b>'+esc(x.n)+'</b><br><span>'+esc(x.s)+'</span></span></button>'}).join(''):'<div class="empty">Nessun risultato. Il dizionario contiene solo ciò che è nel corso.</div>');
+  $('v-res')._r=r}
+$('q').addEventListener('input',function(){search(this.value)});
+$('v-res').addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(!b)return;var x=$('v-res')._r[+b.dataset.go][1];
+  $('q').value='';$('v-res').hidden=true;
+  if(x.t==='met'){mf='all';renderMet()}if(x.t==='bias'){bf=x.bf||'all';renderBias()}
+  show(x.t,true);
+  if(x.id){var el=$(x.id);if(el){el.open=true;setTimeout(function(){el.scrollIntoView({block:'start'});window.scrollBy(0,-120)},30)}}});
+
+document.addEventListener('click',function(e){var b;
+  if(b=e.target.closest('[data-mf]')){mf=b.dataset.mf;renderMet()}
+  if(b=e.target.closest('[data-bf]')){bf=b.dataset.bf;renderBias()}});
+function show(t,keep){document.querySelectorAll('.tab').forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===t?'true':'false')});
+  ['met','bias','conc'].forEach(function(x){$('v-'+x).hidden=x!==t});if(!keep)window.scrollTo(0,0)}
+document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(b)show(b.dataset.t)});
+renderMet();renderBias();renderConc();
+var h0=(location.hash||'').slice(1);if(h0==='bias'||h0==='conc')show(h0);
+});
+</script>
+
+<style>
+/* Tema "gioco": colori, caratteri arrotondati, pulsanti in rilievo. Caricato dopo gli stili di ogni pagina. */
+:root{
+ --bg:#F7F8FC;--surface:#FFFFFF;--sunk:#F1F3F9;--fg:#1B2240;--muted:#5A6385;--line:#E3E7F0;--line2:#EDF0F6;
+ --accent:#2F6BFF;--accent-dk:#1E4FD6;--accent-fg:#FFFFFF;--accent-soft:#EAF0FF;
+ --star:#F5A524;--star-dk:#C98408;--star-soft:#FFF4DE;--warn:#C2410C;--warn-soft:#FFEDE3;
+ --ok:#12805A;--ok-bg:#1FB37A;--ok-dk:#138A5C;--ok-soft:#E3F7EE;--fire:#FF8A3D;
+ --c1:#2F6BFF;--c2:#16A06B;--c3:#E08E0B;--c4:#8B5CF6;--c5:#EF5350;
+ --d:#2F6BFF;--d-soft:#EAF0FF;--p:#8B5CF6;--p-soft:#F3EEFF;--i:#E8590C;--i-soft:#FFEDE3;
+ --shadow:none;--lift:0 3px 0 var(--line);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#0F1426;--surface:#182038;--sunk:#131A30;--fg:#EEF1FA;--muted:#A3ACC9;--line:#2A3459;--line2:#222B4A;
+ --accent:#6F97FF;--accent-dk:#3F66D6;--accent-fg:#0B1020;--accent-soft:#1D2A52;
+ --star:#FFC247;--star-dk:#B88310;--star-soft:#3A2F14;--warn:#FF9B6A;--warn-soft:#3B2318;
+ --ok:#4FD69C;--ok-bg:#2FBF83;--ok-dk:#1B7F56;--ok-soft:#14352A;--fire:#FF9D5C;
+ --c1:#7EA2FF;--c2:#4FD69C;--c3:#FFC247;--c4:#B69CFF;--c5:#FF8A80;
+ --d:#7EA2FF;--d-soft:#1D2A52;--p:#B69CFF;--p-soft:#2A2350;--i:#FF9B6A;--i-soft:#3B2318;
+ --shadow:none;--lift:0 3px 0 var(--line);color-scheme:dark}}
+:root[data-theme="dark"]{
+ --bg:#0F1426;--surface:#182038;--sunk:#131A30;--fg:#EEF1FA;--muted:#A3ACC9;--line:#2A3459;--line2:#222B4A;
+ --accent:#6F97FF;--accent-dk:#3F66D6;--accent-fg:#0B1020;--accent-soft:#1D2A52;
+ --star:#FFC247;--star-dk:#B88310;--star-soft:#3A2F14;--warn:#FF9B6A;--warn-soft:#3B2318;
+ --ok:#4FD69C;--ok-bg:#2FBF83;--ok-dk:#1B7F56;--ok-soft:#14352A;--fire:#FF9D5C;
+ --c1:#7EA2FF;--c2:#4FD69C;--c3:#FFC247;--c4:#B69CFF;--c5:#FF8A80;
+ --d:#7EA2FF;--d-soft:#1D2A52;--p:#B69CFF;--p-soft:#2A2350;--i:#FF9B6A;--i-soft:#3B2318;
+ --shadow:none;--lift:0 3px 0 var(--line);color-scheme:dark}
+
+html body,html body *:not(svg):not(svg *):not(code):not(pre){font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif}
+html body svg text{font-family:Nunito,system-ui,sans-serif!important}
+body{background:var(--bg);color:var(--fg);padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))!important}
+h1,h2,h3{font-weight:900!important;letter-spacing:-.01em}
+h1{font-size:1.9rem}
+.eyebrow,.ph,.area{font-weight:800!important}
+
+/* schede */
+.card,.hist,.mod,details.lv,.ig{border:2px solid var(--line)!important;border-radius:20px!important;box-shadow:var(--lift)!important}
+.mod.done{background:var(--ok-soft)!important;border-color:var(--ok-bg)!important;box-shadow:0 3px 0 var(--ok-bg)!important}
+
+/* pulsanti in rilievo */
+.btn{border-radius:14px!important;font-weight:800!important;letter-spacing:.02em;border:2px solid var(--line)!important;box-shadow:0 4px 0 var(--line);transition:transform .06s,box-shadow .06s}
+.btn.pri,.dpi .btn:not(.sec):not(.on){background:var(--accent)!important;color:var(--accent-fg)!important;border-color:var(--accent)!important;box-shadow:0 4px 0 var(--accent-dk)}
+.btn:active,.chk:active,.star:active,.ch:active,.scale button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.btn.pri:active{box-shadow:0 1px 0 var(--accent-dk)}
+.chk,.star{border:2px solid var(--line)!important;border-radius:14px!important;box-shadow:0 3px 0 var(--line)}
+.chk[aria-pressed="true"]{background:var(--ok-bg)!important;border-color:var(--ok-bg)!important;color:#fff!important;box-shadow:0 3px 0 var(--ok-dk)}
+.star[aria-pressed="true"]{background:var(--star)!important;border-color:var(--star)!important;box-shadow:0 3px 0 var(--star-dk)}
+.scale button,.ch{border:2px solid var(--line)!important;border-radius:14px!important;font-weight:800!important;box-shadow:0 3px 0 var(--line)}
+.ch{border-radius:99px!important}
+.scale button[aria-pressed="true"]{background:var(--accent)!important;border-color:var(--accent)!important;color:var(--accent-fg)!important;box-shadow:0 3px 0 var(--accent-dk)}
+
+/* schede (tabs) */
+.tabs,.seg{background:var(--sunk)!important;border-radius:16px!important;padding:5px!important}
+.tab,.seg button{font-weight:800!important;border-radius:12px!important}
+.tab[aria-selected="true"],.seg button[aria-pressed="true"]{background:var(--accent)!important;color:var(--accent-fg)!important;box-shadow:0 3px 0 var(--accent-dk)!important}
+
+/* campi */
+textarea,input[type=text],input[type=search],select{border:2px solid var(--line)!important;border-radius:14px!important;background:var(--sunk)!important;font-weight:600}
+textarea:focus,input:focus,select:focus{outline:none!important;border-color:var(--accent)!important}
+.pill,.tag{font-weight:800!important}
+.bar{height:10px!important;border-radius:99px}.bar i{background:var(--ok-bg)!important;border-radius:99px}
+
+/* barra di navigazione in basso */
+.appbar{position:fixed!important;left:0;right:0;bottom:0;top:auto!important;z-index:15;max-width:none!important;margin:0!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px!important;
+ background:var(--surface);border-top:2px solid var(--line);padding:8px max(10px,env(safe-area-inset-left,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-right,0px))!important}
+.appbar a{display:flex!important;flex-direction:column;align-items:center;gap:2px;padding:6px 0!important;border-radius:14px!important;font-weight:800!important;font-size:.76rem!important;color:var(--muted)!important;background:none!important;max-width:160px;width:100%;justify-self:center}
+.appbar a svg{width:26px;height:26px}
+.appbar a[aria-current]{color:var(--accent)!important;background:var(--accent-soft)!important}
+</style>
+</body></html>

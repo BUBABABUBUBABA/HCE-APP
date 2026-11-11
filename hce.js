@@ -48,7 +48,7 @@ var HCE = (function () {
   function importPack(text) {
     var p = JSON.parse(text);
     if (!p || p.app !== 'hce-contenuti') throw new Error('Questo non è il file dei contenuti HCE.');
-    var pack = { version: p.version, vs: p.vs, vd: p.vd, data: p.data, areas: p.areas, sys: p.sys, toolnames: p.toolnames, unp: p.unp, books: p.books, e3: p.e3, mib: p.mib, istair: p.istair, feedback: p.feedback };
+    var pack = { version: p.version, vs: p.vs, vd: p.vd, data: p.data, areas: p.areas, sys: p.sys, toolnames: p.toolnames, unp: p.unp, books: p.books, e3: p.e3, mib: p.mib, istair: p.istair, feedback: p.feedback, diz: p.diz };
     return clear('appunti')
       .then(function () { return putAll('appunti', p.appunti); })
       .then(function () { return putAll('meta', { pack: pack, cerca: p.cerca }); })
