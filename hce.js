@@ -457,10 +457,10 @@ var HCE = (function () {
   /* medaglia nuova: un avviso in basso, una volta sola */
   function medalCheck() {
     pack().then(function (pk) { if (!pk) return;
-      var all = medals(pk), seen = J(lsGet('medals_seen_v2'), null), first = !seen; seen = seen || {};
+      var all = medals(pk), seen = J(lsGet('medals_seen_v3'), null), first = !seen; seen = seen || {};
       all.forEach(function (m) { m.sk = m.k + (m.tier != null && m.tier >= 0 ? '#' + m.tier : ''); });
       var nu = all.filter(function (m) { return m.got && !seen[m.sk]; });
-      nu.forEach(function (m) { seen[m.sk] = Date.now(); }); lsSet('medals_seen_v2', JSON.stringify(seen));
+      nu.forEach(function (m) { seen[m.sk] = first ? 1 : Date.now(); }); lsSet('medals_seen_v3', JSON.stringify(seen));
       if (first || !nu.length) return;
       var t = document.createElement('a'); t.href = 'io.html#medaglie'; t.className = 'medal-toast'; t.setAttribute('role', 'status');
       t.innerHTML = '<span class="mt-ic">🏅</span><span><b>' + (nu.length > 1 ? nu.length + ' medaglie nuove' : 'Medaglia sbloccata') + '</b><span>' + nu.slice(0, 3).map(function (m) { return m.e + ' ' + m.n + (m.tier != null && m.tier >= 0 && (m.th || m.tlab) ? ' · ' + ['bronzo', 'argento', 'oro'][m.tier] : ''); }).join(', ').replace(/[<>&]/g, '') + (nu.length > 3 ? ' e altre ' + (nu.length - 3) : '') + '</span></span>';

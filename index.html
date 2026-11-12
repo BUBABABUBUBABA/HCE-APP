@@ -124,6 +124,22 @@ input[type=file]{display:none}
 .seg2{display:flex;gap:6px;flex-wrap:wrap}.seg2 button{font:inherit;font-weight:800;font-size:.86rem;padding:8px 12px;min-height:44px;border:2px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);cursor:pointer}
 .seg2 button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
 .note-bk{background:var(--star-soft);border-radius:14px;padding:12px;line-height:1.45;font-weight:600;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.now{display:flex;flex-direction:column;gap:10px;background:var(--accent);color:var(--accent-fg);border-radius:24px;padding:22px;text-decoration:none;box-shadow:0 5px 0 var(--accent-dk)}
+.now .ey{font-size:.78rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;opacity:.92}.now .nt{font-size:1.5rem;font-weight:900;line-height:1.2}.now .ns{font-weight:700;opacity:.92}
+.now .nb{align-self:flex-start;background:var(--accent-fg);color:var(--accent);font-weight:900;font-size:1.05rem;padding:12px 22px;border-radius:16px;min-height:44px;box-sizing:border-box;display:inline-flex;align-items:center}
+.now.done{background:var(--ok-bg);box-shadow:0 5px 0 var(--ok-dk)}.now.done .nb{color:var(--ok)}
+.plan summary{list-style:none;display:flex;align-items:center;gap:14px;cursor:pointer;min-height:64px}.plan summary::-webkit-details-marker{display:none}
+.plan .pt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.plan .pt b{font-size:1.05rem;font-weight:900}.plan .pt span{font-size:.86rem;font-weight:700;color:var(--muted)}
+.chev{flex:none;color:var(--muted);font-weight:900;font-size:1.3rem;transition:transform .15s}details[open]>summary .chev{transform:rotate(90deg)}
+.sec{font-size:.78rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.rows{padding:4px 16px;gap:0}
+.row1{display:block;border-top:2px solid var(--line2);text-decoration:none;color:var(--fg)}.row1:first-child{border-top:0}
+a.row1,.row1>summary{display:flex;align-items:center;gap:12px;min-height:60px;padding:8px 0;cursor:pointer;list-style:none}.row1>summary::-webkit-details-marker{display:none}
+.row1 .ic{flex:none;width:40px;height:40px;border-radius:13px;background:var(--cs);color:var(--c);display:grid;place-items:center;font-weight:900}
+.row1 .tx{flex:1;min-width:0;display:flex;flex-direction:column}.row1 .tx b{font-weight:900}.row1 .tx span{font-size:.86rem;font-weight:700;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row1.ok .tx b{color:var(--ok)}.rb{padding:0 0 14px;display:flex;flex-direction:column;gap:10px}
+.more{text-align:center;font-weight:800;color:var(--muted);text-decoration:none;padding:10px 6px;min-height:44px;display:block;line-height:1.4}.more b{color:var(--accent)}
+.seth{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .tot{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .tot div{background:var(--sunk);border-radius:14px;padding:8px 4px;text-align:center;display:flex;flex-direction:column}
 .tot b{font-size:1.2rem;font-weight:900}.tot span{font-size:.75rem;font-weight:800;color:var(--muted)}
@@ -156,52 +172,40 @@ input[type=file]{display:none}
 </div>
 
 <div class="card welcome" id="upd" hidden><h2>Contenuti da aggiornare</h2><p class="muted">Gli strumenti nuovi sono nella versione nuova di <b>hce-contenuti.json</b>. Importala: i tuoi progressi restano.</p><label class="big g" for="f-pack">IMPORTA IL FILE NUOVO</label><div id="u-msg" style="width:100%"></div></div>
-<div id="main" hidden style="display:flex;flex-direction:column;gap:18px">
-  <div class="hi"><h1 id="hello">Ciao!</h1><p id="hi-s">Ecco il tuo piano di oggi.</p></div>
-  <div class="goal"><div class="gbar"><i id="g-bar" style="width:0"></i></div><b id="g-n">0/3</b></div>
-
-  <div class="card" style="gap:4px">
-    <h2 style="margin-bottom:6px">Il piano di oggi</h2>
-    <a class="task" id="t1" href="percorso.html"><span class="ck"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></span><span class="tx"><b>Studia 2 moduli</b><span id="t1-s">…</span></span><span class="go">›</span></a>
-    <a class="task" id="t2" href="prep.html#nuova"><span class="ck"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></span><span class="tx"><b>Allenati su un'interazione vera</b><span>Prepara un'interazione, usa D-P-I, E³, IBM o fai un giro in Palestra</span></span><span class="go">›</span></a>
-    <a class="task" id="t3" href="#tod"><span class="ck"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></span><span class="tx"><b>Prova lo strumento del giorno</b><span id="t3-s">In una conversazione di oggi</span></span><span class="go">›</span></a>
-  </div>
-
+<div id="main" hidden style="display:flex;flex-direction:column;gap:16px">
+  <div class="hi"><h1 id="hello">Ciao!</h1><p id="hi-s">Una cosa alla volta. Ecco la prossima.</p></div>
+  <a class="now" id="now" href="percorso.html"><span class="ey" id="now-e">Adesso</span><span class="nt" id="now-t">…</span><span class="ns" id="now-s"></span><span class="nb" id="now-b">Inizia</span></a>
   <div class="note-bk" id="bk-nudge" hidden></div>
-  <details class="card guide" id="guide">
-    <summary><b>Come funziona l'app</b><span class="muted">Da dove parto, in 4 passi</span></summary>
-    <ol class="gsteps">
-      <li><b>Percorso</b><span>Studia un modulo alla volta: sono brevi. In fondo trovi «Esercitati», per fissarlo subito.</span></li>
-      <li><b>Prepara</b><span>Hai una conversazione importante? Qui la prepari passo passo, e dopo segni com'è andata.</span></li>
-      <li><b>Strumenti</b><span>Le schede da consultare e la Palestra per allenarti con le domande. Se trovi una parola che non conosci, cercala nel Dizionario.</span></li>
-      <li><b>Io</b><span>Due minuti al giorno su di te: come stai, obiettivi, abitudini.</span></li>
-    </ol>
-    <p class="muted">I numeri in alto sono i giorni di fila in cui hai usato l'app e i punti (XP) che guadagni facendo le attività. La 🏅 conta le medaglie sbloccate: le trovi in Io → Medaglie, divise per gruppi, ognuna con scritto come prenderla.</p>
+  <details class="card plan" id="plan">
+    <summary><svg class="ring" width="64" height="64" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26" fill="none" stroke="var(--line2)" stroke-width="9"/><circle id="ring" cx="32" cy="32" r="26" fill="none" stroke="var(--ok-bg)" stroke-width="9" stroke-dasharray="0 164" stroke-linecap="round" transform="rotate(-90 32 32)"/></svg><span class="pt"><b id="g-n">Piano di oggi: 0 su 3</b><span id="g-s">Tocca per vedere i tre passi</span></span><span class="chev" aria-hidden="true">›</span></summary>
+    <div style="display:flex;flex-direction:column">
+    <a class="task" id="t1" href="percorso.html"><span class="ck"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></span><span class="tx"><b>Studia 2 moduli</b><span id="t1-s">…</span></span><span class="go">›</span></a>
+    <a class="task" id="t2" href="prep.html#nuova"><span class="ck"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></span><span class="tx"><b>Allenati su un'interazione vera</b><span>Prepara, D-P-I, E³, IBM, Palestra o Io</span></span><span class="go">›</span></a>
+    <a class="task" id="t3" href="#tod-d"><span class="ck"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></span><span class="tx"><b>Prova lo strumento del giorno</b><span id="t3-s">In una conversazione di oggi</span></span><span class="go">›</span></a>
+    </div>
   </details>
-
-  <div class="tod" id="tod"></div>
-
-  <div class="card" id="rip-c">
-    <h2>Ripasso</h2>
-    <p class="muted">I moduli studiati 1, 3 e 7 giorni fa: 5 minuti ciascuno, a voce, senza guardare.</p>
-    <div id="rip" style="display:flex;flex-direction:column;gap:10px"></div>
+  <div class="sec">Anche oggi</div>
+  <div class="card rows">
+    <details class="row1" id="rip-c"><summary><span class="ic" style="--c:var(--accent);--cs:var(--accent-soft)" id="rip-n">0</span><span class="tx"><b>Ripasso</b><span id="rip-s">…</span></span><span class="chev" aria-hidden="true">›</span></summary>
+      <div class="rb"><p class="muted">I moduli studiati 1, 3 e 7 giorni fa: 5 minuti ciascuno, a voce, senza guardare.</p><div id="rip" style="display:flex;flex-direction:column;gap:10px"></div></div></details>
+    <details class="row1" id="tod-d"><summary><span class="ic" style="--c:var(--i);--cs:var(--i-soft)">E³</span><span class="tx"><b>Strumento del giorno</b><span id="tod-s">…</span></span><span class="chev" aria-hidden="true">›</span></summary>
+      <div class="rb"><div class="tod" id="tod"></div></div></details>
+    <a class="row1" id="ck-r" href="io.html#oggi"><span class="ic" style="--c:var(--ok);--cs:var(--ok-soft)">☺</span><span class="tx"><b>Check-in</b><span id="ck-s">Due minuti: come stai oggi</span></span><span class="chev" aria-hidden="true">›</span></a>
+    <details class="row1" id="la-c"><summary><span class="ic" style="--c:var(--c5);--cs:var(--warn-soft)" id="la-n">0</span><span class="tx"><b>Da completare</b><span>Un «Dopo» da scrivere, l'ultimo modulo o l'ultimo piano</span></span><span class="chev" aria-hidden="true">›</span></summary>
+      <div class="rb"><div id="la" style="display:flex;flex-direction:column;gap:10px"></div></div></details>
   </div>
-
-  <div class="card" id="la-c">
-    <h2>Riprendi</h2>
-    <div id="la" style="display:flex;flex-direction:column;gap:10px"></div>
-  </div>
-
-  <div class="card">
-    <h2>La tua settimana</h2>
-    <div class="wk" id="wk"></div>
-    <div class="tot" id="tot"></div>
-  </div>
+  <a class="more" href="io.html#resoconto">Il tuo resoconto, il calendario e le medaglie sono in <b>Io</b> ›</a>
+  <details class="card guide" id="guide" hidden>
+    <summary><b>Come funziona l'app</b><span class="muted">Da dove parto, in 4 passi</span></summary>
+    <div id="guide-b"></div>
+    <button class="btn" id="guide-ok">Ho capito, nascondi</button>
+  </details>
 </div>
 
-<div class="card" id="impostazioni">
-  <h2>Impostazioni</h2>
+<div class="card" id="impostazioni" hidden>
+  <div class="seth"><h2>Impostazioni</h2><button class="btn" id="set-x">Chiudi</button></div>
   <p class="muted">Tocca una voce per aprirla.</p>
+  <details class="set" id="set-guide"><summary><span><b>Come funziona l'app</b><small>Da dove parto, in 4 passi</small></span></summary><div class="setb" id="guide-b2"></div></details>
   <details class="set" id="contenuti"><summary><span><b>Contenuti del corso</b><small id="c-st">Controllo…</small></span></summary>
     <div class="setb">
     <div class="row"><label class="btn pri" for="f-pack">Importa il file dei contenuti</label></div>
@@ -245,8 +249,9 @@ function draw(p){
   $('welcome').hidden=!!p;$('main').hidden=!p;$('upd').hidden=!p||!!(p.e3&&p.mib&&p.istair&&p.feedback&&p.diz&&p.diz.gloss&&p.diz.chemrefs&&p.io&&p.ex&&p.lex&&p.slcc&&p.inc);if(!p)return;
   var D=p.data,done=S.done,today=S.todayKey,now=new Date();
   $('hello').textContent=greet()+'!';
-  $('hi-s').textContent=S.goal>=S.goalMax?'Piano di oggi completato. Grande!':S.streak?'Serie di '+S.streak+(S.streak===1?' giorno':' giorni')+(S.today?': continua così.':': fai qualcosa oggi per non perderla.'):'Ecco il tuo piano di oggi.';
-  $('g-bar').style.width=Math.round(S.goal/S.goalMax*100)+'%';$('g-n').textContent=S.goal+'/'+S.goalMax;
+  $('hi-s').textContent=S.goal>=S.goalMax?'Piano di oggi completato. Grande!':S.streak&&!S.today?'Serie di '+S.streak+(S.streak===1?' giorno':' giorni')+': fai qualcosa oggi per non perderla.':'Una cosa alla volta. Ecco la prossima.';
+  $('ring').setAttribute('stroke-dasharray',Math.round(S.goal/S.goalMax*163)+' 164');$('g-n').textContent='Piano di oggi: '+S.goal+' su '+S.goalMax;
+  $('g-s').textContent=S.goal>=S.goalMax?'Tutti e tre i passi fatti':'Tocca per vedere i tre passi';
   // piano
   var next=null;for(var i=0;i<D.mods.length;i++){if(!(done[D.mods[i].id]>0)){next=D.mods[i];break}}
   var LV={};D.levels.forEach(function(l){LV[l.k]=l});
@@ -257,11 +262,12 @@ function draw(p){
   $('t3').className='task'+(S.plan[2]>=1?' ok':'');
   // strumento del giorno
   var E=p.e3,tod=$('tod');
+  var todT=null;
   if(!E){tod.style.cssText='';tod.innerHTML='<h2 style="font-size:1.2rem">Strumento del giorno</h2><p class="muted">Importa la nuova versione di hce-contenuti.json (Impostazioni, qui sotto) per vedere gli strumenti dell\'E³.</p>'}
   else{var ALL=[];E.phases.forEach(function(ph){ph.aspects.forEach(function(a){a.tools.forEach(function(t){ALL.push({p:ph,a:a,t:t})})})});
     var o=ALL[dayNum(now)%ALL.length],t=o.t,c=PC[o.p.k],dd=S.daily[today];
     tod.style.setProperty('--pc',c[0]);tod.style.setProperty('--pc2',c[1]);
-    $('t3-s').textContent=t.n+' · '+t.it;
+    $('t3-s').textContent=t.n+' · '+t.it;todT=t;$('tod-s').textContent=(dd?'✓ Provato oggi · ':'')+t.n+' · '+t.it;$('tod-d').classList.toggle('ok',!!dd);
     tod.innerHTML='<div class="crumb">Strumento del giorno · '+esc(o.p.n)+' › '+esc(o.a.n)+'</div><h2>'+esc(t.n)+'<small>'+esc(t.it)+'</small></h2><p>'+esc(t.what)+'</p>'+
       (t.ex?'<p class="hint">'+esc(t.ex)+'</p>':'')+'<p class="hint">Usalo almeno una volta oggi, in una conversazione vera.</p>'+
       '<div class="row"><button class="btn'+(dd?' done':' pri')+'" id="tod-ok">'+(dd?'✓ Provato oggi':'L\'ho provato')+'</button><a class="btn" href="e3.html#t='+encodeURIComponent(t.n)+'" style="text-decoration:none">Come si usa</a></div>';
@@ -272,6 +278,8 @@ function draw(p){
   Object.keys(done).forEach(function(id){var ts=done[id];if(!(ts>1e12)||!MOD[id])return;var ago=tn-dayNum(new Date(ts));if(ago===1||ago===3||ago===7)rows.push({id:id,ago:ago,ts:ts})});
   rows.sort(function(a,b){return a.ago-b.ago||a.ts-b.ts});
   var more=rows.length>5?rows.length-5:0;rows=rows.slice(0,5);
+  var ripTodo=rows.filter(function(r){return !S.rip[r.id+'@'+today]});
+  $('rip-n').textContent=ripTodo.length;$('rip-s').textContent=rows.length?(ripTodo.length?ripTodo.length+(ripTodo.length===1?' modulo da ripassare a voce':' moduli da ripassare a voce'):'✓ Ripasso di oggi fatto'):'Niente da ripassare oggi';$('rip-c').classList.toggle('ok',rows.length>0&&!ripTodo.length);
   $('rip').innerHTML=rows.length?rows.map(function(r){var m=MOD[r.id],k=r.id+'@'+today,ok=!!S.rip[k];
     return '<div class="ri"><a class="tx" href="studio.html#x='+r.id+'"><small>'+(r.ago===1?'Ieri':r.ago+' giorni fa')+'</small><b>'+esc(m.t)+'</b><span>'+esc((LV[m.l]||{}).n||'')+'</span></a><button class="chk'+(ok?' done':'')+'" data-rip="'+k+'" aria-pressed="'+ok+'" aria-label="Ripassato" style="'+(ok?'background:var(--ok-bg);color:#fff;border-color:var(--ok-bg)':'')+'">✓</button></div>'}).join('')+(more?'<p class="muted">E altri '+more+': li trovi domani.</p>':'')
    :'<p class="muted">Niente da ripassare oggi. I moduli che segni come studiati tornano qui dopo 1, 3 e 7 giorni.</p>';
@@ -285,13 +293,17 @@ function draw(p){
   if(pl)la.push('<a class="la" href="e3.html#p='+pl.id+'" style="--c:var(--i);--c-soft:var(--i-soft)"><span class="ic">E³</span><span class="tx"><b>'+esc(pl.sit||'Preparazione E³')+'</b><span>Preparata il '+new Date(+pl.id).toLocaleDateString('it-IT')+(pl.goal?' · '+esc(pl.goal):'')+'</span></span><span class="go">Apri ›</span></a>');
   var lm=Object.keys(done).filter(function(k){return done[k]>0&&MOD[k]}).sort(function(a,b){return done[b]-done[a]})[0];
   if(lm)la.push('<a class="la" href="studio.html#m='+lm+'" style="--c:var(--c1);--c-soft:var(--accent-soft)"><span class="ic">S</span><span class="tx"><b>'+esc(MOD[lm].t)+'</b><span>Ultimo modulo studiato · '+esc((LV[MOD[lm].l]||{}).n||'')+'</span></span><span class="go">Rileggi ›</span></a>');
-  $('la-c').hidden=!la.length;$('la').innerHTML=la.join('');
-  // settimana (lunedì-domenica)
-  var mon=new Date(now);mon.setHours(12,0,0,0);mon.setDate(mon.getDate()-((mon.getDay()+6)%7));
-  var keys=[],LET='LMMGVSD';for(var j=0;j<7;j++){var d=new Date(mon);d.setDate(mon.getDate()+j);keys.push(HCE.dayKey(d.getTime()))}
-  $('wk').innerHTML=keys.map(function(k,j){var cls=(S.days[k]?'on':'')+(k===today?' td':'')+(k>today?' fut':'');return '<div class="'+cls+'"><i>'+(S.days[k]?'✓':'')+'</i>'+LET[j]+'</div>'}).join('');
-  var W={xp:0,mod:0,ses:0,plan:0};S.events.forEach(function(e){if(keys.indexOf(e.d)<0)return;W.xp+=e.xp;if(e.type in W)W[e.type]++});
-  $('tot').innerHTML='<div><b>'+W.xp+'</b><span>XP</span></div><div><b>'+W.mod+'</b><span>moduli</span></div><div><b>'+W.ses+'</b><span>sessioni</span></div><div><b>'+W.plan+'</b><span>prep. E³</span></div>';
+  $('la-c').hidden=!la.length;$('la').innerHTML=la.join('');$('la-n').textContent=la.length;
+  var ck=HCE.lsJ('io_check_v1',{})[today];$('ck-s').textContent=ck&&ck.t?'✓ Fatto oggi'+(ck.emo?' · '+ck.emo:''):'Due minuti: come stai oggi';$('ck-r').classList.toggle('ok',!!(ck&&ck.t));
+  // adesso: una cosa alla volta
+  var N=null;
+  if(ripTodo.length){var rm=MOD[ripTodo[0].id];N={e:'Adesso · 5 minuti',t:'Ripassa a voce «'+rm.t+'»',s:(ripTodo[0].ago===1?'Studiato ieri':'Studiato '+ripTodo[0].ago+' giorni fa')+' · '+((LV[rm.l]||{}).n||''),b:'Ripassa',h:'studio.html#x='+rm.id}}
+  else if(S.T.mod<2&&next){var idx=D.mods.filter(function(m){return m.l===next.l}).map(function(m){return m.id}).indexOf(next.id)+1,tot=D.mods.filter(function(m){return m.l===next.l}).length;N={e:'Adesso · 6 minuti',t:'Studia «'+next.t+'»',s:((LV[next.l]||{}).n||'')+' · modulo '+idx+' di '+tot,b:S.T.mod?'Continua':'Inizia',h:'studio.html#m='+next.id}}
+  else if(todT&&!S.daily[today]){N={e:'Adesso · in una conversazione',t:'Prova '+todT.n,s:todT.it+' · strumento del giorno',b:'Leggi lo strumento',h:'#tod-d',tod:1}}
+  else if(!(S.plan[1]>=1)){N={e:'Adesso · prima di un incontro',t:'Allenati su un\'interazione vera',s:'Prepara una conversazione di oggi o di domani',b:'Prepara',h:'prep.html#nuova'}}
+  else if(pq){N={e:'Adesso · 2 minuti',t:'Scrivi com\'è andata con '+(pq.who||pq.sit||'l\'interazione'),s:'Il Dopo fissa quello che hai imparato',b:'Compila il Dopo',h:'prep.html#p='+pq.id}}
+  else N={e:'Piano di oggi completato',t:'Bravo: per oggi hai fatto tutto',s:'Se hai voglia, un giro in Palestra',b:'Vai in Palestra',h:'palestra.html',done:1};
+  var nw=$('now');nw.href=N.h;nw.classList.toggle('done',!!N.done);nw.dataset.tod=N.tod?'1':'';$('now-e').textContent=N.e;$('now-t').textContent=N.t;$('now-s').textContent=N.s;$('now-b').textContent=N.b;
 }
 document.addEventListener('click',function(e){var b=e.target.closest('[data-rip]');if(!b)return;var r=HCE.lsJ('ripasso_v1',{}),k=b.dataset.rip;if(r[k])delete r[k];else r[k]=Date.now();HCE.lsPut('ripasso_v1',r);draw(PACK)});
 function status(){return HCE.pack().then(function(p){
@@ -307,15 +319,22 @@ $('b-exp').addEventListener('click',function(){var b=HCE.exportBackup();HCE.save
 $('f-bk').addEventListener('change',function(){var f=this.files[0];if(!f)return;
  readFile(f).then(function(t){var n=HCE.importBackup(t);msg('b-msg','Backup importato: '+n+' elementi aggiunti o aggiornati.',true);bstat();status()})
  .catch(function(e){msg('b-msg','Non riesco a importare: '+esc(e&&e.message?e.message:'file non valido'))});this.value=''});
-if(location.hash==='#contenuti'){$('contenuti').open=true;setTimeout(function(){$('contenuti').scrollIntoView({block:'center'})},300)}
-if(location.hash==='#set-bk')$('set-bk').open=true;
+var H0=location.hash;if(H0==='#contenuti'||H0==='#set-bk')setTimeout(function(){showSet(H0.slice(1))},300);else if(H0==='#impostazioni')setTimeout(function(){showSet()},300);
 function uiDraw(){var u=HCE.ui.get();Array.prototype.forEach.call(document.querySelectorAll('[data-uifont] button'),function(b){b.setAttribute('aria-pressed',b.dataset.v===u.font?'true':'false')});[['ui-font',u.font],['ui-theme',u.theme]].forEach(function(p){Array.prototype.forEach.call($(p[0]).children,function(b){b.setAttribute('aria-pressed',b.dataset.v===p[1]?'true':'false')})});
  var S=HCE.stats(),days=u.lastBackup?Math.floor((Date.now()-u.lastBackup)/864e5):-1,n=$('bk-nudge');
  if(S.xp>=100&&(days<0||days>=14)){n.hidden=false;n.innerHTML='<b>'+(days<0?'Non hai ancora fatto un backup.':'Ultimo backup '+days+' giorni fa.')+'</b> I tuoi dati sono solo su questo dispositivo: se cancelli i dati del browser li perdi. <button class="btn" id="bk-go">Fai il backup ora</button>'}else n.hidden=true}
 ['ui-font','ui-theme'].forEach(function(id){$(id).addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;HCE.ui.set(id==='ui-font'?'font':'theme',b.dataset.v);uiDraw()})});
-document.addEventListener('click',function(e){var b;if(e.target.id==='bk-go'){$('set-bk').open=true;$('b-exp').click()}if(b=e.target.closest('[data-uifont] button')){HCE.ui.set('font',b.dataset.v);uiDraw()}});
+document.addEventListener('click',function(e){var b;if(e.target.id==='bk-go'){showSet('set-bk');$('b-exp').click()}if(b=e.target.closest('[data-uifont] button')){HCE.ui.set('font',b.dataset.v);uiDraw()}});
+var GUIDE='<ol class="gsteps"><li><b>Percorso</b><span>Studia un modulo alla volta: sono brevi. In fondo trovi «Esercitati», per fissarlo subito.</span></li><li><b>Prepara</b><span>Hai una conversazione importante? Qui la prepari passo passo, e dopo segni com\'è andata.</span></li><li><b>Strumenti</b><span>Le schede da consultare e la Palestra per allenarti con le domande. Se trovi una parola che non conosci, cercala nel Dizionario.</span></li><li><b>Io</b><span>Due minuti al giorno su di te: come stai, obiettivi, abitudini. Lì trovi anche il resoconto con il calendario del mese e le medaglie.</span></li></ol><p class="muted">In alto: i giorni di fila in cui hai usato l\'app, i punti (XP) che guadagni con le attività e le medaglie sbloccate (🏅).</p>';$('guide-b').innerHTML=GUIDE;$('guide-b2').innerHTML=GUIDE;
+var gSeen=false;try{gSeen=!!localStorage.getItem('ui_guide_seen')}catch(x){}$('guide').hidden=gSeen;
+$('guide-ok').addEventListener('click',function(){try{localStorage.setItem('ui_guide_seen','1')}catch(x){}$('guide').hidden=true});
+function showSet(open){var c=$('impostazioni');c.hidden=false;if(open)$(open).open=true;setTimeout(function(){(open?$(open):c).scrollIntoView({block:'start',behavior:'smooth'})},50)}
+document.querySelector('.gear').addEventListener('click',function(e){e.preventDefault();var c=$('impostazioni');if(c.hidden)showSet();else c.hidden=true});
+$('set-x').addEventListener('click',function(){$('impostazioni').hidden=true;window.scrollTo(0,0)});
+$('now').addEventListener('click',function(e){if(this.dataset.tod){e.preventDefault();$('tod-d').open=true;$('tod-d').scrollIntoView({block:'start',behavior:'smooth'})}});
+$('t3').addEventListener('click',function(e){e.preventDefault();$('tod-d').open=true;$('tod-d').scrollIntoView({block:'start',behavior:'smooth'})});
 uiDraw();
-$('ver').textContent='App versione 2026-11-12e-bc4a065f';
+$('ver').textContent='App versione 2026-11-12f-98f13ff6';
 status();bstat();
 window.addEventListener('pageshow',function(e){if(e.persisted){status();bstat()}});
 })();
