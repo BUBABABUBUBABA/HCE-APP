@@ -127,6 +127,7 @@ input[type=range]{width:100%;accent-color:var(--io)}
 .dev .tm{font-size:.8rem;font-weight:900;color:var(--muted);width:42px;flex:none}.dev>i{flex:none;width:10px;height:10px}
 .dev .tx{display:flex;flex-direction:column;min-width:0}.dev .tx b{font-weight:800;line-height:1.3}.dev .tx span{font-size:.8rem;color:var(--muted);font-weight:700}
 .dmed{display:flex;flex-wrap:wrap;gap:6px}.dmed span{background:var(--io-s);color:var(--fg);border-radius:99px;padding:4px 10px;font-weight:800;font-size:.85rem}
+.nb{border:0}.nb summary{cursor:pointer;font-weight:800;font-size:.84rem;color:var(--muted);min-height:36px;display:flex;align-items:center}.nb textarea{margin-top:6px}
 </style>
 <div class="page">
 <header>
@@ -218,6 +219,8 @@ function holdHtml(g){var c=g.done.C,since=Math.floor((Date.now()-c)/864e5),last=
   return '<div class="tool"><b>Tenuta</b><span class="tip">Sono passati '+since+' giorni dal traguardo. Ogni tanto conferma che lo stai mantenendo: a 30, 90 e 120 giorni dal traguardo sblocchi la medaglia 🛡️ Tenuta (bronzo, argento, oro). I giorni sono una scelta dell\'app: il corso non indica una durata per Hold.</span>'+
   (last?'<span class="muted">Ultima conferma: '+new Date(last).toLocaleDateString('it-IT')+' · '+holdDays(g)+' giorni di tenuta</span>':'')+
   '<div class="row"><button class="btn io" data-ghold="1"'+(today?' disabled':'')+'>'+(today?'✓ Confermato oggi':'Lo sto ancora mantenendo')+'</button></div></div>'}
+function noteBox(attr,key,v,n){return '<details class="nb"'+(v?' open':'')+'><summary>Note libere</summary><textarea data-'+attr+'="'+key+'" aria-label="Note · '+esc(n)+'">'+esc(v||'')+'</textarea></details>'}
+function keepOpen(id,fn){var root=$(id),ds=root.querySelectorAll('details'),op=[],y=window.scrollY;ds.forEach(function(d,i){if(d.open)op.push(i)});fn();var nd=$(id).querySelectorAll('details');nd.forEach(function(d,i){d.open=op.indexOf(i)>=0});window.scrollTo(0,y)}
 function renderObiettivi(){var h='';
   if(!GOAL){var a=goals();
     h+='<div class="card"><h3>REACH</h3><p>'+esc(R.intro)+'</p><div class="steps">'+R.phases.map(function(p){return '<div class="stp"><b>'+p.k+'</b><span><strong>'+esc(p.n)+'</strong> · '+esc(p.it)+'</span></div>'}).join('')+'</div><p class="note">'+esc(R.note)+'</p>'+ml(R.m)+'</div>'+
@@ -228,7 +231,7 @@ function renderObiettivi(){var h='';
   h+='<div class="row"><button class="btn" id="g-back">← Obiettivi</button></div><div class="card"><label class="f">Obiettivo<input type="text" data-gt="t" value="'+esc(g.t)+'"></label><div class="bar"><i style="width:'+(n/5*100)+'%"></i></div><p class="muted">'+(next?'Prossima fase: '+next.n+' ('+next.it+')':'Tutte le fasi completate. Dopo Hold, si rilancia: nuovo obiettivo.')+'</p></div>';
   h+=R.phases.map(function(p){var dn=(g.done||{})[p.k];return '<details class="ph'+(dn?' dn':'')+'"'+(next===p?' open':'')+'><summary><span class="L">'+(dn?'✓':p.k)+'</span><span><b>'+esc(p.n)+'</b><small>'+esc(p.it)+(dn?' · fatta il '+new Date(dn).toLocaleDateString('it-IT'):'')+'</small></span><span class="chev">›</span></summary><div class="pb">'+
     '<p style="line-height:1.5;font-weight:600">'+esc(p.d)+'</p>'+
-    p.tools.map(function(t){return '<div class="tool"><b>'+esc(t.n)+'</b><span class="tip">'+esc(t.d)+'</span><textarea data-gf="'+p.k+'.'+t.k+'" aria-label="'+esc(t.n)+'" placeholder="'+esc(t.p)+'">'+esc((g.f||{})[p.k+'.'+t.k]||'')+'</textarea></div>'}).join('')+
+    p.tools.map(function(t){var key=p.k+'.'+t.k,old=(g.f||{})[key]||'';return '<div class="tool"><b>'+esc(t.n)+'</b><span class="tip">'+esc(t.d)+'</span>'+(t.s?HCE.sf(t.s,(g.fs||{})[key],key,'g')+noteBox('gf',key,old,t.n):'<textarea data-gf="'+key+'" aria-label="'+esc(t.n)+'" placeholder="'+esc(t.p)+'">'+esc(old)+'</textarea>')+'</div>'}).join('')+
     (p.k==='H'&&(g.done||{}).C?holdHtml(g):'')+'<div class="row"><button class="btn'+(dn?'':' io')+'" data-gdone="'+p.k+'">'+(dn?'Riapri la fase':(p.k==='C'?'Ho celebrato · +30 XP':'Fase completata · +10 XP'))+'</button></div>'+ml(p.m)+'</div></details>'}).join('');
   h+='<div class="row"><button class="btn" id="g-del">Elimina obiettivo</button></div><div id="g-msg"></div>';
   $('v-obiettivi').innerHTML=h}
@@ -239,6 +242,7 @@ $('v-obiettivi').addEventListener('click',function(e){var b,t=e.target;
   if(t.closest('[data-ghold]')){GOAL.hold=GOAL.hold||[];GOAL.hold.push(Date.now());saveGoal();renderObiettivi();return}
   if(b=t.closest('[data-gdone]')){var k=b.dataset.gdone;GOAL.done=GOAL.done||{};if(GOAL.done[k])delete GOAL.done[k];else GOAL.done[k]=Date.now();saveGoal();renderObiettivi();return}
   if(t.id==='g-del'){if(t.textContent!=='Elimina?'){t.textContent='Elimina?';return}P('io_goals_v1',goals().filter(function(x){return x.id!==GOAL.id}));GOAL=null;renderObiettivi()}});
+HCE.sfBind($('v-obiettivi'),'g',function(k){GOAL.fs=GOAL.fs||{};return GOAL.fs[k]=GOAL.fs[k]||{}},function(re){if(re){saveGoal();keepOpen('v-obiettivi',renderObiettivi)}else{clearTimeout(gTimer);gTimer=setTimeout(saveGoal,400)}});
 $('v-obiettivi').addEventListener('input',function(e){var t=e.target;if(!GOAL)return;if(t.dataset.gt)GOAL.t=t.value;else if(t.dataset.gf){GOAL.f=GOAL.f||{};GOAL.f[t.dataset.gf]=t.value}else return;clearTimeout(gTimer);gTimer=setTimeout(saveGoal,400)});
 
 /* ---------- ABITUDINI ---------- */
@@ -258,7 +262,7 @@ function renderAbitudini(){var h='';
     $('v-abitudini').innerHTML=h;return}
   var x=HE,steps=x.type==='old'?HB.old.concat(HB['new'].filter(function(s){return s.k!=='idea'})):HB['new'];
   h+='<div class="row"><button class="btn" id="h-back">← Abitudini</button></div><div class="card">'+(x.type==='old'?'<label class="f">Abitudine da sostituire<input type="text" data-ht="t" value="'+esc(x.t)+'" placeholder="Es. controllare il telefono appena sveglio"></label>':'<p class="muted">Compila i cinque passaggi: l\'idea chiara diventa il nome dell\'abitudine.</p>')+'</div>';
-  h+=steps.map(function(s,i){return '<details class="ph"'+(i<1?' open':'')+'><summary><span class="L">'+(i+1)+'</span><span><b>'+esc(s.n)+'</b></span><span class="chev">›</span></summary><div class="pb"><p class="tip">'+esc(s.d)+'</p><textarea data-hf="'+s.k+'" aria-label="'+esc(s.n)+'" placeholder="'+esc(s.ph)+'">'+esc((x.f||{})[s.k]||'')+'</textarea>'+ml(s.m)+'</div></details>'}).join('');
+  h+=steps.map(function(s,i){return '<details class="ph"'+(i<1?' open':'')+'><summary><span class="L">'+(i+1)+'</span><span><b>'+esc(s.n)+'</b></span><span class="chev">›</span></summary><div class="pb"><p class="tip">'+esc(s.d)+'</p>'+(s.s?HCE.sf(s.s,(x.fs||{})[s.k],s.k,'h')+noteBox('hf',s.k,(x.f||{})[s.k],s.n):'<textarea data-hf="'+s.k+'" aria-label="'+esc(s.n)+'" placeholder="'+esc(s.ph)+'">'+esc((x.f||{})[s.k]||'')+'</textarea>')+ml(s.m)+'</div></details>'}).join('');
   h+='<div class="row"><button class="btn io" id="h-done">Salva</button><button class="btn" id="h-arch">'+(x.arch?'Riattiva':'Archivia')+'</button><button class="btn" id="h-del">Elimina</button></div><div id="h-msg"></div>';
   $('v-abitudini').innerHTML=h}
 $('v-abitudini').addEventListener('click',function(e){var b,t=e.target;
@@ -266,9 +270,11 @@ $('v-abitudini').addEventListener('click',function(e){var b,t=e.target;
   if(b=t.closest('[data-hopen]')){HE=habits().filter(function(x){return x.id===b.dataset.hopen})[0]||null;renderAbitudini();window.scrollTo(0,0);return}
   if(b=t.closest('[data-tick]')){tickHabit(b.dataset.tick);return}
   if(t.id==='h-back'){HE=null;renderAbitudini();return}
-  if(t.id==='h-done'){var name=HE.type==='old'?(HE.f.replace||''):(HE.f.idea||'');if(!name.trim()||(HE.type==='old'&&!HE.t.trim())){flash('h-msg',HE.type==='old'?'Scrivi l\'abitudine da sostituire e la sostituta.':'Scrivi almeno l\'idea chiara.');return}HE.t=HE.t||name;saveHabit();HE=null;renderAbitudini();renderOggi();return}
+  if(t.id==='h-done'){var name=habName();if(HE.type==='old')HE.f.replace=name;else HE.f.idea=name;if(!name.trim()||(HE.type==='old'&&!HE.t.trim())){flash('h-msg',HE.type==='old'?'Scrivi l\'abitudine da sostituire e la sostituta.':'Scrivi almeno l\'idea chiara.');return}HE.t=HE.t||name;saveHabit();HE=null;renderAbitudini();renderOggi();return}
   if(t.id==='h-arch'){HE.arch=!HE.arch;saveHabit();HE=null;renderAbitudini();renderOggi();return}
   if(t.id==='h-del'){if(t.textContent!=='Elimina?'){t.textContent='Elimina?';return}P('io_habits_v1',habits().filter(function(x){return x.id!==HE.id}));HE=null;renderAbitudini();renderOggi()}});
+HCE.sfBind($('v-abitudini'),'h',function(k){HE.fs=HE.fs||{};return HE.fs[k]=HE.fs[k]||{}},function(re){if(re)keepOpen('v-abitudini',renderAbitudini)});
+function habName(){var fs=HE.fs||{},id=fs.idea||{},rp=fs.replace||{};if(HE.type==='old')return (rp[1]||'').trim()||(HE.f.replace||'');var a=[id[0],id[1],id[2]].filter(function(x){return (x||'').trim()}).join(' · ');return a||(HE.f.idea||'')}
 $('v-abitudini').addEventListener('input',function(e){var t=e.target;if(!HE)return;if(t.dataset.ht)HE.t=t.value;else if(t.dataset.hf){HE.f[t.dataset.hf]=t.value}});
 
 /* ---------- FOCUS ---------- */
@@ -390,7 +396,7 @@ function evLabel(e){var r=e.ref,T={check:'Check-in',goal:'Nuovo obiettivo',reach
   switch(e.type){case 'mod':return 'Studiato «'+(MODT[r]||r)+'»';case 'rip':var id=String(r).split('@')[0];return 'Ripassato «'+(MODT[id]||id)+'»';case 'ex':return 'Esercitato «'+(MODT[r]||r)+'»';case 'exp':return 'Esercizio pratico su «'+(MODT[r]||r)+'»';
   case 'prep':var p=G('prep_v1',[]).filter(function(x){return x.id===r})[0];return 'Preparata un\'interazione'+(p&&(p.who||p.sit)?' con '+(p.who||p.sit):'');case 'prepafter':return 'Compilato il Dopo di un\'interazione';
   case 'ses':return 'Sessione D-P-I';case 'after':return 'Dopo di una sessione D-P-I';case 'plan':return 'Piano E³';case 'tool':return 'Strumento del giorno: '+r;case 'mib':return 'Mix usato in un\'interazione vera';case 'fb':return 'Feedback preparato';
-  case 'gym':return 'Allenamento in Palestra';case 'slcc':return r==='msg'?'Messaggio SLCC (MICRO o MACRO)':'Profilo SLCC';case 'inc':return 'Scheda «Prima di un incontro»';case 'pub':return 'Intervento di public speaking';case 'ven':return 'Trattativa di vendita';case 'lea':return 'Situazione di leadership';case 'alg':return 'Messaggio con un algoritmo linguistico';case 'frm':return 'Frase riscritta con una nuova cornice';case 'car':return r==='self'?'Autovalutazione SPARK':r==='plan'?'Incontro preparato con SPARK':r==='ex'?'Esercizio «Spark in action»':'Azione di carisma';case 'lib':return /^try:/.test(r)?'Strategia di Instant Emotions provata':/^qz:/.test(r)?'Esercitati su un capitolo di un libro':'Capitolo di un libro letto';case 'io':return T[r]||'Io'}return e.type}
+  case 'gym':return 'Allenamento in Palestra';case 'slcc':return r==='msg'?'Messaggio SLCC (MICRO o MACRO)':'Profilo SLCC';case 'inc':return 'Scheda «Prima di un incontro»';case 'pub':return 'Intervento di public speaking';case 'ven':return 'Trattativa di vendita';case 'lea':return 'Situazione di leadership';case 'alg':return 'Messaggio con un algoritmo linguistico';case 'frm':return 'Frase riscritta con una nuova cornice';case 'car':return r==='self'?'Autovalutazione SPARK':r==='plan'?'Incontro preparato con SPARK':r==='ex'?'Esercizio «Spark in action»':'Azione di carisma';case 'lib':return /^try:/.test(r)?'Strategia di Instant Emotions provata':/^qz:/.test(r)?'Esercitati su un capitolo di un libro':/^ex:/.test(r)?'Esercizio di un libro':'Capitolo di un libro letto';case 'io':return T[r]||'Io'}return e.type}
 function evHref(e){var t=e.type;if(t==='mod'||t==='ex'||t==='exp')return 'studio.html#m='+e.ref;if(t==='rip')return 'studio.html#x='+String(e.ref).split('@')[0];
   return {prep:'prep.html',prepafter:'prep.html',ses:'protocollo.html',after:'protocollo.html',plan:'e3.html',tool:'e3.html',mib:'mib.html',fb:'feedback.html',gym:'palestra.html',slcc:'slcc.html',inc:'incontro.html',pub:'public.html',ven:'vendita.html',lea:'leadership.html',alg:'algoritmi.html',frm:'frame.html',car:'carisma.html',lib:/^try:/.test(e.ref)?'io.html#emozioni':'libri.html'}[t]||('io.html#'+({check:'oggi',goal:'obiettivi',reach:'obiettivi',habit:'abitudini',focus:'focus',emo:'emozioni',pred:'bias',week:'settimana'}[e.ref]||'oggi'))}
 function calKey(d){return HCE.dayKey(d.getTime())}

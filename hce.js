@@ -255,7 +255,7 @@ var HCE = (function () {
     L('carisma_v1', []).forEach(function (x) { if (x.kind === 'day') { Object.keys(x.a || {}).forEach(function (k) { add(x.a[k], 'car', 5, 'act'); }); Object.keys(x.x || {}).forEach(function (k) { add(x.x[k], 'car', 10, 'ex'); }); }
       else if (x.kind === 'self') add(+x.id, 'car', 20, 'self');
       else if (x.kind === 'act') { add(+x.id, 'car', 20, 'plan'); if (x.esito && x.et) add(x.et, 'car', 10, 'plan'); } });
-    L('libri_v1', []).forEach(function (x) { if (x.kind === 'try') { add(x.t, 'lib', 5, 'try:' + x.c); return; } if (x.rd) add(x.rd, 'lib', 10, 'rd:' + x.id); if (x.qz) add(x.qz, 'lib', 15, 'qz:' + x.id); });
+    L('libri_v1', []).forEach(function (x) { if (x.kind === 'try') { add(x.t, 'lib', 5, 'try:' + x.c); return; } if (x.rd) add(x.rd, 'lib', 10, 'rd:' + x.id); if (x.qz) add(x.qz, 'lib', 15, 'qz:' + x.id); Object.keys(x.xd || {}).forEach(function (i) { add(x.xd[i], 'lib', 10, 'ex:' + x.id); }); });
     preps.forEach(function (x) { add(+x.id, 'prep', 20, x.id); if (x.after && x.after.t) add(x.after.t, 'prepafter', 10, x.id); });
     var days = {}, xp = 0, today = dayKey(Date.now()), T = { mod: 0, ses: 0, plan: 0, tool: 0, rip: 0, after: 0, mib: 0, prep: 0, prepafter: 0, fb: 0, gym: 0, io: 0, ex: 0, exp: 0, slcc: 0, inc: 0, pub: 0, ven: 0, lea: 0, alg: 0, frm: 0, car: 0, lib: 0 };
     ev.forEach(function (e) { days[e.d] = 1; xp += e.xp; if (e.d === today) T[e.type]++; });
@@ -328,7 +328,7 @@ var HCE = (function () {
     M('ris', 'svolta', '🌤️', 'Svolta', 'Trovi l\'altro in Tensione o Dissenso e lo porti a Felicità o Fiducia: Dopo con «Sì».', 'prep.html', [1, 5, 15], preps.filter(function (p) { var h = p.him || {}; return (h.now === 'ten' || h.now === 'dis') && (h.need === 'fel' || h.need === 'fid') && (p.after || {}).res === 'si'; }).length);
     M('ris', 'lezione', '📚', 'Lezione imparata', 'Quando va male («No» o «In parte»), scrivi cosa cambi la prossima volta.', 'prep.html', [1, 5, 15], aft.filter(function (p) { return p.after.res !== 'si' && (p.after.next || '').trim(); }).length);
     /* --- Obiettivi REACH --- */
-    var F = function (g, k) { return ((g.f || {})[k] || '').trim(); }, D = function (g, k) { return (g.done || {})[k]; };
+    var F = function (g, k) { return ((g.f || {})[k] || '').trim() || sfText(null, (g.fs || {})[k]); }, D = function (g, k) { return (g.done || {})[k]; };
     M('obi', 'g_R', '❓', 'Ho un perché', 'Completa la fase Reason di un obiettivo, con i Cinque perché scritti.', 'io.html#obiettivi', [1, 3, 10], goals.filter(function (g) { return D(g, 'R') && F(g, 'R.why'); }).length);
     M('obi', 'g_E', '📐', 'Architetto', 'Completa la fase Engineer con il Premortem scritto.', 'io.html#obiettivi', [1, 3, 10], goals.filter(function (g) { return D(g, 'E') && F(g, 'E.premortem'); }).length);
     M('obi', 'g_A', '🏃', 'Sul campo', 'Completa la fase Accomplish con KPI e sprint settimanale scritti.', 'io.html#obiettivi', [1, 3, 10], goals.filter(function (g) { return D(g, 'A') && F(g, 'A.kpi') && F(g, 'A.sprint'); }).length);
@@ -427,6 +427,9 @@ var HCE = (function () {
     M('stu', 'lib_spark', '💫', 'Incantali tutti', 'Leggi i 5 pilastri SPARK nella sezione Libri.', 'libri.html#spark', [5], bk('spark-'));
     M('stu', 'lib_ie', '🫀', 'Instant Emotions', 'Leggi i 10 capitoli di Instant Emotions nella sezione Libri.', 'libri.html#ie', [10], bk('ie-'));
     M('stu', 'lib_ip', '🧲', 'Instant Persuasion', 'Leggi i 10 capitoli di Instant Persuasion nella sezione Libri.', 'libri.html#ip', [10], bk('ip-'));
+    var lxd = libs.reduce(function (a, x) { return a + Object.keys(x.xd || {}).length; }, 0), lbk = {}; lrd.forEach(function (x) { lbk[String(x.id).split('-')[0]] = 1; });
+    M('stu', 'lib_ex', '🧾', 'Esercizi dei libri', 'Completa un esercizio di un capitolo nella sezione Libri.', 'libri.html', [1, 10, 30, 60], lxd);
+    M('stu', 'lib_all', '🏛️', 'Biblioteca HCE', 'Leggi almeno un capitolo di ciascuno degli otto libri.', 'libri.html', [3, 8], Object.keys(lbk).length);
     var tr = {}; ltry.forEach(function (x) { tr[x.c] = 1; });
     M('io', 'ie_try', '🌬️', 'Ho provato', 'In Io → Emozioni segna una strategia di Instant Emotions che hai provato.', 'io.html#emozioni', [1, 10, 30], ltry.length);
     M('io', 'ie_all', '🎐', 'Dieci strategie', 'Prova tutte e 10 le strategie di Instant Emotions.', 'io.html#emozioni', [10], Object.keys(tr).length);
@@ -520,6 +523,49 @@ var HCE = (function () {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(medalCheck, 900); }); else setTimeout(medalCheck, 900);
   if (navigator.storage && navigator.storage.persist) { navigator.storage.persist().catch(function () {}); }
 
+  // Esercizi strutturati: colonne, elenchi, tabelle, scale, scelte
+  var SF_CSS = '.sf{display:flex;flex-direction:column;gap:8px}.sf .sfh,.sf .sfr{display:grid;gap:8px;align-items:start}.sf .sfh span{font-size:.75rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.sf .sfr>b{font-weight:800;font-size:.86rem;padding-top:10px;line-height:1.3}.sf .sfc{display:flex;flex-direction:column;gap:3px;min-width:0}.sf .sfc i{display:none;font-style:normal;font-size:.75rem;font-weight:800;color:var(--muted)}.sf textarea,.sf input{width:100%;box-sizing:border-box;font:inherit;padding:9px 11px;color:var(--fg);background:var(--surface);border:2px solid var(--line);border-radius:12px;min-width:0}.sf textarea{min-height:64px;resize:vertical}.sf .sfq{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.sf .sfq label{display:flex;flex-direction:column;gap:4px;font-weight:800;font-size:.84rem}.sf .sfl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:center}.sf .sfl>b{font-weight:900;color:var(--muted);min-width:22px;text-align:right}.sf .sfo{display:flex;gap:6px;flex-wrap:wrap}.sf .sfo button{font:inherit;font-weight:800;min-width:44px;min-height:44px;padding:6px 12px;border:2px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);cursor:pointer}.sf .sfo button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg,#fff)}.sf .sfp{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;border-top:2px solid var(--line2,var(--line));padding-top:8px}.sf .sfp>b{font-weight:800}.sf .sfp input{grid-column:1/-1}.sf .sfadd{align-self:flex-start;font:inherit;font-weight:800;font-size:.86rem;min-height:40px;padding:6px 12px;border:2px dashed var(--line);border-radius:12px;background:transparent;color:var(--fg);cursor:pointer}.sf .sff{display:flex;flex-direction:column;gap:4px;font-weight:800;font-size:.88rem}@media (max-width:560px){.sf .sfr.st{grid-template-columns:minmax(0,1fr)!important;border-top:2px solid var(--line2,var(--line));padding-top:8px}.sf .sfh.st{display:none}.sf .sfr.st .sfc i{display:block}.sf .sfr.st>b{padding-top:0}.sf .sfq{grid-template-columns:minmax(0,1fr)}}';
+  function sfCss() { if (!document.getElementById('sf-css')) { var st = document.createElement('style'); st.id = 'sf-css'; st.textContent = SF_CSS; document.head.appendChild(st); } }
+  function sfTA(ns, key, cell, v, ph, lab, line) { var a = 'data-sf="' + ns + '|' + key + '|' + cell + '" aria-label="' + esc(lab || ph || '') + '" placeholder="' + esc(ph || '') + '"'; return line ? '<input type="text" ' + a + ' value="' + esc(v || '') + '">' : '<textarea ' + a + '>' + esc(v || '') + '</textarea>'; }
+  function sf(spec, val, key, ns) {
+    sfCss(); val = val || {}; var h = '<div class="sf">', t = spec.t;
+    if (t === 'grid') {
+      var rows = spec.rows, cols = spec.cols, nr = typeof rows === 'number' ? Math.max(rows, val._n || 0) : rows.length, rl = typeof rows !== 'number' || spec.rl, stack = cols.length > 2, two = cols.length <= 2 && rl;
+      var tpl = (rl && !two ? 'minmax(70px,.6fr) ' : '') + 'repeat(' + cols.length + ',minmax(0,1fr))';
+      h += '<div class="sfh' + (stack ? ' st' : '') + '" style="grid-template-columns:' + tpl + '">' + (rl && !two ? '<span></span>' : '') + cols.map(function (c) { return '<span>' + esc(c) + '</span>'; }).join('') + '</div>';
+      for (var r = 0; r < nr; r++) { var lab = typeof rows === 'number' ? (spec.rl ? spec.rl + ' ' + (r + 1) : '') : rows[r];
+        h += '<div class="sfr' + (stack ? ' st' : '') + '" style="grid-template-columns:' + tpl + '">' + (rl ? '<b' + (two ? ' style="grid-column:1/-1;padding-top:4px"' : '') + '>' + esc(lab) + '</b>' : '') + cols.map(function (c, j) { return '<div class="sfc"><i>' + esc(c) + '</i>' + sfTA(ns, key, r + '.' + j, val[r + '.' + j], spec.ph && spec.ph[j] || '', (lab ? lab + ' · ' : '') + c, spec.line) + '</div>'; }).join('') + '</div>'; }
+      if (spec.add) h += '<button type="button" class="sfadd" data-sfa="' + ns + '|' + key + '|' + nr + '">+ Aggiungi una riga</button>';
+    } else if (t === 'list') {
+      var n = Math.max(spec.n, val._n || 0);
+      for (var k = 0; k < n; k++) h += '<div class="sfl"><b>' + (spec.lab ? esc(spec.lab) + ' ' : '') + (k + 1) + '</b>' + sfTA(ns, key, String(k), val[k], spec.ph || '', (spec.lab || 'Voce') + ' ' + (k + 1), true) + '</div>';
+      if (spec.add) h += '<button type="button" class="sfadd" data-sfa="' + ns + '|' + key + '|' + n + '">+ Aggiungine un\'altra</button>';
+    } else if (t === 'form') {
+      h += spec.f.map(function (f, k) { f = typeof f === 'string' ? [f] : f; return '<label class="sff">' + esc(f[0]) + sfTA(ns, key, String(k), val[k], f[1] || '', f[0], f[2] === 'line') + '</label>'; }).join('');
+    } else if (t === 'quad') {
+      h += '<div class="sfq">' + spec.q.map(function (q, k) { return '<label>' + esc(q) + sfTA(ns, key, String(k), val[k], '', q) + '</label>'; }).join('') + '</div>';
+    } else if (t === 'pick') {
+      h += spec.rows.map(function (r, k) { return '<div class="sfp"><b>' + esc(r) + '</b><div class="sfo" role="group" aria-label="' + esc(r) + '">' + spec.opts.map(function (o) { return '<button type="button" data-sfo="' + ns + '|' + key + '|' + k + '|' + esc(o) + '" aria-pressed="' + (val[k] === o) + '">' + esc(o) + '</button>'; }).join('') + '</div>' + (spec.note ? sfTA(ns, key, k + '.n', val[k + '.n'], spec.note, r + ' · ' + spec.note, true) : '') + '</div>'; }).join('');
+    } else if (t === 'scale') {
+      h += spec.items.map(function (it, k) { return '<label class="sff">' + esc(it[0]) + ' <span style="font-weight:600;color:var(--muted)">(' + it[1] + '–' + it[2] + ')</span><input type="number" inputmode="numeric" min="' + it[1] + '" max="' + it[2] + '" data-sf="' + ns + '|' + key + '|' + k + '" value="' + esc(val[k] || '') + '" aria-label="' + esc(it[0]) + '" style="max-width:120px"></label>'; }).join('');
+    } else if (t === 'choice') {
+      h += '<div class="sfo" role="group" aria-label="' + esc(spec.lab || 'Scelta') + '">' + spec.opts.map(function (o) { return '<button type="button" data-sfo="' + ns + '|' + key + '|o|' + esc(o) + '" aria-pressed="' + (val.o === o) + '">' + esc(o) + '</button>'; }).join('') + '</div>' + (spec.why ? '<label class="sff">' + esc(spec.why) + sfTA(ns, key, 'w', val.w, '', spec.why) + '</label>' : '');
+    } else if (t === 'multi') {
+      h += spec.parts.map(function (pp, k) { return '<div class="sff" style="gap:6px">' + (pp.title ? '<span>' + esc(pp.title) + '</span>' : '') + sf(pp, sfSub(val, k), key, ns + '~' + k).replace(/^<div class="sf">/, '<div class="sf" style="gap:6px">') + '</div>'; }).join('');
+    }
+    return h + '</div>';
+  }
+  function sfSub(val, k) { var o = {}, p = k + ':'; Object.keys(val || {}).forEach(function (c) { if (c.indexOf(p) === 0) o[c.slice(p.length)] = val[c]; }); return o; }
+  function sfCell(ns, cell) { var m = /~(\d+)$/.exec(ns); return m ? m[1] + ':' + cell : cell; }
+  function sfFilled(val) { return Object.keys(val || {}).filter(function (c) { return !/_n$/.test(c) && String(val[c] || '').trim(); }).length; }
+  function sfText(spec, val) { val = val || {}; var out = []; Object.keys(val).forEach(function (c) { if (!/_n$/.test(c) && String(val[c] || '').trim()) out.push(String(val[c]).trim()); }); return out.join(' · '); }
+  function sfBind(root, ns, getMap, onChange) {
+    function own(a) { var p = a.split('|'); return (p[0] === ns || p[0].indexOf(ns + '~') === 0) ? p : null; }
+    root.addEventListener('input', function (e) { var a = e.target.getAttribute && e.target.getAttribute('data-sf'); if (!a) return; var p = own(a); if (!p) return; var m = getMap(p[1]); m[sfCell(p[0], p[2])] = e.target.value; onChange(false, p[1]); });
+    root.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('[data-sfo],[data-sfa]'); if (!b) return; var a = b.getAttribute('data-sfo') || b.getAttribute('data-sfa'), p = own(a); if (!p) return; var m = getMap(p[1]);
+      if (b.hasAttribute('data-sfo')) { var c = sfCell(p[0], p[2]); if (m[c] === p[3]) delete m[c]; else m[c] = p[3]; } else { m[sfCell(p[0], '_n')] = (+p[2] || 0) + 1; }
+      onChange(true, p[1]); });
+  }
   // Tecniche dei libri collegate a uno strumento (sezione «Dai libri»)
   function esc(x) { return String(x == null ? '' : x).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   var BKN = { spark: 'Incantali tutti', ie: 'Instant Emotions', ip: 'Instant Persuasion' };
@@ -528,15 +574,16 @@ var HCE = (function () {
     (L.spark.pillars || []).forEach(function (p) { p.tools.forEach(function (t) { if ((t.tl || []).indexOf(tool) >= 0) out.push({ b: 'spark', h: 'libri.html#spark-' + p.k, n: t.n, s: p.k + ' · ' + p.n, d: t.d, ex: t.ex }); }); });
     (L.ie.ch || []).forEach(function (c) { if ((c.tl || []).indexOf(tool) >= 0) out.push({ b: 'ie', h: 'libri.html#ie-' + c.n, n: c.t, s: 'Cap. ' + c.n, d: c.pts[c.pts.length - 1], ex: c.ex }); });
     (L.ip.ch || []).forEach(function (c) { if ((c.tl || []).indexOf(tool) >= 0) c.tech.forEach(function (t, j) { if (j < 3) out.push({ b: 'ip', h: 'libri.html#ip-' + c.n, n: t[0], s: 'Cap. ' + c.n + ' · ' + c.t, d: t[1], ex: t[2] }); }); });
+    (L.more || []).forEach(function (B) { BKN[B.id] = B.book; B.ch.forEach(function (c) { if ((c.tl || []).indexOf(tool) >= 0) out.push({ b: B.id, h: 'libri.html#' + B.id + '-' + c.n, n: c.t, s: 'Cap. ' + c.n, d: c.pts[0], ex: c.ex_txt || '' }); }); });
     return out;
   }
   function bookTips(P, tool, max) {
     var it = bookItems(P, tool); if (!it.length) return '';
     if (!document.getElementById('bkt-css')) { var st = document.createElement('style'); st.id = 'bkt-css'; st.textContent = '.bkt{border:2px solid var(--line);border-radius:20px;background:var(--surface);overflow:hidden}.bkt>summary{list-style:none;cursor:pointer;display:flex;gap:10px;align-items:center;padding:12px 14px;min-height:56px;font-weight:900}.bkt>summary::-webkit-details-marker{display:none}.bkt>summary small{display:block;font-weight:700;color:var(--muted);font-size:.82rem}.bkt .bi{flex:none;width:40px;height:40px;border-radius:12px;background:var(--sunk);display:grid;place-items:center;font-size:1.2rem}.bkt .bb{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}.bkt .bx{border-top:2px solid var(--line2);padding-top:10px;display:flex;flex-direction:column;gap:4px;line-height:1.45}.bkt .bx b{font-weight:900}.bkt .bx .s{font-size:.78rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.bkt .bx i{color:var(--muted);font-weight:600}.bkt .bx a{font-weight:800;color:var(--accent);font-size:.86rem;align-self:flex-start;min-height:32px;display:inline-flex;align-items:center}.bkt .bn{font-size:.82rem;color:var(--muted);font-weight:600}'; document.head.appendChild(st); }
-    var by = {}; it.forEach(function (x) { (by[x.b] = by[x.b] || []).push(x); });
+    var by = {}; it.forEach(function (x) { (by[x.b] = by[x.b] || []).push(x); }); Object.keys(by).forEach(function (b) { by[b] = by[b].slice(0, max || 4); }); it = [].concat.apply([], Object.keys(by).map(function (b) { return by[b]; }));
     var h = '<details class="bkt"><summary><span class="bi" aria-hidden="true">📚</span><span>Dai libri · ' + it.length + ' tecniche<small>' + Object.keys(by).map(function (b) { return BKN[b]; }).join(' · ') + '</small></span></summary><div class="bb">';
-    Object.keys(by).forEach(function (b) { by[b].slice(0, max || 6).forEach(function (x) { h += '<div class="bx"><span class="s">' + esc(BKN[b]) + ' · ' + esc(x.s) + '</span><b>' + esc(x.n) + '</b><span>' + esc(x.d) + '</span>' + (x.ex ? '<i>Esempio: ' + esc(x.ex) + '</i>' : '') + '<a href="' + x.h + '">Apri nel libro →</a></div>'; }); });
+    Object.keys(by).forEach(function (b) { by[b].forEach(function (x) { h += '<div class="bx"><span class="s">' + esc(BKN[b]) + ' · ' + esc(x.s) + '</span><b>' + esc(x.n) + '</b><span>' + esc(x.d) + '</span>' + (x.ex ? '<i>Esempio: ' + esc(x.ex) + '</i>' : '') + '<a href="' + x.h + '">Apri nel libro →</a></div>'; }); });
     return h + '<p class="bn">Sintesi ed esempi scritti da me sulle tecniche dei libri.</p></div></details>';
   }
-  return { bookTips: bookTips, bookItems: bookItems, get: get, pack: pack, ready: ready, importPack: importPack, exportBackup: exportBackup, importBackup: importBackup, save: save, pickButton: pickButton, nav: nav, stats: stats, dayKey: dayKey, lsJ: lsJ, lsPut: lsPut, USER_KEYS: USER_KEYS, medals: medals, medalGroups: MEDAL_GROUPS, medalUnits: medalUnits, medalMax: medalMax, ui: { get: uiGet, set: uiSet } };
+  return { sf: sf, sfBind: sfBind, sfFilled: sfFilled, sfText: sfText, bookTips: bookTips, bookItems: bookItems, get: get, pack: pack, ready: ready, importPack: importPack, exportBackup: exportBackup, importBackup: importBackup, save: save, pickButton: pickButton, nav: nav, stats: stats, dayKey: dayKey, lsJ: lsJ, lsPut: lsPut, USER_KEYS: USER_KEYS, medals: medals, medalGroups: MEDAL_GROUPS, medalUnits: medalUnits, medalMax: medalMax, ui: { get: uiGet, set: uiSet } };
 })();

@@ -278,7 +278,7 @@ function list(arr){return arr.map(function(o){return modHtml(o.m,o.c)}).join('')
 function sortO(arr){var R={D:0,A:1,W:2};return arr.filter(function(o){return inFilter(o.m)}).sort(function(a,b){return R[a.c]-R[b.c]||(a.m.id<b.m.id?-1:1)})}
 function split(arr){return {c:arr.filter(function(o){return o.m.l!=='we'}),w:arr.filter(function(o){return o.m.l==='we'})}}
 function secHtml(title,sub,arr,empty){return '<div class="sec"><h3>'+title+(sub?' <small>'+sub+'</small>':'')+'</h3>'+(arr.length?list(arr):'<p class="muted">'+empty+'</p>')+'</div>'}
-var LBK={L4:'ip',L7:'ie',L8:'spark'};function booksHtml(asp){var b=D.bookmap[asp]||[];if(!b.length)return '<p class="muted">Nessun libro lo tratta, secondo la tabella «Ruota e libri».</p>';
+var LBK={L1:'cb',L2:'uc',L3:'cs',L4:'ip',L5:'si',L6:'vi',L7:'ie',L8:'spark'};function booksHtml(asp){var b=D.bookmap[asp]||[];if(!b.length)return '<p class="muted">Nessun libro lo tratta, secondo la tabella «Ruota e libri».</p>';
  return '<div class="bk">'+b.map(function(x){return '<b>'+x.b+'</b><span>'+esc(D.books[x.b])+' · '+esc(x.r)+(x.w?' <span class="pill w">⚠ AGGANCIO MIO</span>':'')+(LBK[x.b]?' <a href="libri.html#'+LBK[x.b]+'" style="font-weight:800;color:var(--accent)">Apri in Libri →</a>':'')+'</span>'}).join('')+'</div><p class="muted">c = capitolo · E = esercizio · Es. = esercizio di fine capitolo · Abr. = Abracadabra · Dom. = domanda portante · AL = «Al lavoro!» · Q = quiz.</p>'}
 function otherHtml(asp){var c=D.coarse[asp];if(!c||(!c.a.length&&!c.t.length))return '';
  return '<div class="sec"><h3>Altri livelli <small>non ancora collegati modulo per modulo</small></h3><div class="chips">'+c.a.map(function(n){return '<span class="pill ok">'+esc(n)+'</span>'}).join('')+c.t.map(function(n){return '<span class="pill lv">'+esc(n)+' · di passaggio</span>'}).join('')+'</div><p class="muted">Indicazione di massima dalla mia vecchia mappa della ruota: verde = lo allena, grigio = lo tocca di passaggio.</p></div>'}
@@ -425,7 +425,7 @@ function exStep(id,X,st,cur){
     (X.org?(st.showorg?'<div class="model"><small class="tip" style="display:block">Frase modello degli appunti</small>'+esc(X.org)+'</div>':'<button class="btn" data-exshow="org" style="align-self:flex-start">Confronta con la frase modello</button>'):'')+
     '<div class="row"><button class="btn pri" data-exdone="t4">'+(st.t4?'Aggiorna':'Fatto · +10 XP')+'</button></div><div data-exmsg></div>'}
   if(cur==='5'){var d=st.done||{};return '<h3>Pratica entro 24 ore</h3><p class="tip">Dalla teoria alla pratica prima che il ricordo si indebolisca. Segna ogni esercizio quando l\'hai fatto davvero, con cosa hai verificato.</p>'+
-    (X.ex||[]).map(function(e,i){var dn=d[i];return '<div class="pr'+(dn?' dn':'')+'"><b>'+(i+1)+'. '+esc(e.n)+'</b>'+(e.s?'<div><span class="k">Scopo</span><p>'+esc(e.s)+'</p></div>':'')+(e.c?'<div><span class="k">Come si fa</span><p>'+esc(e.c)+'</p></div>':'')+(e.v?'<div><span class="k">Come verificare</span><p>'+esc(e.v)+'</p></div>':'')+
+    (X.ex||[]).map(function(e,i){var dn=d[i];return '<div class="pr'+(dn?' dn':'')+'"><b>'+(i+1)+'. '+esc(e.n)+'</b>'+(e.s?'<div><span class="k">Scopo</span><p>'+esc(e.s)+'</p></div>':'')+(e.c?'<div><span class="k">Come si fa</span><p>'+esc(e.c)+'</p></div>':'')+(e.sf?'<div><span class="k">Il tuo lavoro</span>'+HCE.sf(e.sf,(st.fs||{})[i],id+'#'+i,'xs')+'</div>':'')+(e.v?'<div><span class="k">Come verificare</span><p>'+esc(e.v)+'</p></div>':'')+
      '<label class="f">Com\'è andata<input type="text" data-exn="'+i+'" value="'+esc(dn&&dn.note||'')+'" placeholder="Cosa ho verificato"></label>'+
      '<div class="row"><button class="btn'+(dn?'':' pri')+'" data-exp="'+i+'">'+(dn?'✓ Fatto il '+new Date(dn.t).toLocaleDateString('it-IT')+' · annulla':'L\'ho fatto · +10 XP')+'</button></div></div>'}).join('')+'<div data-exmsg></div>'}
   return ''}
@@ -492,6 +492,8 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
   p.innerHTML='<div class="in"><div class="hd"><b>'+esc(x.t)+'</b><button class="btn" data-lxx="1" aria-label="Chiudi">✕</button></div><p>'+esc(x.d)+'</p>'+(x.h?'<a class="src" href="'+x.h+'">↗ '+esc(x.l)+'</a>':'')+'</div>';
   document.body.appendChild(p);var c=p.querySelector('[data-lxx]');if(c)c.focus()});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')lxClose()});
+
+var XSP=null;HCE.sfBind(document.body,'xs',function(k){var p=k.split('#');if(!XSP||XSP.id!==p[0])XSP={id:p[0],st:exSt(p[0])};var st=XSP.st;st.fs=st.fs||{};return st.fs[p[1]]=st.fs[p[1]]||{}},function(re){if(!XSP)return;exSave(XSP.id,XSP.st);var id=XSP.id;XSP=null;if(re){var r=document.getElementById('reader'),y=r?r.scrollTop:0;exRender(id);if(r)r.scrollTop=y}});
 
 function closeReader(){$('reader').hidden=true;document.body.classList.remove('noscroll');RID='';if(!$('v-ruota').hidden)wheelSync()}
 $('r-x').addEventListener('click',closeReader);

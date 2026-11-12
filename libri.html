@@ -94,67 +94,85 @@ table.t{width:100%;border-collapse:collapse;font-size:.88rem}table.t td,table.t 
 .ent .L.d{background:var(--ok-soft);color:var(--ok)}
 .bar{height:10px;border-radius:99px;background:var(--sunk);overflow:hidden}.bar i{display:block;height:100%;background:var(--sl);border-radius:99px}
 .kpi{display:flex;gap:16px;flex-wrap:wrap;font-weight:800}.kpi span{color:var(--muted);font-weight:700}
+.shelf{display:flex;gap:6px;flex-wrap:wrap}.shelf button{font:inherit;font-weight:800;font-size:.84rem;padding:8px 12px;min-height:44px;border:2px solid var(--line);border-radius:99px;background:var(--surface);color:var(--fg);cursor:pointer;text-align:left}
+.shelf button[aria-pressed="true"]{background:var(--sl);border-color:var(--sl);color:var(--onp)}
+.xx{border:2px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px}.xx>b{font-weight:900}.xx .src2{font-size:.72rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--sl)}
+.cd2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.cd2 div{border-radius:12px;padding:10px 12px;background:var(--sunk);line-height:1.45;font-weight:600}.cd2 div b{display:block;font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:900}.cd2 div.n{background:var(--sl-s)}
+@media (max-width:520px){.cd2{grid-template-columns:minmax(0,1fr)}}
 </style>
 <div class="page">
 <header>
   <div class="eyebrow">HCE · Percorso</div>
   <h1>Libri</h1>
-  <p class="lead">Tre libri del metodo, capitolo per capitolo: le tecniche con esempi, dove stanno sulla ruota, in quale strumento usarle e un «Esercitati» per fissarle.</p>
+  <p class="lead">Otto libri del metodo, capitolo per capitolo: le tecniche con esempi, gli esercizi con la struttura che chiede il libro, dove stanno sulla ruota, in quale strumento usarle e un «Esercitati».</p>
 </header>
 <div class="card notice" id="old" hidden><h2>Serve il file dei contenuti aggiornato</h2><p class="muted">Importa la versione nuova di hce-contenuti.json dalla Home, in Impostazioni.</p><a class="btn pri" href="index.html#contenuti">Vai alla Home</a></div>
 <div id="app" hidden style="display:flex;flex-direction:column;gap:16px">
-  <nav class="tb"><div class="tabs"><button class="tab" data-t="spark" aria-selected="true">Incantali tutti</button><button class="tab" data-t="ie" aria-selected="false">Instant Emotions</button><button class="tab" data-t="ip" aria-selected="false">Instant Persuasion</button></div></nav>
-  <section id="v-spark"></section><section id="v-ie" hidden></section><section id="v-ip" hidden></section>
+  <div class="card"><span class="lbl">Scegli il libro</span><div class="shelf" id="shelf" role="group" aria-label="Libri"></div></div>
+  <section id="v-book"></section>
 </div>
 </div>
 <script>
 HCE.ready(function(PACK){
 var $=function(i){return document.getElementById(i)};
-if(!PACK.lib){$('old').hidden=false;return}
+if(!PACK.lib||!PACK.lib.more){$('old').hidden=false;return}
 $('app').hidden=false;
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-var LB=PACK.lib,K='libri_v1',OPEN={},SHOWN={};
-var TL={io:['io.html#emozioni','Io · Emozioni'],incontro:['incontro.html','Prima di un incontro'],mib:['mib.html','Matrice biochimica'],public:['public.html','Public speaking'],prep:['prep.html','Prepara'],leadership:['leadership.html','Leadership'],e3:['e3.html','Algoritmo E³'],slcc:['slcc.html','SLCC'],frame:['frame.html','Frame e metafore'],algoritmi:['algoritmi.html','Algoritmi linguistici'],vendita:['vendita.html','Vendita'],istair:['istair.html','I-STAIR'],feedback:['feedback.html','Feedback'],carisma:['carisma.html','Carisma SPARK']};
+var LB=PACK.lib,K='libri_v1',OPEN={},SHOWN={},CUR='spark';
+var TL={io:['io.html#emozioni','Io · Emozioni'],incontro:['incontro.html','Prima di un incontro'],mib:['mib.html','Matrice biochimica'],public:['public.html','Public speaking'],prep:['prep.html','Prepara'],leadership:['leadership.html','Leadership'],e3:['e3.html','Algoritmo E³'],slcc:['slcc.html','SLCC'],frame:['frame.html','Frame e metafore'],algoritmi:['algoritmi.html','Algoritmi linguistici'],vendita:['vendita.html','Vendita'],istair:['istair.html','I-STAIR'],feedback:['feedback.html','Feedback'],carisma:['carisma.html','Carisma SPARK'],protocollo:['protocollo.html','Protocollo D-P-I']};
 var VA={};(PACK.vs||[]).forEach(function(v){VA[v.asp]=v});
+var BOOKS=[{id:'spark',L:'L8',n:'Incantali tutti',c:5},{id:'ie',L:'L7',n:'Instant Emotions',c:10},{id:'ip',L:'L4',n:'Instant Persuasion',c:10}].concat(LB.more.map(function(b){return {id:b.id,L:b.L,n:b.book,c:b.ch.length,B:b}}));
+var BY={};BOOKS.forEach(function(b){BY[b.id]=b});
 function list(){return HCE.lsJ(K,[])}
 function rec(id){return list().filter(function(x){return x.id===id})[0]||{id:id}}
 function put(x){var a=list(),i=a.findIndex(function(y){return y.id===x.id});x.u=Date.now();if(i>=0)a[i]=x;else a.push(x);HCE.lsPut(K,a)}
-function links(asp,tl){return '<span class="lbl">Sulla ruota · aggancio mio</span><div class="lk">'+(asp||[]).map(function(a){var v=VA[a];return '<a class="w" href="studio.html#a='+encodeURIComponent(a)+'">'+esc(a)+(v?' · '+esc(v.area):'')+'</a>'}).join('')+'</div>'+
+var TIMER=null,PEND={};
+function links(asp,tl){return (asp&&asp.length?'<span class="lbl">Sulla ruota · aggancio mio</span><div class="lk">'+asp.map(function(a){var v=VA[a];return '<a class="w" href="studio.html#a='+encodeURIComponent(a)+'">'+esc(a)+(v?' · '+esc(v.area):'')+'</a>'}).join('')+'</div>':'')+
   (tl&&tl.length?'<span class="lbl">Usalo in</span><div class="lk">'+tl.filter(function(t){return TL[t]}).map(function(t){return '<a href="'+TL[t][0]+'">'+esc(TL[t][1])+' →</a>'}).join('')+'</div>':'')}
-function quiz(id,qs){var r=rec(id),sh=SHOWN[id]||{},all=qs.every(function(q,i){return sh[i]});
+function quiz(id,qs){if(!qs||!qs.length)return '';var r=rec(id),sh=SHOWN[id]||{},all=qs.every(function(q,i){return sh[i]});
   return '<span class="lbl">Esercitati</span>'+qs.map(function(q,i){return '<div class="qa"><b>'+esc(q[0])+'</b>'+(sh[i]||r.qz?'<span class="an">'+esc(q[1])+'</span>':'<button class="btn" data-ans="'+id+'|'+i+'">Mostra la risposta</button>')+'</div>'}).join('')+
   (r.qz?'<div class="msg">Esercitati completato</div>':'<button class="btn'+(all?' sl':'')+'" data-qz="'+id+'"'+(all?'':' disabled')+'>Ho finito · +15 XP</button>')}
+function exs(id,xs){if(!xs||!xs.length)return '';var r=rec(id),fs=r.fs||{},xd=r.xd||{};
+  return '<span class="lbl">Esercizi</span>'+xs.map(function(x,i){return '<div class="xx"><span class="src2">'+(x.src==='libro'?'Dal libro':'Costruito da me sul capitolo')+'</span><b>'+esc(x.n)+'</b><span class="tip">'+esc(x.d)+'</span>'+HCE.sf(x.s,fs[i],id+'#'+i,'lx')+
+    '<div class="row">'+(xd[i]?'<span class="msg">Fatto il '+new Date(xd[i]).toLocaleDateString('it-IT')+'</span><button class="btn" data-xun="'+id+'|'+i+'">Annulla</button>':'<button class="btn sl" data-xd="'+id+'|'+i+'">L\'ho fatto · +10 XP</button>')+'</div></div>'}).join('')}
 function readBtn(id){var r=rec(id);return '<div class="row">'+(r.rd?'<span class="msg">Letto ✓</span><button class="btn" data-unread="'+id+'">Segna da rileggere</button>':'<button class="btn sl" data-rd="'+id+'">Segna come letto · +10 XP</button>')+'</div>'}
 function ent(id,L,t,s,body){var r=rec(id);return '<details class="ent" id="'+id+'"'+(OPEN[id]?' open':'')+'><summary><span class="L'+(r.rd?' d':'')+'">'+(r.rd?'✓':esc(L))+'</span><span class="tx"><b>'+esc(t)+'</b><small>'+esc(s)+'</small></span><span class="chev">›</span></summary><div class="sb">'+body+'</div></details>'}
-function prog(pre,n){var a=list().filter(function(x){return String(x.id).indexOf(pre)===0}),rd=a.filter(function(x){return x.rd}).length,qz=a.filter(function(x){return x.qz}).length;
-  return '<div class="kpi">'+rd+'/'+n+' <span>letti</span> '+qz+'/'+n+' <span>esercitati</span></div><div class="bar"><i style="width:'+Math.round(100*rd/n)+'%"></i></div>'}
-function renderSpark(){var B=LB.spark,h='<div class="card"><h2>'+esc(B.book)+'</h2><p>'+esc(B.intro)+'</p><div class="say">'+esc(B.chem)+'</div><p class="tip">'+esc(B.self)+'</p><p class="note">'+esc(B.note)+' '+esc(B.exnote)+'</p>'+prog('spark-',5)+'<a class="btn sl" href="carisma.html">Apri lo strumento Carisma SPARK →</a></div>';
-  B.pillars.forEach(function(p){var id='spark-'+p.k,b='<p style="font-weight:600;line-height:1.5">'+esc(p.d)+'</p>';
-    p.tools.forEach(function(t){b+='<div class="tk"><b>'+esc(t.n)+'</b><span>'+esc(t.d)+'</span><div class="ex">'+esc(t.ex)+'</div><span class="muted">Quando: '+esc(t.use)+'</span><span class="lbl">Palestra quotidiana</span><ul class="pts">'+t.acts.map(function(a){return '<li>'+esc(a)+'</li>'}).join('')+'</ul>'+links(t.asp,t.tl)+'</div>'});
-    b+='<div class="tk"><b>Spark in action</b><ul class="pts">'+p.spark.map(function(x){return '<li><b>'+esc(x.n)+'</b> ('+esc(x.dur)+'): '+esc(x.why)+'</li>'}).join('')+'</ul><a class="src" href="carisma.html#esercizi">Fallo nello strumento →</a></div>';
-    h+=ent(id,p.k,p.n,p.it+' · 3 strumenti',b+readBtn(id))});
-  h+=ent('spark-q','?','Esercitati sul libro',B.q.length+' domande',quiz('spark-q',B.q));
-  $('v-spark').innerHTML=h}
-function renderIE(){var B=LB.ie,h='<div class="card"><h2>'+esc(B.book)+'</h2><p>'+esc(B.intro)+'</p><p class="note">'+esc(B.exnote)+'</p>'+prog('ie-',10)+'<a class="btn" href="io.html#emozioni">Le strategie in Io → Emozioni →</a></div>';
-  B.ch.forEach(function(c){var id='ie-'+c.n;
-    h+=ent(id,c.n,c.t,'Capitolo '+c.n,'<ul class="pts">'+c.pts.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul><div class="ex">'+esc(c.ex)+'</div><div class="say">Prova: '+esc(c['try'])+'</div>'+links(c.asp,c.tl)+quiz(id,c.q)+readBtn(id))});
-  $('v-ie').innerHTML=h}
-function renderIP(){var B=LB.ip,h='<div class="card"><h2>'+esc(B.book)+'</h2><p>'+esc(B.intro)+'</p><p class="note">'+esc(B.exnote)+'</p>'+prog('ip-',10)+'</div>';
-  B.ch.forEach(function(c){var id='ip-'+c.n,b='';
-    c.tech.forEach(function(t){b+='<div class="tk"><b>'+esc(t[0])+'</b><span>'+esc(t[1])+'</span><div class="ex">'+esc(t[2])+'</div></div>'});
-    h+=ent(id,c.n,c.t,c.s,b+links(c.asp,c.tl)+quiz(id,c.q)+readBtn(id))});
-  $('v-ip').innerHTML=h}
-var R_={spark:renderSpark,ie:renderIE,ip:renderIP},CURT='spark';
-function show(t){CURT=t;document.querySelectorAll('.tab').forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===t?'true':'false')});Object.keys(R_).forEach(function(x){$('v-'+x).hidden=x!==t});R_[t]()}
-document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(b){show(b.dataset.t);window.scrollTo(0,0)}});
+function prog(pre,n){var a=list().filter(function(x){return String(x.id).indexOf(pre)===0&&x.kind!=='try'}),rd=a.filter(function(x){return x.rd}).length,qz=a.filter(function(x){return x.qz}).length,xd=a.reduce(function(s,x){return s+Object.keys(x.xd||{}).length},0);
+  return '<div class="kpi">'+rd+'/'+n+' <span>letti</span> '+xd+' <span>esercizi fatti</span>'+(qz?' '+qz+' <span>esercitati</span>':'')+'</div><div class="bar"><i style="width:'+Math.round(100*rd/n)+'%"></i></div>'}
+function pts(a){return '<ul class="pts">'+a.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>'}
+function head(b,intro,extra){return '<div class="card"><span class="lbl">'+esc(b.L)+'</span><h2>'+esc(b.n)+'</h2><p>'+esc(intro)+'</p>'+(extra||'')+prog(b.id+'-',b.c)+'</div>'}
+function renderSpark(){var B=LB.spark,b=BY.spark,h=head(b,B.intro,'<div class="say">'+esc(B.chem)+'</div><p class="tip">'+esc(B.self)+'</p><p class="note">'+esc(B.note)+' '+esc(B.exnote)+'</p><a class="btn sl" href="carisma.html">Apri lo strumento Carisma SPARK →</a>');
+  B.pillars.forEach(function(p){var id='spark-'+p.k,bd='<p style="font-weight:600;line-height:1.5">'+esc(p.d)+'</p>';
+    p.tools.forEach(function(t){bd+='<div class="tk"><b>'+esc(t.n)+'</b><span>'+esc(t.d)+'</span><div class="ex">'+esc(t.ex)+'</div><span class="muted">Quando: '+esc(t.use)+'</span><span class="lbl">Palestra quotidiana</span>'+pts(t.acts)+links(t.asp,t.tl)+'</div>'});
+    bd+='<div class="tk"><b>Spark in action</b><ul class="pts">'+p.spark.map(function(x){return '<li><b>'+esc(x.n)+'</b> ('+esc(x.dur)+'): '+esc(x.why)+'</li>'}).join('')+'</ul><a class="src" href="carisma.html#esercizi">Fallo nello strumento →</a></div>';
+    h+=ent(id,p.k,p.n,p.it+' · 3 strumenti',bd+readBtn(id))});
+  h+=ent('spark-q','?','Esercitati sul libro',B.q.length+' domande',quiz('spark-q',B.q));return h}
+function renderIE(){var B=LB.ie,b=BY.ie,h=head(b,B.intro,'<p class="note">'+esc(B.exnote)+'</p><a class="btn" href="io.html#emozioni">Le strategie in Io → Emozioni →</a>');
+  B.ch.forEach(function(c){var id='ie-'+c.n;h+=ent(id,c.n,c.t,'Capitolo '+c.n,pts(c.pts)+'<div class="ex">'+esc(c.ex)+'</div><div class="say">Prova: '+esc(c['try'])+'</div>'+exs(id,c.exs)+links(c.asp,c.tl)+quiz(id,c.q)+readBtn(id))});return h}
+function renderIP(){var B=LB.ip,b=BY.ip,h=head(b,B.intro,'<p class="note">'+esc(B.exnote)+'</p>');
+  B.ch.forEach(function(c){var id='ip-'+c.n,bd='';c.tech.forEach(function(t){bd+='<div class="tk"><b>'+esc(t[0])+'</b><span>'+esc(t[1])+'</span><div class="ex">'+esc(t[2])+'</div></div>'});
+    h+=ent(id,c.n,c.t,c.s,bd+exs(id,c.exs)+links(c.asp,c.tl)+quiz(id,c.q)+readBtn(id))});return h}
+function renderMore(b){var B=b.B,h=head(b,B.intro,(B.cards||[]).map(function(c){return '<div class="tk"><b>'+esc(c[0])+'</b><span>'+esc(c[1])+'</span></div>'}).join('')+'<p class="note">'+esc(B.exnote)+'</p>'+(B.id==='cs'?'<a class="btn sl" href="mib.html">Apri la Matrice biochimica →</a>':''));
+  B.ch.forEach(function(c){var id=B.id+'-'+c.n,bd=pts(c.pts);
+    if(c.code)bd+='<div class="cd2"><div><b>Codice sorgente</b>'+esc(c.code[0])+'</div><div class="n"><b>Nuovo codice</b>'+esc(c.code[1])+'</div></div>';
+    if(c.ex_txt)bd+='<div class="ex">'+esc(c.ex_txt)+'</div>';
+    h+=ent(id,c.n,c.t,c.s,bd+exs(id,c.ex)+links(c.asp,c.tl)+readBtn(id))});
+  if(B.q&&B.q.length)h+=ent(B.id+'-q','?','Esercitati sul libro',B.q.length+' domande',quiz(B.id+'-q',B.q));return h}
+function render(){var b=BY[CUR];$('shelf').innerHTML=BOOKS.map(function(x){return '<button data-bk="'+x.id+'" aria-pressed="'+(x.id===CUR)+'">'+esc(x.n)+'</button>'}).join('');
+  $('v-book').innerHTML=CUR==='spark'?renderSpark():CUR==='ie'?renderIE():CUR==='ip'?renderIP():renderMore(b)}
+function rerender(){var y=window.scrollY;render();window.scrollTo(0,y)}
 document.addEventListener('toggle',function(e){var d=e.target;if(d.classList&&d.classList.contains('ent'))OPEN[d.id]=d.open},true);
-$('app').addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;var r;
-  if(t.dataset.ans){var p=t.dataset.ans.split('|');SHOWN[p[0]]=SHOWN[p[0]]||{};SHOWN[p[0]][p[1]]=1;R_[CURT]();return}
-  if(t.dataset.qz){r=rec(t.dataset.qz);r.qz=Date.now();put(r);R_[CURT]();HCE.medalCheck&&HCE.medalCheck();return}
-  if(t.dataset.rd){r=rec(t.dataset.rd);r.rd=Date.now();put(r);R_[CURT]();HCE.medalCheck&&HCE.medalCheck();return}
-  if(t.dataset.unread){r=rec(t.dataset.unread);delete r.rd;put(r);R_[CURT]();return}});
+HCE.sfBind($('v-book'),'lx',function(k){var p=k.split('#'),r=PEND[p[0]]||rec(p[0]);PEND[p[0]]=r;r.fs=r.fs||{};return r.fs[p[1]]=r.fs[p[1]]||{}},function(re){Object.keys(PEND).forEach(function(id){put(PEND[id])});PEND={};if(re)rerender()});
+$('app').addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;var r,p;
+  if(t.dataset.bk){CUR=t.dataset.bk;render();return}
+  if(t.dataset.ans){p=t.dataset.ans.split('|');SHOWN[p[0]]=SHOWN[p[0]]||{};SHOWN[p[0]][p[1]]=1;rerender();return}
+  if(t.dataset.qz){r=rec(t.dataset.qz);r.qz=Date.now();put(r);rerender();return}
+  if(t.dataset.rd){r=rec(t.dataset.rd);r.rd=Date.now();put(r);rerender();return}
+  if(t.dataset.unread){r=rec(t.dataset.unread);delete r.rd;put(r);rerender();return}
+  if(t.dataset.xd){p=t.dataset.xd.split('|');r=rec(p[0]);r.xd=r.xd||{};r.xd[p[1]]=Date.now();put(r);rerender();return}
+  if(t.dataset.xun){p=t.dataset.xun.split('|');r=rec(p[0]);if(r.xd)delete r.xd[p[1]];put(r);rerender();return}});
 var h0=(location.hash||'').slice(1),bk=h0.split('-')[0];
-if(R_[bk]){show(bk);if(h0.indexOf('-')>0){OPEN[h0]=true;R_[bk]();setTimeout(function(){var d=$(h0);if(d)d.scrollIntoView({block:'start'})},60)}}else show('spark');
+if(BY[bk]){CUR=bk;if(h0.indexOf('-')>0)OPEN[h0]=true;render();if(h0.indexOf('-')>0)setTimeout(function(){var d=$(h0);if(d)d.scrollIntoView({block:'start'})},60)}else render();
 });
 </script>
 
