@@ -315,7 +315,7 @@ function uiDraw(){var u=HCE.ui.get();Array.prototype.forEach.call(document.query
 ['ui-font','ui-theme'].forEach(function(id){$(id).addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;HCE.ui.set(id==='ui-font'?'font':'theme',b.dataset.v);uiDraw()})});
 document.addEventListener('click',function(e){var b;if(e.target.id==='bk-go'){$('set-bk').open=true;$('b-exp').click()}if(b=e.target.closest('[data-uifont] button')){HCE.ui.set('font',b.dataset.v);uiDraw()}});
 uiDraw();
-$('ver').textContent='App versione 2026-11-12d-2c2fb3c6';
+$('ver').textContent='App versione 2026-11-12e-bc4a065f';
 status();bstat();
 window.addEventListener('pageshow',function(e){if(e.persisted){status();bstat()}});
 })();

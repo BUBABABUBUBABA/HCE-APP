@@ -315,12 +315,23 @@ var HCE = (function () {
     var stOrd = ['ind', 'int', 'sup', 'imp', 'irr'], stc = {};
     preps.forEach(function (p) { var st = (p.after || {}).st, i = stOrd.indexOf(st); for (var j = 1; j <= i; j++) stc[stOrd[j]] = (stc[stOrd[j]] || 0) + 1; });
     IST_MED.forEach(function (m) { M('ris', 'ist_' + m[0], m[1], m[2], 'I-STAIR: porta qualcuno almeno al gradino ' + m[3] + '. Lo segni nel Dopo di Prepara.', 'prep.html', [1, 5, 15], stc[m[0]]); });
+    var aft = preps.filter(function (p) { return p.after && p.after.res; });
+    M('ris', 'si', '✅', 'Obiettivo centrato', 'Nel Dopo di Prepara rispondi «Sì» a «Obiettivo raggiunto?».', 'prep.html', [3, 10, 30], aft.filter(function (p) { return p.after.res === 'si'; }).length);
+    M('ris', 'occhio', '👁️', 'Occhio clinico', 'Il mix in cui pensavi di trovare l\'altro (Prepara, passo 2) è quello in cui l\'hai trovato davvero (Dopo).', 'prep.html', [1, 5, 15], preps.filter(function (p) { return (p.him || {}).now && (p.after || {}).mix === p.him.now; }).length);
+    M('ris', 'svolta', '🌤️', 'Svolta', 'Trovi l\'altro in Tensione o Dissenso e lo porti a Felicità o Fiducia: Dopo con «Sì».', 'prep.html', [1, 5, 15], preps.filter(function (p) { var h = p.him || {}; return (h.now === 'ten' || h.now === 'dis') && (h.need === 'fel' || h.need === 'fid') && (p.after || {}).res === 'si'; }).length);
+    M('ris', 'lezione', '📚', 'Lezione imparata', 'Quando va male («No» o «In parte»), scrivi cosa cambi la prossima volta.', 'prep.html', [1, 5, 15], aft.filter(function (p) { return p.after.res !== 'si' && (p.after.next || '').trim(); }).length);
     /* --- Obiettivi REACH --- */
     var F = function (g, k) { return ((g.f || {})[k] || '').trim(); }, D = function (g, k) { return (g.done || {})[k]; };
-    M('obi', 'g_R', '💡', 'Ho un perché', 'Completa la fase Reason di un obiettivo, con i Cinque perché scritti.', 'io.html#obiettivi', [1, 3, 10], goals.filter(function (g) { return D(g, 'R') && F(g, 'R.why'); }).length);
+    M('obi', 'g_R', '❓', 'Ho un perché', 'Completa la fase Reason di un obiettivo, con i Cinque perché scritti.', 'io.html#obiettivi', [1, 3, 10], goals.filter(function (g) { return D(g, 'R') && F(g, 'R.why'); }).length);
     M('obi', 'g_E', '📐', 'Architetto', 'Completa la fase Engineer con il Premortem scritto.', 'io.html#obiettivi', [1, 3, 10], goals.filter(function (g) { return D(g, 'E') && F(g, 'E.premortem'); }).length);
     M('obi', 'g_A', '🏃', 'Sul campo', 'Completa la fase Accomplish con KPI e sprint settimanale scritti.', 'io.html#obiettivi', [1, 3, 10], goals.filter(function (g) { return D(g, 'A') && F(g, 'A.kpi') && F(g, 'A.sprint'); }).length);
     M('obi', 'g_C', '🏆', 'Traguardo', 'Raggiungi un obiettivo e celebralo (fase Cheer).', 'io.html#obiettivi', [1, 3, 10], goals.filter(function (g) { return D(g, 'C'); }).length);
+    M('obi', 'g_n', '🎯', 'Nuovi obiettivi', 'Scrivi un obiettivo in Io → Obiettivi.', 'io.html#obiettivi', [1, 3, 10], goals.length);
+    [['R.future', '🔭', 'Il sé futuro'], ['R.pain', '🎢', 'Dolore e piacere'], ['R.mine', '🪪', 'È davvero mio?'], ['E.map', '🗺️', 'Mappatura'], ['E.cross', '🔀', 'Trasversalità'], ['E.reward', '🎁', 'La ricompensa'],
+     ['A.minute', '⌚', 'Il minuto'], ['C.ritual', '🥂', 'Rituale della vittoria'], ['C.thanks', '🙏', 'Gratitudine condivisa'], ['H.diary', '📔', 'Diario del successo'], ['H.skills', '🗃️', 'Inventario delle competenze'], ['H.decon', '🧱', 'Decostruzione del successo']].forEach(function (t) {
+      var n = goals.filter(function (g) { return F(g, t[0]); }).length;
+      M('obi', 'gt_' + t[0], t[1], t[2], 'Usa lo strumento REACH «' + t[2] + '» in un obiettivo (fase ' + t[0][0] + ').', 'io.html#obiettivi', null, n, { cnt: n }); });
+    M('obi', 'g_all', '🌟', 'REACH completo', 'Tutte e 5 le fasi completate sullo stesso obiettivo.', 'io.html#obiettivi', [1, 3, 10], goals.filter(function (g) { return ['R', 'E', 'A', 'C', 'H'].every(function (k) { return D(g, k); }); }).length);
     var hd = 0; goals.forEach(function (g) { var c0 = D(g, 'C'), h = g.hold || []; if (c0 && h.length) hd = Math.max(hd, Math.floor((Math.max.apply(null, h) - c0) / 864e5)); });
     M('obi', 'g_H', '🛡️', 'Tenuta', 'Dopo il traguardo, conferma nella fase Hold che lo stai mantenendo: 30, 90, 120 giorni.', 'io.html#obiettivi', [30, 90, 120], hd, { unit: 'giorni' });
     var hEnd = goals.map(function (g) { return D(g, 'H'); }).filter(Boolean), rel = hEnd.length ? goals.filter(function (g) { return hEnd.some(function (t) { return +g.id > t; }); }).length : 0;
@@ -334,6 +345,11 @@ var HCE = (function () {
     M('abi', 'h_100', '💯', 'Cento', '100 giorni segnati su un\'abitudine.', 'io.html#abitudini', null, nw.some(function (h) { return nlog(h) >= 100; }), { cnt: nw.filter(function (h) { return nlog(h) >= 100; }).length });
     M('abi', 'h_run', '🔗', 'Catena', 'Giorni di fila sulla stessa abitudine, senza saltarne uno.', 'io.html#abitudini', [7, 30, 66], Math.max.apply(null, [0].concat(nw.map(best))), { unit: 'giorni' });
     M('abi', 'h_old', '🔓', 'Catena spezzata', '30 giorni segnati su un\'abitudine vecchia da smontare.', 'io.html#abitudini', null, od.some(function (h) { return nlog(h) >= 30; }), { cnt: od.filter(function (h) { return nlog(h) >= 30; }).length });
+    M('abi', 'h_n', '🧱', 'Costruttore', 'Crea un\'abitudine in Io → Abitudini.', 'io.html#abitudini', [1, 3, 5], habits.length);
+    M('abi', 'h_1', '🌰', 'Primo passo', 'Segna il primo giorno di un\'abitudine.', 'io.html#abitudini', null, habits.some(function (h) { return nlog(h) >= 1; }));
+    var hdays = {}; habits.forEach(function (h) { Object.keys(h.log || {}).forEach(function (d) { hdays[d] = 1; }); });
+    M('abi', 'h_tot', '📆', 'Giorni di abitudini', 'Giorni in cui hai segnato almeno un\'abitudine.', 'io.html#abitudini', [10, 50, 200], Object.keys(hdays).length, { unit: 'giorni' });
+    M('abi', 'h_two', '🤹', 'Doppietta', 'Lo stesso giorno, segna due abitudini diverse.', 'io.html#abitudini', null, Object.keys(hdays).some(function (d) { return habits.filter(function (h) { return (h.log || {})[d]; }).length >= 2; }));
     /* --- Strumenti --- */
     var tried = {}; Object.keys(daily).forEach(function (d) { var v = daily[d]; if (v && v.n) tried[v.n] = 1; });
     var ph = {}, allT = [];
@@ -354,16 +370,40 @@ var HCE = (function () {
     M('str', 'sl_macro', '📜', 'MACRO', 'Scrivi un messaggio con la combinazione MACRO.', 'slcc.html#combo', [1, 5, 15], slm.filter(function (x) { return x.k === 'MACRO'; }).length);
     var early = inc.filter(function (x) { var e = x.e || {}; return ['E', 'A', 'R', 'L', 'Y'].every(function (k) { return (e[k] || '').trim(); }); }).length;
     M('str', 'early', '🐦', 'EARLY', 'Compila tutte e 5 le lettere EARLY in una scheda «Prima di un incontro».', 'incontro.html', [1, 5, 15], early);
+    M('str', 'e3_days', '🗓️', 'Strumento del giorno', 'Giorni in cui hai provato lo strumento E³ del giorno.', 'index.html', [7, 30, 100], Object.keys(daily).length, { unit: 'giorni' });
+    var asp = {}; if (pk && pk.e3) pk.e3.phases.forEach(function (p) { (p.aspects || []).forEach(function (a) { asp[a.k] = p.k; }); });
+    M('str', 'e3_full', '🎬', 'Copione completo', 'In Prepara, scrivi il copione E³ con almeno una battuta per Engage, Explain ed Exchange.', 'prep.html#nuova', [1, 5, 15], preps.filter(function (p) { var e = p.e3 || {}, f = {}; Object.keys(e).forEach(function (k) { var v = e[k] || {}; if ((v.text || '').trim() || v.tool) f[asp[k]] = 1; }); return f.engage && f.explain && f.exchange; }).length);
+    M('str', 'dpi_after', '🧩', 'Profiler', 'Compila il Dopo di una sessione D-P-I.', 'protocollo.html', [1, 10, 30], c.after);
+    M('str', 'fb_both', '🤲', 'Doppio feedback', 'Usa sia RINGS sia ARISE almeno una volta.', 'feedback.html', null, fbs.some(function (x) { return x.model === 'rings'; }) && fbs.some(function (x) { return x.model === 'arise'; }));
+    M('str', 'sl_n', '🖼️', 'Ritrattista', 'Crea il profilo SLCC di una persona.', 'slcc.html', [1, 5, 15], sl.length);
+    M('str', 'sl_both', '🎼', 'Combinazione doppia', 'Scrivi sia un MICRO sia un MACRO per la stessa persona.', 'slcc.html#combo', null, sl.some(function (x) { return slm.some(function (m) { return m.who === x.id && m.k === 'MICRO'; }) && slm.some(function (m) { return m.who === x.id && m.k === 'MACRO'; }); }));
+    M('str', 'inc_dic', '👗', 'Stilista', 'In una scheda «Prima di un incontro», scegli dove stare su tutte e 5 le dicotomie del look.', 'incontro.html', null, inc.some(function (x) { var d = x.dic || {}; return [0, 1, 2, 3, 4].every(function (i) { return d[i] != null && d[i] !== ''; }); }));
+    M('str', 'inc_amb', '🛋️', 'Ambiente letto', 'Scrivi cosa c\'è di significativo nel luogo dell\'incontro e come lo gestisci.', 'incontro.html', [1, 5, 15], inc.filter(function (x) { return (x.amb || '').trim(); }).length);
+    M('str', 'inc_av', '🧼', 'Parole pulite', 'Spunta tutte le frasi da non dire in una scheda «Prima di un incontro».', 'incontro.html', null, inc.some(function (x) { var a = x.av || {}; return Object.keys(a).filter(function (k) { return a[k]; }).length >= 7; }));
+    [['cliente', '💼', 'Nuovo cliente'], ['colloquio', '🧑‍💼', 'Colloquio'], ['telefono', '📞', 'Telefonata'], ['video', '💻', 'Videochiamata'], ['pubblico', '🎤', 'In pubblico'], ['team', '👥', 'Nuovo nel team'], ['intro', '🙋', 'Presentato da altri'], ['bambini', '🧸', 'Con i bambini'], ['social', '📱', 'Social o sito']].forEach(function (x) {
+      var n = inc.filter(function (y) { return y.ctx === x[0]; }).length;
+      M('str', 'ctx_' + x[0], x[1], x[2], 'Prepara una scheda «Prima di un incontro» di tipo «' + x[2] + '».', 'incontro.html', null, n, { cnt: n }); });
     /* --- Su di te --- */
     M('io', 'check', '🪞', 'Specchio', 'Fai il check-in in Io.', 'io.html#oggi', [7, 30, 100], c.check);
     M('io', 'flow', '🌊', 'Flow', 'Porta a termine una sessione di focus con il timer.', 'io.html#focus', [5, 15, 50], foc.filter(function (x) { return x.full; }).length);
     M('io', 'fondo', '🏊', 'Fondo', 'Completa una sessione di focus da 30 minuti.', 'io.html#focus', null, foc.some(function (x) { return x.full && x.min >= 30; }));
     var emoAll = emo.filter(function (x) { var f = x.f || {}; return Object.keys(f).filter(function (k) { return (f[k] || '').trim(); }).length >= 7; }).length;
-    M('io', 'emo', '🧭', 'Timoniere', 'Gestisci un\'emozione scrivendo tutte e 7 le fasi.', 'io.html#emozioni', [1, 5, 15], emoAll);
+    M('io', 'emo', '☸️', 'Timoniere', 'Gestisci un\'emozione scrivendo tutte e 7 le fasi.', 'io.html#emozioni', [1, 5, 15], emoAll);
     var pr = pred.filter(function (x) { return x.kind === 'pred' && x.res; }), hit = pr.filter(function (x) { return (x.res === 'si') === (x.prob >= 50); }).length;
     M('io', 'pred', '🔮', 'Previsore', 'Registra previsioni nella scheda Bias e segna com\'è andata.', 'io.html#bias', [3, 10, 30], pr.length);
     M('io', 'calib', '⚖️', 'Ben calibrato', 'Almeno 10 previsioni risolte e 7 su 10 azzeccate (soglia scelta dall\'app).', 'io.html#bias', null, pr.length >= 10 && hit / pr.length >= 0.7, { prog: [pr.length >= 10 ? Math.round(100 * hit / pr.length) + '%' : pr.length + '/10'] });
     M('io', 'week', '📅', 'Settimane', 'Fai la revisione della settimana.', 'io.html#settimana', [1, 4, 12], c.week);
+    var ck = L2('io_check_v1', {}), words = {}; Object.keys(ck).forEach(function (d) { var w = ((ck[d] || {}).emo || '').trim().toLowerCase(); if (w) words[w] = 1; });
+    M('io', 'vocab', '🎨', 'Vocabolario emotivo', 'Nel check-in, dai un nome preciso a ciò che provi: conta le parole diverse che usi.', 'io.html#oggi', [10, 25, 50], Object.keys(words).length, { unit: 'parole' });
+    var fmin = foc.reduce(function (a, x) { return a + (x.min || 0); }, 0);
+    M('io', 'fmin', '⏳', 'Minuti di focus', 'Minuti totali delle sessioni di focus.', 'io.html#focus', [60, 600, 3000], fmin, { unit: 'min' });
+    M('io', 'fclean', '🧘', 'Zero distrazioni', 'Una sessione di focus completa senza segnare distrazioni.', 'io.html#focus', [1, 10, 30], foc.filter(function (x) { return x.full && !x.distr; }).length);
+    M('io', 'fback', '🪃', 'Rifocalizzato', 'Segna una distrazione e torna sul compito, come insegna il corso.', 'io.html#focus', [1, 10, 30], foc.reduce(function (a, x) { return a + (x.distr || 0); }, 0));
+    var trg = L2('io_trig_v1', []);
+    M('io', 'trig', '🔑', 'Trigger personali', 'Crea un trigger tuo nella scheda Emozioni.', 'io.html#emozioni', [1, 3, 10], trg.length);
+    M('io', 'trig_u', '🎛️', 'Trigger usati', 'Usa un trigger in un momento vero e segnalo.', 'io.html#emozioni', [1, 10, 30], trg.reduce(function (a, x) { return a + (x.used || 0); }, 0));
+    M('io', 'over', '😈', 'Avvocato del diavolo', 'Rifletti su una decisione con le domande contro l\'eccesso di fiducia (scheda Bias).', 'io.html#bias', [1, 5, 15], pred.filter(function (x) { return x.kind === 'over'; }).length);
+    M('io', 'self', '🧐', 'Sguardo onesto', 'Rifletti su di te con le domande sul bias dell\'autovalutazione (scheda Bias).', 'io.html#bias', [1, 5, 15], pred.filter(function (x) { return x.kind === 'self'; }).length);
     /* --- Studio --- */
     if (pk && pk.data) {
       var by = {}, ar = {};
@@ -381,6 +421,19 @@ var HCE = (function () {
     M('stu', 'r137', '🧠', 'Memoria di ferro', 'Ripassa lo stesso modulo a 1, 3 e 7 giorni.', 'index.html', [1, 10, 30], Object.keys(r137).filter(function (id) { return r137[id] >= 3; }).length);
     M('stu', 'kid', '🧒', 'Spiegalo a un bambino', 'In «Esercitati», fai la prova «Spiegalo» di un modulo.', 'percorso.html', [5, 25, 100], Object.keys(exa).filter(function (id) { return (exa[id] || {}).t2; }).length);
     M('stu', 'mine', '✍️', 'Le mie espressioni', 'Aggiungi espressioni tue nel Dizionario.', 'dizionario.html#mie', [1, 10, 30], mine.length);
+    var exk = function (k) { return Object.keys(exa).filter(function (id) { return (exa[id] || {})[k]; }).length; };
+    M('stu', 'ex_t1', '🃏', 'Flashcard', 'In «Esercitati», completa il test sul momento di un modulo.', 'percorso.html', [5, 25, 100], exk('t1'));
+    M('stu', 'ex_t3', '🕳️', 'Lacune colmate', 'In «Esercitati», completa «Colma le lacune».', 'percorso.html', [5, 25, 100], exk('t3'));
+    M('stu', 'ex_t4', '✂️', 'Semplificatore', 'In «Esercitati», completa «Organizza e semplifica».', 'percorso.html', [5, 25, 100], exk('t4'));
+    var gOk = gym.reduce(function (a, x) { return a + (x.ok || 0); }, 0);
+    M('stu', 'gym_ok', '✔️', 'Risposte giuste', 'Risposte giuste in Palestra, in totale.', 'palestra.html', [100, 500, 2000], gOk);
+    M('stu', 'gym_err', '🥊', 'Rivincita', 'In Palestra, rifai le domande che avevi sbagliato.', 'palestra.html', [1, 5, 15], gym.filter(function (x) { return x.tp === 'err'; }).length);
+    M('stu', 'gym_mix', '🎲', 'Tutto insieme', 'Un giro di Palestra su tutti gli argomenti insieme.', 'palestra.html', [1, 10, 30], gym.filter(function (x) { return x.tp === 'all'; }).length);
+    var perDay = {}, hrs = { m: 0, n: 0 }; Object.keys(done).forEach(function (id) { var t = done[id]; if (!(t > 1e12)) return; var d = new Date(t), k = dayKey(t); perDay[k] = (perDay[k] || 0) + 1; if (d.getHours() < 8) hrs.m++; if (d.getHours() >= 22) hrs.n++; });
+    var maxDay = Math.max.apply(null, [0].concat(Object.keys(perDay).map(function (k) { return perDay[k]; })));
+    M('stu', 'maraton', '🏁', 'Maratona di studio', 'Moduli studiati nello stesso giorno.', 'percorso.html', [5, 10, 20], maxDay, { unit: 'moduli' });
+    M('stu', 'early', '🐓', 'Mattiniero', 'Studia un modulo prima delle 8.', 'percorso.html', null, hrs.m > 0, { cnt: hrs.m });
+    M('stu', 'owl', '🦉', 'Nottambulo', 'Studia un modulo dopo le 22.', 'percorso.html', null, hrs.n > 0, { cnt: hrs.n });
     /* --- Costanza --- */
     var ds = Object.keys(S.days).sort(), bs = 0, run = 0, prev = null;
     ds.forEach(function (d) { var t = Date.parse(d + 'T12:00:00'); run = prev != null && Math.round((t - prev) / 864e5) === 1 ? run + 1 : 1; prev = t; if (run > bs) bs = run; });
@@ -389,6 +442,11 @@ var HCE = (function () {
     M('base', 'mod', '📖', 'Studio', 'Segna «✓ Studiato» alla fine di un modulo.', 'percorso.html', [10, 50, 150], S.mods, { unit: 'moduli' });
     M('base', 'rip', '🔁', 'Ripasso', 'I ripassi di 1, 3 e 7 giorni, in Home.', 'index.html', [5, 25, 100], c.rip);
     M('base', 'gym', '🏋️', 'Palestra', 'Un giro di domande in Palestra.', 'palestra.html', [5, 25, 100], gym.length);
+    M('base', 'days', '📍', 'Presenze', 'Giorni in cui hai usato l\'app, in totale.', 'index.html', [10, 50, 200], ds.length, { unit: 'giorni' });
+    var back = false; for (var q = 1; q < ds.length; q++) if ((Date.parse(ds[q]) - Date.parse(ds[q - 1])) / 864e5 >= 7) back = true;
+    M('base', 'back', '👋', 'Bentornato', 'Torna a usare l\'app dopo almeno una settimana di pausa: conta ripartire.', 'index.html', null, back);
+    var wk = ds.some(function (d) { var t = new Date(d + 'T12:00:00'); return t.getDay() === 6 && S.days[dayKey(t.getTime() + 864e5)]; });
+    M('base', 'wkend', '🏖️', 'Anche nel weekend', 'Usa l\'app sia il sabato sia la domenica dello stesso weekend.', 'index.html', null, wk);
     M('base', 'all', '🧭', 'Esploratore', 'Usa almeno una volta Prepara, D-P-I, IBM, Feedback, Palestra, SLCC, Prima di un incontro, Io ed Esercitati.', 'strumenti.html', null,
       preps.length && c.ses && mlog.length && fbs.length && gym.length && (sl.length || slm.length) && inc.length && c.check && Object.keys(exa).length);
     M('base', 'backup', '💾', 'Al sicuro', 'Esporta il tuo primo backup.', 'index.html#set-bk', null, +(lsGet('ui_last_backup') || 0) > 0);
