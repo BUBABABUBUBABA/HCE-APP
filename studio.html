@@ -278,8 +278,8 @@ function list(arr){return arr.map(function(o){return modHtml(o.m,o.c)}).join('')
 function sortO(arr){var R={D:0,A:1,W:2};return arr.filter(function(o){return inFilter(o.m)}).sort(function(a,b){return R[a.c]-R[b.c]||(a.m.id<b.m.id?-1:1)})}
 function split(arr){return {c:arr.filter(function(o){return o.m.l!=='we'}),w:arr.filter(function(o){return o.m.l==='we'})}}
 function secHtml(title,sub,arr,empty){return '<div class="sec"><h3>'+title+(sub?' <small>'+sub+'</small>':'')+'</h3>'+(arr.length?list(arr):'<p class="muted">'+empty+'</p>')+'</div>'}
-function booksHtml(asp){var b=D.bookmap[asp]||[];if(!b.length)return '<p class="muted">Nessun libro lo tratta, secondo la tabella «Ruota e libri».</p>';
- return '<div class="bk">'+b.map(function(x){return '<b>'+x.b+'</b><span>'+esc(D.books[x.b])+' · '+esc(x.r)+(x.w?' <span class="pill w">⚠ AGGANCIO MIO</span>':'')+'</span>'}).join('')+'</div><p class="muted">c = capitolo · E = esercizio · Es. = esercizio di fine capitolo · Abr. = Abracadabra · Dom. = domanda portante · AL = «Al lavoro!» · Q = quiz.</p>'}
+var LBK={L4:'ip',L7:'ie',L8:'spark'};function booksHtml(asp){var b=D.bookmap[asp]||[];if(!b.length)return '<p class="muted">Nessun libro lo tratta, secondo la tabella «Ruota e libri».</p>';
+ return '<div class="bk">'+b.map(function(x){return '<b>'+x.b+'</b><span>'+esc(D.books[x.b])+' · '+esc(x.r)+(x.w?' <span class="pill w">⚠ AGGANCIO MIO</span>':'')+(LBK[x.b]?' <a href="libri.html#'+LBK[x.b]+'" style="font-weight:800;color:var(--accent)">Apri in Libri →</a>':'')+'</span>'}).join('')+'</div><p class="muted">c = capitolo · E = esercizio · Es. = esercizio di fine capitolo · Abr. = Abracadabra · Dom. = domanda portante · AL = «Al lavoro!» · Q = quiz.</p>'}
 function otherHtml(asp){var c=D.coarse[asp];if(!c||(!c.a.length&&!c.t.length))return '';
  return '<div class="sec"><h3>Altri livelli <small>non ancora collegati modulo per modulo</small></h3><div class="chips">'+c.a.map(function(n){return '<span class="pill ok">'+esc(n)+'</span>'}).join('')+c.t.map(function(n){return '<span class="pill lv">'+esc(n)+' · di passaggio</span>'}).join('')+'</div><p class="muted">Indicazione di massima dalla mia vecchia mappa della ruota: verde = lo allena, grigio = lo tocca di passaggio.</p></div>'}
 
@@ -522,7 +522,7 @@ function libri(){
 function tab(t){[].forEach.call(document.querySelectorAll('.tab'),function(b){b.setAttribute('aria-selected',b.dataset.t===t)});
  ['ruota','corsi','libri'].forEach(function(x){$('v-'+x).hidden=x!==t});if(t==='corsi')corsi();if(t==='libri')libri();if(t==='ruota')render();window.scrollTo(0,0)}
 document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(b)tab(b.dataset.t)});
-render();(function(){var h=/^#([mx])=([\w-]+)/.exec(location.hash);if(h)setTimeout(function(){openReader(h[2]);if(h[1]==='x'){EXSTEP[h[2]]='1';EXC=null;exRender(h[2]);setTimeout(function(){var e=document.getElementById('r-ex');if(e)e.scrollIntoView({block:'start'})},400)}},0)})();$('sync').textContent='Salvato su questo dispositivo · ricordati il backup dalla Home';
+render();(function(){var ha=/^#a=(.+)/.exec(location.hash);if(ha)setTimeout(function(){goTarget(decodeURIComponent(ha[1]))},0)})();(function(){var h=/^#([mx])=([\w-]+)/.exec(location.hash);if(h)setTimeout(function(){openReader(h[2]);if(h[1]==='x'){EXSTEP[h[2]]='1';EXC=null;exRender(h[2]);setTimeout(function(){var e=document.getElementById('r-ex');if(e)e.scrollIntoView({block:'start'})},400)}},0)})();$('sync').textContent='Salvato su questo dispositivo · ricordati il backup dalla Home';
 (async function(){try{
  if(!window.claude||!claude.use)return;
  var db=await claude.use('db'),user=await claude.use('user');if(!db||!user)return;

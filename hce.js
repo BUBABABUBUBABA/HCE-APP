@@ -1,7 +1,7 @@
 /* HCE app: database locale, pacchetto contenuti, backup, barra di navigazione */
 var HCE = (function () {
   var DBN = 'hce-app', DBV = 1, dbp = null;
-  var USER_KEYS = ['dpi_su_di_me_v1', 'dpi_know_v1', 'studio_hce_v1', 'e3_plans_v1', 'e3_daily_v1', 'ripasso_v1', 'mib_log_v1', 'prep_v1', 'fb_v1', 'gym_v1', 'gym_err_v1', 'diz_my_v1', 'io_check_v1', 'io_goals_v1', 'io_habits_v1', 'io_focus_v1', 'io_emo_v1', 'io_trig_v1', 'io_pred_v1', 'io_week_v1', 'ex_v1', 'slcc_v1', 'slcc_msg_v1', 'incontro_v1', 'public_v1', 'vendita_v1', 'lead_v1', 'alg_v1', 'frame_v1'];
+  var USER_KEYS = ['dpi_su_di_me_v1', 'dpi_know_v1', 'studio_hce_v1', 'e3_plans_v1', 'e3_daily_v1', 'ripasso_v1', 'mib_log_v1', 'prep_v1', 'fb_v1', 'gym_v1', 'gym_err_v1', 'diz_my_v1', 'io_check_v1', 'io_goals_v1', 'io_habits_v1', 'io_focus_v1', 'io_emo_v1', 'io_trig_v1', 'io_pred_v1', 'io_week_v1', 'ex_v1', 'slcc_v1', 'slcc_msg_v1', 'incontro_v1', 'public_v1', 'vendita_v1', 'lead_v1', 'alg_v1', 'frame_v1', 'carisma_v1', 'libri_v1'];
 
   function open() {
     if (dbp) return dbp;
@@ -49,7 +49,7 @@ var HCE = (function () {
     var p; try { p = JSON.parse(text); } catch (e) { throw new Error('il file scelto non è leggibile'); }
     if (p && p.app === 'hce-backup') throw new Error('questo è un file di backup: importalo più sotto, in «Backup dei tuoi dati»');
     if (!p || p.app !== 'hce-contenuti' || !p.data || !p.appunti) throw new Error('questo non è il file dei contenuti HCE');
-    var pack = { version: p.version, vs: p.vs, vd: p.vd, data: p.data, areas: p.areas, sys: p.sys, toolnames: p.toolnames, unp: p.unp, books: p.books, e3: p.e3, mib: p.mib, istair: p.istair, feedback: p.feedback, diz: p.diz, io: p.io, ex: p.ex, lex: p.lex, slcc: p.slcc, inc: p.inc, psv: p.psv, lal: p.lal };
+    var pack = { version: p.version, vs: p.vs, vd: p.vd, data: p.data, areas: p.areas, sys: p.sys, toolnames: p.toolnames, unp: p.unp, books: p.books, e3: p.e3, mib: p.mib, istair: p.istair, feedback: p.feedback, diz: p.diz, io: p.io, ex: p.ex, lex: p.lex, slcc: p.slcc, inc: p.inc, psv: p.psv, lal: p.lal, lib: p.lib };
     return clear('appunti')
       .then(function () { return putAll('appunti', p.appunti); })
       .then(function () { return putAll('meta', { pack: pack, cerca: p.cerca }); })
@@ -77,7 +77,7 @@ var HCE = (function () {
   function ready(fn) {
     pack().then(function (p) {
       if (!p) { location.replace('index.html#contenuti'); return; }
-      setTimeout(function () { fn(p); }, 0);
+      setTimeout(function () { fn(p); var bt = document.getElementById('bk-tips'); if (bt && p.lib) bt.innerHTML = bookTips(p, bt.getAttribute('data-tool')); }, 0);
     }).catch(function () { location.replace('index.html#contenuti'); });
   }
 
@@ -168,13 +168,13 @@ var HCE = (function () {
       lsSet(k, JSON.stringify(x));
     });
     // scheda Io: liste unite per id (vince la versione aggiornata per ultima), oggetti uniti per chiave
-    USER_KEYS.filter(function (k) { return k.indexOf('io_') === 0 || k === 'ex_v1' || k === 'slcc_v1' || k === 'slcc_msg_v1' || k === 'incontro_v1' || k === 'public_v1' || k === 'vendita_v1' || k === 'lead_v1' || k === 'alg_v1' || k === 'frame_v1'; }).forEach(function (k) {
+    USER_KEYS.filter(function (k) { return k.indexOf('io_') === 0 || k === 'ex_v1' || k === 'slcc_v1' || k === 'slcc_msg_v1' || k === 'incontro_v1' || k === 'public_v1' || k === 'vendita_v1' || k === 'lead_v1' || k === 'alg_v1' || k === 'frame_v1' || k === 'carisma_v1' || k === 'libri_v1'; }).forEach(function (k) {
       var y = J(b.data[k], null); if (y == null) return;
       var x = J(lsGet(k), Array.isArray(y) ? [] : {});
       if (Array.isArray(y)) {
         var ix = {}; x.forEach(function (e, i) { if (e) ix[e.id] = i; });
         y.forEach(function (e) { if (!e) return; if (!(e.id in ix)) { x.push(e); n++; } else if ((e.u || 0) > (x[ix[e.id]].u || 0)) { x[ix[e.id]] = e; n++; } });
-        x.sort(function (p, q) { return +q.id - +p.id; });
+        x.sort(function (p, q) { return (+q.id || 0) - (+p.id || 0); });
       } else { Object.keys(y).forEach(function (q) { if (!(q in x) || ((y[q] && y[q].u) || 0) > ((x[q] && x[q].u) || 0)) { x[q] = y[q]; n++; } }); }
       lsSet(k, JSON.stringify(x));
     });
@@ -252,13 +252,17 @@ var HCE = (function () {
     L('public_v1', []).forEach(function (x) { add(+x.id, 'pub', 20, x.id); if (x.esito && x.et) add(x.et, 'pub', 10, x.id); });
     L('vendita_v1', []).forEach(function (x) { add(+x.id, 'ven', 20, x.id); if (x.et) add(x.et, 'ven', 10, x.id); });
     [['lead_v1', 'lea', 20], ['alg_v1', 'alg', 20], ['frame_v1', 'frm', 15]].forEach(function (q) { L(q[0], []).forEach(function (x) { add(+x.id, q[1], q[2], x.id); if (x.esito && x.et) add(x.et, q[1], 10, x.id); }); });
+    L('carisma_v1', []).forEach(function (x) { if (x.kind === 'day') { Object.keys(x.a || {}).forEach(function (k) { add(x.a[k], 'car', 5, 'act'); }); Object.keys(x.x || {}).forEach(function (k) { add(x.x[k], 'car', 10, 'ex'); }); }
+      else if (x.kind === 'self') add(+x.id, 'car', 20, 'self');
+      else if (x.kind === 'act') { add(+x.id, 'car', 20, 'plan'); if (x.esito && x.et) add(x.et, 'car', 10, 'plan'); } });
+    L('libri_v1', []).forEach(function (x) { if (x.kind === 'try') { add(x.t, 'lib', 5, 'try:' + x.c); return; } if (x.rd) add(x.rd, 'lib', 10, 'rd:' + x.id); if (x.qz) add(x.qz, 'lib', 15, 'qz:' + x.id); });
     preps.forEach(function (x) { add(+x.id, 'prep', 20, x.id); if (x.after && x.after.t) add(x.after.t, 'prepafter', 10, x.id); });
-    var days = {}, xp = 0, today = dayKey(Date.now()), T = { mod: 0, ses: 0, plan: 0, tool: 0, rip: 0, after: 0, mib: 0, prep: 0, prepafter: 0, fb: 0, gym: 0, io: 0, ex: 0, exp: 0, slcc: 0, inc: 0, pub: 0, ven: 0, lea: 0, alg: 0, frm: 0 };
+    var days = {}, xp = 0, today = dayKey(Date.now()), T = { mod: 0, ses: 0, plan: 0, tool: 0, rip: 0, after: 0, mib: 0, prep: 0, prepafter: 0, fb: 0, gym: 0, io: 0, ex: 0, exp: 0, slcc: 0, inc: 0, pub: 0, ven: 0, lea: 0, alg: 0, frm: 0, car: 0, lib: 0 };
     ev.forEach(function (e) { days[e.d] = 1; xp += e.xp; if (e.d === today) T[e.type]++; });
     var streak = 0, d = new Date();
     if (!days[dayKey(d)]) d.setDate(d.getDate() - 1);
     while (days[dayKey(d)]) { streak++; d.setDate(d.getDate() - 1); }
-    var plan = [Math.min(T.mod, 2) / 2, (T.ses + T.after + T.plan + T.mib + T.prep + T.prepafter + T.fb + T.gym + T.io + T.exp + T.slcc + T.inc + T.pub + T.ven + T.lea + T.alg + T.frm) ? 1 : 0, T.tool ? 1 : 0];
+    var plan = [Math.min(T.mod, 2) / 2, (T.ses + T.after + T.plan + T.mib + T.prep + T.prepafter + T.fb + T.gym + T.io + T.exp + T.slcc + T.inc + T.pub + T.ven + T.lea + T.alg + T.frm + T.car + T.lib) ? 1 : 0, T.tool ? 1 : 0];
     return { xp: xp, streak: streak, today: !!days[today], todayKey: today, days: days, events: ev, T: T,
       mods: nm, sessions: ses.length, plans: plans.length, preps: preps, done: done, ses: ses, planList: plans, daily: daily, rip: rip,
       goal: plan.filter(function (x) { return x >= 1; }).length, goalMax: 3, plan: plan };
@@ -408,6 +412,24 @@ var HCE = (function () {
     M('str', 'frm', '🪟', 'Cambio di cornice', 'Riscrivi una frase con una nuova cornice nel laboratorio Frame e metafore.', 'frame.html', [1, 10, 30], frs.filter(function (x) { return (x.out || '').trim(); }).length);
     var toUsed = {}; frs.forEach(function (x) { if (x.to) toUsed[x.to] = 1; });
     M('str', 'frm10', '🌈', 'Dieci metafore', 'Usa tutte e 10 le categorie metaforiche come nuova cornice.', 'frame.html#metafore', [5, 10], Object.keys(toUsed).length);
+    var cars = L2('carisma_v1', []), libs = L2('libri_v1', []), cdays = cars.filter(function (x) { return x.kind === 'day' && Object.keys(x.a || {}).length; });
+    var cAct = {}, cPil = {}; cars.forEach(function (x) { if (x.kind === 'day') Object.keys(x.a || {}).forEach(function (k) { cAct[k.split('.')[0]] = 1; cPil[k.charAt(0)] = 1; }); });
+    M('str', 'car_self', '🪩', 'Specchio SPARK', 'Fai l\'autovalutazione dei 15 strumenti del carisma.', 'carisma.html#valuta', [1, 4, 12], cars.filter(function (x) { return x.kind === 'self'; }).length);
+    M('str', 'car_day', '🕯️', 'Scintilla quotidiana', 'Spunta almeno un\'azione della palestra del carisma in un giorno.', 'carisma.html', [1, 7, 30, 100], cdays.length);
+    M('str', 'car_ex', '🔆', 'Spark in action', 'Completa un esercizio «Spark in action».', 'carisma.html#esercizi', [1, 5, 15], cars.reduce(function (a, x) { return a + Object.keys(x.x || {}).length; }, 0));
+    M('str', 'car_pil', '🖖', 'Cinque pilastri', 'Fai azioni di tutti e 5 i pilastri: State, Presence, Attitude, Rhetoric, Knowledge.', 'carisma.html', [5], Object.keys(cPil).length);
+    M('str', 'car_15', '🪄', 'Quindici leve', 'Allena tutti e 15 gli strumenti SPARK.', 'carisma.html', [5, 10, 15], Object.keys(cAct).length);
+    M('str', 'car_act', '🎇', 'Carisma in campo', 'Prepara un incontro vero con SPARK nella scheda «In azione».', 'carisma.html#azione', [1, 5, 15], cars.filter(function (x) { return x.kind === 'act'; }).length);
+    var lrd = libs.filter(function (x) { return x.rd; }), lqz = libs.filter(function (x) { return x.qz; }), ltry = libs.filter(function (x) { return x.kind === 'try'; });
+    function bk(pre) { return lrd.filter(function (x) { return String(x.id).indexOf(pre) === 0; }).length; }
+    M('stu', 'lib_rd', '📓', 'Lettore', 'Segna come letto un capitolo nella sezione Libri.', 'libri.html', [1, 10, 25], lrd.length);
+    M('stu', 'lib_qz', '✏️', 'Interrogazione', 'Completa l\'Esercitati di un capitolo di un libro.', 'libri.html', [1, 10, 25], lqz.length);
+    M('stu', 'lib_spark', '💫', 'Incantali tutti', 'Leggi i 5 pilastri SPARK nella sezione Libri.', 'libri.html#spark', [5], bk('spark-'));
+    M('stu', 'lib_ie', '🫀', 'Instant Emotions', 'Leggi i 10 capitoli di Instant Emotions nella sezione Libri.', 'libri.html#ie', [10], bk('ie-'));
+    M('stu', 'lib_ip', '🧲', 'Instant Persuasion', 'Leggi i 10 capitoli di Instant Persuasion nella sezione Libri.', 'libri.html#ip', [10], bk('ip-'));
+    var tr = {}; ltry.forEach(function (x) { tr[x.c] = 1; });
+    M('io', 'ie_try', '🌬️', 'Ho provato', 'In Io → Emozioni segna una strategia di Instant Emotions che hai provato.', 'io.html#emozioni', [1, 10, 30], ltry.length);
+    M('io', 'ie_all', '🎐', 'Dieci strategie', 'Prova tutte e 10 le strategie di Instant Emotions.', 'io.html#emozioni', [10], Object.keys(tr).length);
     /* --- Su di te --- */
     M('io', 'check', '🪞', 'Specchio', 'Fai il check-in in Io.', 'io.html#oggi', [7, 30, 100], c.check);
     M('io', 'flow', '🌊', 'Flow', 'Porta a termine una sessione di focus con il timer.', 'io.html#focus', [5, 15, 50], foc.filter(function (x) { return x.full; }).length);
@@ -498,5 +520,23 @@ var HCE = (function () {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(medalCheck, 900); }); else setTimeout(medalCheck, 900);
   if (navigator.storage && navigator.storage.persist) { navigator.storage.persist().catch(function () {}); }
 
-  return { get: get, pack: pack, ready: ready, importPack: importPack, exportBackup: exportBackup, importBackup: importBackup, save: save, pickButton: pickButton, nav: nav, stats: stats, dayKey: dayKey, lsJ: lsJ, lsPut: lsPut, USER_KEYS: USER_KEYS, medals: medals, medalGroups: MEDAL_GROUPS, medalUnits: medalUnits, medalMax: medalMax, ui: { get: uiGet, set: uiSet } };
+  // Tecniche dei libri collegate a uno strumento (sezione «Dai libri»)
+  function esc(x) { return String(x == null ? '' : x).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  var BKN = { spark: 'Incantali tutti', ie: 'Instant Emotions', ip: 'Instant Persuasion' };
+  function bookItems(P, tool) {
+    var L = P && P.lib, out = []; if (!L) return out;
+    (L.spark.pillars || []).forEach(function (p) { p.tools.forEach(function (t) { if ((t.tl || []).indexOf(tool) >= 0) out.push({ b: 'spark', h: 'libri.html#spark-' + p.k, n: t.n, s: p.k + ' · ' + p.n, d: t.d, ex: t.ex }); }); });
+    (L.ie.ch || []).forEach(function (c) { if ((c.tl || []).indexOf(tool) >= 0) out.push({ b: 'ie', h: 'libri.html#ie-' + c.n, n: c.t, s: 'Cap. ' + c.n, d: c.pts[c.pts.length - 1], ex: c.ex }); });
+    (L.ip.ch || []).forEach(function (c) { if ((c.tl || []).indexOf(tool) >= 0) c.tech.forEach(function (t, j) { if (j < 3) out.push({ b: 'ip', h: 'libri.html#ip-' + c.n, n: t[0], s: 'Cap. ' + c.n + ' · ' + c.t, d: t[1], ex: t[2] }); }); });
+    return out;
+  }
+  function bookTips(P, tool, max) {
+    var it = bookItems(P, tool); if (!it.length) return '';
+    if (!document.getElementById('bkt-css')) { var st = document.createElement('style'); st.id = 'bkt-css'; st.textContent = '.bkt{border:2px solid var(--line);border-radius:20px;background:var(--surface);overflow:hidden}.bkt>summary{list-style:none;cursor:pointer;display:flex;gap:10px;align-items:center;padding:12px 14px;min-height:56px;font-weight:900}.bkt>summary::-webkit-details-marker{display:none}.bkt>summary small{display:block;font-weight:700;color:var(--muted);font-size:.82rem}.bkt .bi{flex:none;width:40px;height:40px;border-radius:12px;background:var(--sunk);display:grid;place-items:center;font-size:1.2rem}.bkt .bb{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}.bkt .bx{border-top:2px solid var(--line2);padding-top:10px;display:flex;flex-direction:column;gap:4px;line-height:1.45}.bkt .bx b{font-weight:900}.bkt .bx .s{font-size:.78rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.bkt .bx i{color:var(--muted);font-weight:600}.bkt .bx a{font-weight:800;color:var(--accent);font-size:.86rem;align-self:flex-start;min-height:32px;display:inline-flex;align-items:center}.bkt .bn{font-size:.82rem;color:var(--muted);font-weight:600}'; document.head.appendChild(st); }
+    var by = {}; it.forEach(function (x) { (by[x.b] = by[x.b] || []).push(x); });
+    var h = '<details class="bkt"><summary><span class="bi" aria-hidden="true">📚</span><span>Dai libri · ' + it.length + ' tecniche<small>' + Object.keys(by).map(function (b) { return BKN[b]; }).join(' · ') + '</small></span></summary><div class="bb">';
+    Object.keys(by).forEach(function (b) { by[b].slice(0, max || 6).forEach(function (x) { h += '<div class="bx"><span class="s">' + esc(BKN[b]) + ' · ' + esc(x.s) + '</span><b>' + esc(x.n) + '</b><span>' + esc(x.d) + '</span>' + (x.ex ? '<i>Esempio: ' + esc(x.ex) + '</i>' : '') + '<a href="' + x.h + '">Apri nel libro →</a></div>'; }); });
+    return h + '<p class="bn">Sintesi ed esempi scritti da me sulle tecniche dei libri.</p></div></details>';
+  }
+  return { bookTips: bookTips, bookItems: bookItems, get: get, pack: pack, ready: ready, importPack: importPack, exportBackup: exportBackup, importBackup: importBackup, save: save, pickButton: pickButton, nav: nav, stats: stats, dayKey: dayKey, lsJ: lsJ, lsPut: lsPut, USER_KEYS: USER_KEYS, medals: medals, medalGroups: MEDAL_GROUPS, medalUnits: medalUnits, medalMax: medalMax, ui: { get: uiGet, set: uiSet } };
 })();

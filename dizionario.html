@@ -180,10 +180,10 @@ function renderBias(){
   $('v-bias').innerHTML=h}
 
 // CONCETTI
-var CG={Frame:['var(--q-orange)','Frame e framing'],Metafore:['var(--anc)','Metafore'],Figure:['var(--mod)','Altre figure retoriche']};
+var CG={Frame:['var(--q-orange)','Frame e framing'],Metafore:['var(--anc)','Metafore'],Figure:['var(--mod)','Altre figure retoriche'],Libri:['var(--q-purple)','Dai libri']};
 function concCard(c,i,open){var g=CG[c[0]];
   return '<details class="ent" id="conc-'+i+'" style="--mc:'+g[0]+';--ms:var(--sunk)"'+(open?' open':'')+'><summary><span class="L">'+esc(c[1][0])+'</span><span class="tx"><b>'+esc(c[1])+'</b><small>'+esc(g[1])+'</small></span><span class="chev">›</span></summary><div class="sb">'+
-   '<p style="line-height:1.5;font-weight:600">'+esc(c[2])+'</p>'+(c[3]?'<div class="say">'+esc(c[3])+'</div>':'')+'<div>'+ml(c[4])+'</div></div></details>'}
+   '<p style="line-height:1.5;font-weight:600">'+esc(c[2])+'</p>'+(c[3]?'<div class="say">'+esc(c[3])+'</div>':'')+'<div>'+(/^libri\.html/.test(c[4]||'')?'<a class="src" href="'+c[4]+'">↗ Apri in Libri</a>':ml(c[4]))+'</div></div></details>'}
 function renderConc(){var h='',last='';
   Z.conc.forEach(function(c,i){if(c[0]!==last){h+='<div class="grp">'+CG[c[0]][1]+'</div>';last=c[0]}h+=concCard(c,i)});
   h+='<div class="card"><h3>Riconoscere una metafora</h3><p>Paragone: termini intercambiabili. Similitudine: c\'è un marcatore (come, sembra). Metafora: identificazione diretta, senza marcatori. Analogia (HCE): concetti lontani, scopo esplicativo, frase lunga.</p><div class="say" style="--mc:var(--anc)">«Claudio è Dotto dei sette nani»: metafora.</div><div>'+ml('op28')+'</div></div>';
