@@ -1,7 +1,7 @@
 /* HCE app: database locale, pacchetto contenuti, backup, barra di navigazione */
 var HCE = (function () {
   var DBN = 'hce-app', DBV = 1, dbp = null;
-  var USER_KEYS = ['dpi_su_di_me_v1', 'dpi_know_v1', 'studio_hce_v1', 'e3_plans_v1', 'e3_daily_v1', 'ripasso_v1', 'mib_log_v1', 'prep_v1', 'fb_v1', 'gym_v1', 'gym_err_v1', 'diz_my_v1', 'io_check_v1', 'io_goals_v1', 'io_habits_v1', 'io_focus_v1', 'io_emo_v1', 'io_trig_v1', 'io_pred_v1', 'io_week_v1', 'ex_v1', 'slcc_v1', 'slcc_msg_v1', 'incontro_v1'];
+  var USER_KEYS = ['dpi_su_di_me_v1', 'dpi_know_v1', 'studio_hce_v1', 'e3_plans_v1', 'e3_daily_v1', 'ripasso_v1', 'mib_log_v1', 'prep_v1', 'fb_v1', 'gym_v1', 'gym_err_v1', 'diz_my_v1', 'io_check_v1', 'io_goals_v1', 'io_habits_v1', 'io_focus_v1', 'io_emo_v1', 'io_trig_v1', 'io_pred_v1', 'io_week_v1', 'ex_v1', 'slcc_v1', 'slcc_msg_v1', 'incontro_v1', 'public_v1', 'vendita_v1'];
 
   function open() {
     if (dbp) return dbp;
@@ -49,7 +49,7 @@ var HCE = (function () {
     var p; try { p = JSON.parse(text); } catch (e) { throw new Error('il file scelto non è leggibile'); }
     if (p && p.app === 'hce-backup') throw new Error('questo è un file di backup: importalo più sotto, in «Backup dei tuoi dati»');
     if (!p || p.app !== 'hce-contenuti' || !p.data || !p.appunti) throw new Error('questo non è il file dei contenuti HCE');
-    var pack = { version: p.version, vs: p.vs, vd: p.vd, data: p.data, areas: p.areas, sys: p.sys, toolnames: p.toolnames, unp: p.unp, books: p.books, e3: p.e3, mib: p.mib, istair: p.istair, feedback: p.feedback, diz: p.diz, io: p.io, ex: p.ex, lex: p.lex, slcc: p.slcc, inc: p.inc };
+    var pack = { version: p.version, vs: p.vs, vd: p.vd, data: p.data, areas: p.areas, sys: p.sys, toolnames: p.toolnames, unp: p.unp, books: p.books, e3: p.e3, mib: p.mib, istair: p.istair, feedback: p.feedback, diz: p.diz, io: p.io, ex: p.ex, lex: p.lex, slcc: p.slcc, inc: p.inc, psv: p.psv };
     return clear('appunti')
       .then(function () { return putAll('appunti', p.appunti); })
       .then(function () { return putAll('meta', { pack: pack, cerca: p.cerca }); })
@@ -168,7 +168,7 @@ var HCE = (function () {
       lsSet(k, JSON.stringify(x));
     });
     // scheda Io: liste unite per id (vince la versione aggiornata per ultima), oggetti uniti per chiave
-    USER_KEYS.filter(function (k) { return k.indexOf('io_') === 0 || k === 'ex_v1' || k === 'slcc_v1' || k === 'slcc_msg_v1' || k === 'incontro_v1'; }).forEach(function (k) {
+    USER_KEYS.filter(function (k) { return k.indexOf('io_') === 0 || k === 'ex_v1' || k === 'slcc_v1' || k === 'slcc_msg_v1' || k === 'incontro_v1' || k === 'public_v1' || k === 'vendita_v1'; }).forEach(function (k) {
       var y = J(b.data[k], null); if (y == null) return;
       var x = J(lsGet(k), Array.isArray(y) ? [] : {});
       if (Array.isArray(y)) {
@@ -249,13 +249,15 @@ var HCE = (function () {
     L('slcc_v1', []).forEach(function (x) { add(+x.id, 'slcc', 10, 'prof'); });
     L('slcc_msg_v1', []).forEach(function (x) { add(+x.id, 'slcc', 15, 'msg'); });
     L('incontro_v1', []).forEach(function (x) { add(+x.id, 'inc', 20, x.id); if (x.esito && x.et) add(x.et, 'inc', 10, x.id); });
+    L('public_v1', []).forEach(function (x) { add(+x.id, 'pub', 20, x.id); if (x.esito && x.et) add(x.et, 'pub', 10, x.id); });
+    L('vendita_v1', []).forEach(function (x) { add(+x.id, 'ven', 20, x.id); if (x.et) add(x.et, 'ven', 10, x.id); });
     preps.forEach(function (x) { add(+x.id, 'prep', 20, x.id); if (x.after && x.after.t) add(x.after.t, 'prepafter', 10, x.id); });
-    var days = {}, xp = 0, today = dayKey(Date.now()), T = { mod: 0, ses: 0, plan: 0, tool: 0, rip: 0, after: 0, mib: 0, prep: 0, prepafter: 0, fb: 0, gym: 0, io: 0, ex: 0, exp: 0, slcc: 0, inc: 0 };
+    var days = {}, xp = 0, today = dayKey(Date.now()), T = { mod: 0, ses: 0, plan: 0, tool: 0, rip: 0, after: 0, mib: 0, prep: 0, prepafter: 0, fb: 0, gym: 0, io: 0, ex: 0, exp: 0, slcc: 0, inc: 0, pub: 0, ven: 0 };
     ev.forEach(function (e) { days[e.d] = 1; xp += e.xp; if (e.d === today) T[e.type]++; });
     var streak = 0, d = new Date();
     if (!days[dayKey(d)]) d.setDate(d.getDate() - 1);
     while (days[dayKey(d)]) { streak++; d.setDate(d.getDate() - 1); }
-    var plan = [Math.min(T.mod, 2) / 2, (T.ses + T.after + T.plan + T.mib + T.prep + T.prepafter + T.fb + T.gym + T.io + T.exp + T.slcc + T.inc) ? 1 : 0, T.tool ? 1 : 0];
+    var plan = [Math.min(T.mod, 2) / 2, (T.ses + T.after + T.plan + T.mib + T.prep + T.prepafter + T.fb + T.gym + T.io + T.exp + T.slcc + T.inc + T.pub + T.ven) ? 1 : 0, T.tool ? 1 : 0];
     return { xp: xp, streak: streak, today: !!days[today], todayKey: today, days: days, events: ev, T: T,
       mods: nm, sessions: ses.length, plans: plans.length, preps: preps, done: done, ses: ses, planList: plans, daily: daily, rip: rip,
       goal: plan.filter(function (x) { return x >= 1; }).length, goalMax: 3, plan: plan };
@@ -383,6 +385,16 @@ var HCE = (function () {
     [['cliente', '💼', 'Nuovo cliente'], ['colloquio', '🧑‍💼', 'Colloquio'], ['telefono', '📞', 'Telefonata'], ['video', '💻', 'Videochiamata'], ['pubblico', '🎤', 'In pubblico'], ['team', '👥', 'Nuovo nel team'], ['intro', '🙋', 'Presentato da altri'], ['bambini', '🧸', 'Con i bambini'], ['social', '📱', 'Social o sito']].forEach(function (x) {
       var n = inc.filter(function (y) { return y.ctx === x[0]; }).length;
       M('str', 'ctx_' + x[0], x[1], x[2], 'Prepara una scheda «Prima di un incontro» di tipo «' + x[2] + '».', 'incontro.html', null, n, { cnt: n }); });
+    var pubs = L2('public_v1', []), vens = L2('vendita_v1', []);
+    M('str', 'pub', '🎤', 'Speaker', 'Prepara un intervento nella scheda Public speaking.', 'public.html', [1, 5, 15], pubs.length);
+    M('str', 'abcde', '🔠', 'ABCDE completo', 'In un intervento, rispondi ad almeno una domanda per ognuna delle 5 lettere.', 'public.html', [1, 5, 15], pubs.filter(function (x) { var q = x.q || {}; return ['A', 'B', 'C', 'D', 'E'].every(function (l) { return Object.keys(q).some(function (k) { return k[0] === l && (q[k] || '').trim(); }); }); }).length);
+    var fused = {}; pubs.forEach(function (x) { var f = x.fp || {}; Object.keys(f).forEach(function (k) { if (f[k]) fused[f[k]] = 1; }); });
+    M('str', 'camaleonte', '🦎', 'Camaleonte', 'Usa tutte e 5 le forme espressive nei tuoi interventi: direttivo, empatico, interattivo, simpatico, sfidante.', 'public.html#forme', [5], Object.keys(fused).length);
+    M('str', 'pub_after', '🎙️', 'Dopo il palco', 'Scrivi com\'è andato un intervento.', 'public.html', [1, 5, 15], pubs.filter(function (x) { return (x.esito || '').trim(); }).length);
+    M('str', 'ven', '🛒', 'Trattativa', 'Prepara una trattativa nella scheda Vendita.', 'vendita.html', [1, 5, 15], vens.length);
+    M('str', 'tedlr', '🖐️', 'Cinque criteri', 'In una trattativa, spunta almeno un punto per Trust, Emotions, Describe, Leadership e Reward.', 'vendita.html', [1, 5, 15], vens.filter(function (x) { var c = x.ck || {}; return ['T', 'E', 'D', 'L', 'R'].every(function (l) { return Object.keys(c).some(function (k) { return k[0] === l && c[k]; }); }); }).length);
+    M('str', 'sold', '🤝', 'Venduto', 'Nel Dopo di una trattativa segna «Venduto».', 'vendita.html', [1, 5, 15], vens.filter(function (x) { return x.res === 'si'; }).length);
+    M('str', 'nosell', '🙅', 'Non si vende a tutti', 'Riconosci una trattativa che non vale la pena chiudere e segnala «Non si vende», con il perché.', 'vendita.html#regole', null, vens.some(function (x) { return x.res === 'no' && (x.esito || '').trim(); }));
     /* --- Su di te --- */
     M('io', 'check', '🪞', 'Specchio', 'Fai il check-in in Io.', 'io.html#oggi', [7, 30, 100], c.check);
     M('io', 'flow', '🌊', 'Flow', 'Porta a termine una sessione di focus con il timer.', 'io.html#focus', [5, 15, 50], foc.filter(function (x) { return x.full; }).length);
