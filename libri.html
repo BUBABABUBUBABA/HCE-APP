@@ -99,6 +99,9 @@ table.t{width:100%;border-collapse:collapse;font-size:.88rem}table.t td,table.t 
 .xx{border:2px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px}.xx>b{font-weight:900}.xx .src2{font-size:.72rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--sl)}
 .cd2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.cd2 div{border-radius:12px;padding:10px 12px;background:var(--sunk);line-height:1.45;font-weight:600}.cd2 div b{display:block;font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:900}.cd2 div.n{background:var(--sl-s)}
 @media (max-width:520px){.cd2{grid-template-columns:minmax(0,1fr)}}
+.mp{display:flex;flex-direction:column;gap:8px}.ma{border-top:2px solid var(--line2);padding-top:10px;display:flex;flex-direction:column;gap:6px}.ma>b{font-weight:900;font-size:1.02rem}.ma .rw{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px;font-size:.88rem;line-height:1.4}.ma .rw>span:first-child{font-size:.72rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-top:2px}.ma .none{color:var(--muted);font-weight:600}.ma .gap{color:var(--warn,#9a6400);font-weight:800}
+.mk{display:flex;gap:16px;flex-wrap:wrap}.mk span{font-weight:700;color:var(--muted)}.mk b{font-weight:900;color:var(--fg)}
+@media (max-width:420px){.ma .rw{grid-template-columns:minmax(0,1fr)}}
 </style>
 <div class="page">
 <header>
@@ -122,7 +125,25 @@ var LB=PACK.lib,K='libri_v1',OPEN={},SHOWN={},CUR='spark';
 var TL={io:['io.html#emozioni','Io · Emozioni'],incontro:['incontro.html','Prima di un incontro'],mib:['mib.html','Matrice biochimica'],public:['public.html','Public speaking'],prep:['prep.html','Prepara'],leadership:['leadership.html','Leadership'],e3:['e3.html','Algoritmo E³'],slcc:['slcc.html','SLCC'],frame:['frame.html','Frame e metafore'],algoritmi:['algoritmi.html','Algoritmi linguistici'],vendita:['vendita.html','Vendita'],istair:['istair.html','I-STAIR'],feedback:['feedback.html','Feedback'],carisma:['carisma.html','Carisma SPARK'],protocollo:['protocollo.html','Protocollo D-P-I']};
 var VA={};(PACK.vs||[]).forEach(function(v){VA[v.asp]=v});
 var BOOKS=[{id:'spark',L:'L8',n:'Incantali tutti',c:5},{id:'ie',L:'L7',n:'Instant Emotions',c:10},{id:'ip',L:'L4',n:'Instant Persuasion',c:10}].concat(LB.more.map(function(b){return {id:b.id,L:b.L,n:b.book,c:b.ch.length,B:b}}));
-var BY={};BOOKS.forEach(function(b){BY[b.id]=b});
+var BY={};BOOKS.forEach(function(b){BY[b.id]=b});BY.mappa={id:'mappa',n:'Mappa: libri, ruota e corso'};
+var LV2APP={'Abitudini':'io.html#abitudini','Algoritmi linguistici':'algoritmi.html','Bias':'io.html#bias','Embodied cognition':'incontro.html','Focus e concentrazione':'io.html#focus','Ingaggio':'istair.html','Interesse':'istair.html','Trionfo':'istair.html','Leadership':'leadership.html','Obiettivi':'io.html#obiettivi','People management':'public.html','Processo emotivo':'io.html#emozioni','SLCC':'slcc.html',"Scienza dell'apparenza":'incontro.html','Vendere':'vendita.html'};
+var MI='',BL2ID={L1:'cb',L2:'uc',L3:'cs',L4:'ip',L5:'si',L6:'vi',L7:'ie',L8:'spark'};
+function aspTools(){var m={};function add(asp,tl){(asp||[]).forEach(function(a){m[a]=m[a]||{};(tl||[]).forEach(function(t){m[a][t]=1})})}
+  LB.spark.pillars.forEach(function(p){p.tools.forEach(function(t){add(t.asp,t.tl)})});LB.ie.ch.forEach(function(c){add(c.asp,c.tl)});LB.ip.ch.forEach(function(c){add(c.asp,c.tl)});LB.more.forEach(function(B){B.ch.forEach(function(c){add(c.asp,c.tl)})});return m}
+function renderMap(){var D=PACK.data,BM=D.bookmap||{},CO=D.coarse||{},AT=aspTools(),V=(PACK.vs||[]).filter(function(v){return v.asp!=='baseline'}),INT=[];V.forEach(function(v){if(INT.indexOf(v.i)<0)INT.push(v.i)});
+  var nb=0,nd=0,nc=0,both=0,none=0;V.forEach(function(v){var b=(BM[v.asp]||[]).length,c=CO[v.asp]&&((CO[v.asp].a||[]).length+(CO[v.asp].t||[]).length);if(b)nb++;if((BM[v.asp]||[]).some(function(x){return !x.w}))nd++;if(c)nc++;if(b&&c)both++;if(!b&&!c)none++});
+  var h='<div class="card"><h2>Libri, ruota e corso</h2><p>Per ogni aspetto della ruota: quali libri lo trattano (e dove), quali livelli del corso lo allenano o lo toccano, e dove lo eserciti nell\'app.</p><div class="mk"><span><b>'+nb+'</b>/'+V.length+' aspetti nei libri</span><span><b>'+nd+'</b> dichiarati dal libro</span><span><b>'+nc+'</b> nel corso</span><span><b>'+both+'</b> in entrambi</span><span><b>'+none+'</b> scoperti</span></div><p class="note">Fonte: la tabella «Ruota e libri» e la mappa della ruota del corso. ⚠ = aggancio mio, un\'ipotesi: il libro non lo dichiara. I collegamenti agli strumenti dell\'app sono miei.</p></div>';
+  h+='<div class="card"><span class="lbl">Intelligenza</span><div class="shelf">'+['',].concat(INT).map(function(i){return '<button data-mi="'+esc(i)+'" aria-pressed="'+(MI===i)+'">'+(i?esc(i)+' · '+esc((PACK.sys||{})[i]||''):'Tutte')+'</button>'}).join('')+'</div></div>';
+  var areas=[];V.forEach(function(v){if((!MI||v.i===MI)&&areas.indexOf(v.area)<0)areas.push(v.area)});
+  areas.forEach(function(ar){var vs=V.filter(function(v){return v.area===ar}),cov=vs.filter(function(v){return (BM[v.asp]||[]).length}).length;
+    h+='<details class="ent" id="mp-'+esc(ar)+'"'+(OPEN['mp-'+ar]?' open':'')+'><summary><span class="L">'+esc(ar[0])+'</span><span class="tx"><b>'+esc(ar)+'</b><small>'+esc(vs[0].i)+' · '+cov+'/'+vs.length+' aspetti nei libri</small></span><span class="chev">›</span></summary><div class="sb"><p class="tip">'+esc((PACK.areas||{})[ar]||'')+'</p><div class="mp">'+
+     vs.map(function(v){var b=BM[v.asp]||[],c=CO[v.asp]||{a:[],t:[]},apps={};(c.a||[]).concat(c.t||[]).forEach(function(l){if(LV2APP[l])apps[LV2APP[l]]=l});Object.keys(AT[v.asp]||{}).forEach(function(t){if(TL[t])apps[TL[t][0]]=TL[t][1]});
+       return '<div class="ma"><b>'+esc(v.asp)+'</b>'+
+        '<div class="rw"><span>Libri</span><span>'+(b.length?b.map(function(x){var id=BL2ID[x.b];return (id?'<a href="libri.html#'+id+'" data-bk="'+id+'" style="font-weight:800;color:var(--accent)">':'<b>')+esc((PACK.data.books||{})[x.b]||x.b)+(id?'</a>':'</b>')+' · '+esc(x.r)+(x.w?' ⚠':'')}).join('<br>'):'<span class="none">nessun libro</span>')+'</span></div>'+
+        '<div class="rw"><span>Corso</span><span>'+((c.a||[]).length?'allena: '+c.a.map(esc).join(', '):'')+((c.a||[]).length&&(c.t||[]).length?'<br>':'')+((c.t||[]).length?'tocca: '+c.t.map(esc).join(', '):'')+(!(c.a||[]).length&&!(c.t||[]).length?'<span class="none">nessun livello</span>':'')+'</span></div>'+
+        '<div class="rw"><span>Nell\'app</span><span class="lk"><a class="w" href="studio.html#a='+encodeURIComponent(v.asp)+'">Ruota</a>'+Object.keys(apps).map(function(h2){var lab=Object.keys(TL).filter(function(k){return TL[k][0]===h2})[0];return '<a href="'+h2+'">'+esc(lab?TL[lab][1]:apps[h2])+' →</a>'}).join('')+'</span></div>'+
+        (!b.length&&!(c.a||[]).length&&!(c.t||[]).length?'<span class="gap">Scoperto: né libri né corso.</span>':'')+'</div>'}).join('')+'</div></div></details>'});
+  return h}
 function list(){return HCE.lsJ(K,[])}
 function rec(id){return list().filter(function(x){return x.id===id})[0]||{id:id}}
 function put(x){var a=list(),i=a.findIndex(function(y){return y.id===x.id});x.u=Date.now();if(i>=0)a[i]=x;else a.push(x);HCE.lsPut(K,a)}
@@ -158,13 +179,14 @@ function renderMore(b){var B=b.B,h=head(b,B.intro,(B.cards||[]).map(function(c){
     if(c.ex_txt)bd+='<div class="ex">'+esc(c.ex_txt)+'</div>';
     h+=ent(id,c.n,c.t,c.s,bd+exs(id,c.ex)+links(c.asp,c.tl)+readBtn(id))});
   if(B.q&&B.q.length)h+=ent(B.id+'-q','?','Esercitati sul libro',B.q.length+' domande',quiz(B.id+'-q',B.q));return h}
-function render(){var b=BY[CUR];$('shelf').innerHTML=BOOKS.map(function(x){return '<button data-bk="'+x.id+'" aria-pressed="'+(x.id===CUR)+'">'+esc(x.n)+'</button>'}).join('');
-  $('v-book').innerHTML=CUR==='spark'?renderSpark():CUR==='ie'?renderIE():CUR==='ip'?renderIP():renderMore(b)}
+function render(){var b=BY[CUR];$('shelf').innerHTML=BOOKS.concat([BY.mappa]).map(function(x){return '<button data-bk="'+x.id+'" aria-pressed="'+(x.id===CUR)+'">'+(x.id==='mappa'?'🗺️ ':'')+esc(x.n)+'</button>'}).join('');
+  $('v-book').innerHTML=CUR==='mappa'?renderMap():CUR==='spark'?renderSpark():CUR==='ie'?renderIE():CUR==='ip'?renderIP():renderMore(b)}
 function rerender(){var y=window.scrollY;render();window.scrollTo(0,y)}
 document.addEventListener('toggle',function(e){var d=e.target;if(d.classList&&d.classList.contains('ent'))OPEN[d.id]=d.open},true);
 HCE.sfBind($('v-book'),'lx',function(k){var p=k.split('#'),r=PEND[p[0]]||rec(p[0]);PEND[p[0]]=r;r.fs=r.fs||{};return r.fs[p[1]]=r.fs[p[1]]||{}},function(re){Object.keys(PEND).forEach(function(id){put(PEND[id])});PEND={};if(re)rerender()});
-$('app').addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;var r,p;
-  if(t.dataset.bk){CUR=t.dataset.bk;render();return}
+$('app').addEventListener('click',function(e){var a=e.target.closest('a[data-bk]');if(a){e.preventDefault();CUR=a.dataset.bk;render();window.scrollTo(0,0);return}var t=e.target.closest('button');if(!t)return;var r,p;
+  if(t.dataset.bk){CUR=t.dataset.bk;render();window.scrollTo(0,0);return}
+  if(t.dataset.mi!=null){MI=t.dataset.mi;rerender();return}
   if(t.dataset.ans){p=t.dataset.ans.split('|');SHOWN[p[0]]=SHOWN[p[0]]||{};SHOWN[p[0]][p[1]]=1;rerender();return}
   if(t.dataset.qz){r=rec(t.dataset.qz);r.qz=Date.now();put(r);rerender();return}
   if(t.dataset.rd){r=rec(t.dataset.rd);r.rd=Date.now();put(r);rerender();return}
