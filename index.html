@@ -176,7 +176,7 @@ input[type=file]{display:none}
       <li><b>Strumenti</b><span>Le schede da consultare e la Palestra per allenarti con le domande. Se trovi una parola che non conosci, cercala nel Dizionario.</span></li>
       <li><b>Io</b><span>Due minuti al giorno su di te: come stai, obiettivi, abitudini.</span></li>
     </ol>
-    <p class="muted">I numeri in alto sono i giorni di fila in cui hai usato l'app e i punti (XP) che guadagni facendo le attività. La 🏅 conta le medaglie sbloccate: sono 57, le trovi in Io → Medaglie.</p>
+    <p class="muted">I numeri in alto sono i giorni di fila in cui hai usato l'app e i punti (XP) che guadagni facendo le attività. La 🏅 conta le medaglie sbloccate: le trovi in Io → Medaglie, divise per gruppi, ognuna con scritto come prenderla.</p>
   </details>
 
   <div class="tod" id="tod"></div>
@@ -315,7 +315,7 @@ function uiDraw(){var u=HCE.ui.get();Array.prototype.forEach.call(document.query
 ['ui-font','ui-theme'].forEach(function(id){$(id).addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;HCE.ui.set(id==='ui-font'?'font':'theme',b.dataset.v);uiDraw()})});
 document.addEventListener('click',function(e){var b;if(e.target.id==='bk-go'){$('set-bk').open=true;$('b-exp').click()}if(b=e.target.closest('[data-uifont] button')){HCE.ui.set('font',b.dataset.v);uiDraw()}});
 uiDraw();
-$('ver').textContent='App versione 2026-11-12c-93dadc46';
+$('ver').textContent='App versione 2026-11-12d-2c2fb3c6';
 status();bstat();
 window.addEventListener('pageshow',function(e){if(e.persisted){status();bstat()}});
 })();

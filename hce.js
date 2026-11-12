@@ -287,67 +287,125 @@ var HCE = (function () {
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', tabsHint); else tabsHint();
 
-  /* medaglie: 17 famiglie a tre gradi (bronzo, argento, oro) + 6 speciali = 57 */
-  var MEDAL_FAM = [
-    ['streak', 'Costanza', 'giorni di fila (record)', [3, 7, 30], 'Usa l\'app ogni giorno: vale qualsiasi attività.', 'index.html'],
-    ['xp', 'Punti', 'XP totali', [500, 2000, 5000], 'Ogni attività vale punti.', 'index.html'],
-    ['mod', 'Studio', 'moduli studiati', [10, 50, 150], 'Segna «✓ Studiato» alla fine di un modulo.', 'percorso.html'],
-    ['rip', 'Ripasso', 'ripassi fatti', [5, 25, 100], 'I moduli di 1, 3 e 7 giorni fa, in Home.', 'index.html#rip-c'],
-    ['ex', 'Esercitati', 'moduli con almeno 3 prove su 4', [5, 25, 100], 'In fondo a ogni modulo, «Esercitati».', 'percorso.html'],
-    ['gym', 'Palestra', 'allenamenti', [5, 25, 100], 'Un giro di domande in Palestra.', 'palestra.html'],
-    ['prep', 'Preparazione', 'interazioni preparate', [1, 10, 30], 'Prepara un\'interazione vera.', 'prep.html#nuova'],
-    ['after', 'Il Dopo', '«com\'è andata» compilati', [3, 15, 40], 'Dopo un\'interazione, in Prepara, D-P-I o Prima di un incontro.', 'prep.html'],
-    ['ses', 'D-P-I', 'sessioni del protocollo', [1, 10, 30], 'Decode, Profile, Influence su una persona.', 'protocollo.html#prima'],
-    ['mib', 'Chimica', 'mix usati in un\'interazione vera', [1, 10, 30], 'Nella Matrice biochimica: «✓ Usata in un\'interazione vera».', 'mib.html'],
-    ['fb', 'Feedback', 'feedback preparati', [1, 5, 20], 'Prepara un feedback con RINGS o ARISE.', 'feedback.html'],
-    ['slcc', 'SLCC', 'profili e messaggi', [3, 15, 40], 'Profila una persona o scrivi un messaggio MICRO o MACRO.', 'slcc.html'],
-    ['inc', 'Primo incontro', 'schede «Prima di un incontro»', [1, 5, 20], 'Una scheda prima di vedere qualcuno.', 'incontro.html'],
-    ['check', 'Check-in', 'check-in in Io', [7, 30, 100], 'Due minuti al giorno: come stai.', 'io.html#oggi'],
-    ['habit', 'Abitudini', 'giorni segnati', [7, 30, 100], 'Segna ogni giorno le tue abitudini.', 'io.html#abitudini'],
-    ['focus', 'Focus', 'sessioni di focus', [3, 15, 50], 'Una sessione con il timer.', 'io.html#focus'],
-    ['emo', 'Emozioni', 'emozioni gestite', [3, 10, 30], 'Fase per fase, in Io.', 'io.html#emozioni']
-  ];
-  var MEDAL_TIER = ['Bronzo', 'Argento', 'Oro'];
-  var MEDAL_SPEC = [
-    ['reach', 'Obiettivo raggiunto', 'Porta un obiettivo fino all\'ultima fase REACH.', 'io.html#obiettivi'],
-    ['level', 'Livello completo', 'Studia tutti i moduli di un livello.', 'percorso.html'],
-    ['perfect', 'Dieci su dieci', 'Un giro di Palestra senza errori (almeno 10 domande).', 'palestra.html'],
-    ['all', 'Esploratore', 'Usa almeno una volta Prepara, D-P-I, IBM, Feedback, Palestra, SLCC, Prima di un incontro, Io ed Esercitati.', 'strumenti.html'],
-    ['week', 'Un mese di settimane', 'Fai 4 revisioni della settimana.', 'io.html#settimana'],
-    ['backup', 'Al sicuro', 'Esporta il tuo primo backup.', 'index.html#set-bk']
-  ];
+  /* medaglie: gruppi Base, Risultati, Obiettivi, Abitudini, Strumenti, Io, Studio.
+     Una medaglia con soglie ha tre gradi (bronzo, argento, oro); senza soglie è unica. */
+  var MEDAL_GROUPS = [['ris', 'Risultati'], ['obi', 'Obiettivi'], ['abi', 'Abitudini'], ['str', 'Strumenti'], ['io', 'Su di te'], ['stu', 'Studio'], ['base', 'Costanza']];
+  var LV_EMO = { iu: '🤝', pi: '✨', op: '🗣️', sc: '🎨', ab: '🌱', fo: '🎯', ob: '🏔️', bi: '🧠', ec: '🧍', pe: '❤️', al: '🔤', sl: '🧩', sa: '👔', ve: '🛒', 'in': '🪝', it: '💡', tr: '🏆', dm: '⚖️', le: '🦁', pm: '👥', we: '🎥' };
+  var AR_EMO = { Connection: '🌐', Improve: '📈', Inside: '🧠', Persuasion: '🗝️', Sales: '💼', Team: '👥', Webinar: '🎥' };
+  var MIX_MED = [['fel', '😊', 'Felicità'], ['fid', '🤝', 'Fiducia'], ['att', '👀', 'Attenzione'], ['rel', '😌', 'Calma'], ['ecc', '🤩', 'Entusiasmo'], ['ten', '⏱️', 'Urgenza'], ['dis', '🗣️', 'Confronto']];
+  var IST_MED = [['int', '💡', 'Interessante', 'Interesting'], ['sup', '🏔️', 'Insuperabile', 'Insuperable'], ['imp', '❗', 'Imperativo', 'Imperative'], ['irr', '🧲', 'Irresistibile', 'Irresistible']];
+  var GYM_T = [['e3', 'E³'], ['ibm', 'Matrice biochimica'], ['ist', 'I-STAIR'], ['fb', 'Feedback'], ['diz', 'Dizionario'], ['gl', 'Termini']];
   function medals(pk) {
-    var S = stats(), c = {}, ev = S.events;
-    ev.forEach(function (e) { var k = e.type; if (k === 'io') k = e.ref; if (k === 'prepafter') k = 'after';
-      if (k === 'inc') { if (c['_inc_' + e.ref]) { c.after = (c.after || 0) + 1; return; } c['_inc_' + e.ref] = 1; }
-      c[k] = (c[k] || 0) + 1; });
-    c.mod = S.mods; c.xp = S.xp;
-    var ds = Object.keys(S.days).sort(), best = 0, run = 0, prev = null;
-    ds.forEach(function (d) { var t = Date.parse(d + 'T12:00:00'); run = prev != null && Math.round((t - prev) / 864e5) === 1 ? run + 1 : 1; prev = t; if (run > best) best = run; });
-    c.streak = best;
-    var exa = J(lsGet('ex_v1'), {}) || {}; c.ex = Object.keys(exa).filter(function (m) { var s = exa[m] || {}; return ['t1', 't2', 't3', 't4'].filter(function (k) { return s[k]; }).length >= 3; }).length;
-    var out = [];
-    MEDAL_FAM.forEach(function (f) { var v = c[f[0]] || 0;
-      f[3].forEach(function (th, i) { out.push({ k: f[0] + i, fam: f[0], n: f[1] + ' · ' + MEDAL_TIER[i], fn: f[1], tier: i, what: f[2], th: th, v: v, got: v >= th, how: f[4], href: f[5] }); }); });
-    var gl = J(lsGet('io_goals_v1'), []) || [], gym = J(lsGet('gym_v1'), []) || [];
-    var lev = false;
-    if (pk && pk.data) { var by = {}; pk.data.mods.forEach(function (m) { (by[m.l] = by[m.l] || []).push(m.id); }); var done = J(lsGet('studio_hce_v1'), {}) || {};
-      lev = Object.keys(by).some(function (l) { return by[l].every(function (id) { return done[id] > 0; }); }); }
-    var sp = { reach: gl.some(function (g) { return g.done && g.done.C; }), level: lev, perfect: gym.some(function (x) { return x.n >= 10 && x.ok === x.n; }),
-      all: ['prep', 'ses', 'mib', 'fb', 'gym', 'slcc', 'inc', 'check', 'ex'].every(function (k) { return (c[k] || 0) > 0 || (k === 'inc' && c.after); }) && (c.ex || 0) > 0,
-      week: (c.week || 0) >= 4, backup: +(lsGet('ui_last_backup') || 0) > 0 };
-    MEDAL_SPEC.forEach(function (m) { out.push({ k: m[0], fam: 'spec', n: m[1], fn: m[1], tier: 3, how: m[2], href: m[3], got: !!sp[m[0]] }); });
+    var S = stats(), c = {}, ev = S.events, out = [];
+    ev.forEach(function (e) { var k = e.type === 'io' ? e.ref : e.type; c[k] = (c[k] || 0) + 1; });
+    var L2 = function (k, d) { return J(lsGet(k), d) || d; };
+    function M(g, k, e, n, how, href, th, v, ex) { var o = { g: g, k: k, e: e, n: n, how: how, href: href, th: th || null, v: v || 0 };
+      if (th) { o.tier = -1; th.forEach(function (t, i) { if (o.v >= t) o.tier = i; }); o.got = o.tier >= 0; } else o.got = !!v;
+      if (ex) for (var x in ex) o[x] = ex[x]; out.push(o); }
+    /* --- dati --- */
+    var preps = L2('prep_v1', []), mlog = L2('mib_log_v1', []), goals = L2('io_goals_v1', []), habits = L2('io_habits_v1', []);
+    var daily = L2('e3_daily_v1', {}), plans = L2('e3_plans_v1', []), fbs = L2('fb_v1', []), sl = L2('slcc_v1', []), slm = L2('slcc_msg_v1', []), inc = L2('incontro_v1', []);
+    var foc = L2('io_focus_v1', []), emo = L2('io_emo_v1', []), pred = L2('io_pred_v1', []), gym = L2('gym_v1', []), exa = L2('ex_v1', {}), rip = L2('ripasso_v1', {}), done = L2('studio_hce_v1', {}), mine = L2('diz_my_v1', []);
+    /* --- Risultati: mix ottenuti --- */
+    var mixOk = {}; preps.forEach(function (p) { var a = p.after || {}, nd = (p.him || {}).need; if (a.res === 'si' && nd) mixOk[nd] = (mixOk[nd] || 0) + 1; });
+    MIX_MED.forEach(function (m) { M('ris', 'mix_' + m[0], m[1], m[2], 'In Prepara scegli il mix «' + m[2].replace('Calma', 'Relax').replace('Entusiasmo', 'Eccitazione').replace('Urgenza', 'Tensione').replace('Confronto', 'Dissenso') + '» come quello che serve all\'altro; nel Dopo rispondi «Sì» a «Obiettivo raggiunto?».', 'prep.html#nuova', [1, 5, 15], mixOk[m[0]]); });
+    var fire = mlog.filter(function (x) { return (x.from === 'ten' || x.from === 'dis') && (x.to === 'rel' || x.to === 'fid'); }).length;
+    M('ris', 'pompiere', '🧯', 'Pompiere', 'Nella Matrice biochimica registra un passaggio da Tensione o Dissenso a Relax o Fiducia, usato in un\'interazione vera.', 'mib.html', [1, 5, 15], fire);
+    M('ris', 'alchimista', '⚗️', 'Alchimista', 'Ottieni tutti e 7 i mix almeno una volta (medaglie dei mix qui sopra).', 'prep.html#nuova', [7], MIX_MED.filter(function (m) { return mixOk[m[0]]; }).length);
+    var stOrd = ['ind', 'int', 'sup', 'imp', 'irr'], stc = {};
+    preps.forEach(function (p) { var st = (p.after || {}).st, i = stOrd.indexOf(st); for (var j = 1; j <= i; j++) stc[stOrd[j]] = (stc[stOrd[j]] || 0) + 1; });
+    IST_MED.forEach(function (m) { M('ris', 'ist_' + m[0], m[1], m[2], 'I-STAIR: porta qualcuno almeno al gradino ' + m[3] + '. Lo segni nel Dopo di Prepara.', 'prep.html', [1, 5, 15], stc[m[0]]); });
+    /* --- Obiettivi REACH --- */
+    var F = function (g, k) { return ((g.f || {})[k] || '').trim(); }, D = function (g, k) { return (g.done || {})[k]; };
+    M('obi', 'g_R', '💡', 'Ho un perché', 'Completa la fase Reason di un obiettivo, con i Cinque perché scritti.', 'io.html#obiettivi', [1, 3, 10], goals.filter(function (g) { return D(g, 'R') && F(g, 'R.why'); }).length);
+    M('obi', 'g_E', '📐', 'Architetto', 'Completa la fase Engineer con il Premortem scritto.', 'io.html#obiettivi', [1, 3, 10], goals.filter(function (g) { return D(g, 'E') && F(g, 'E.premortem'); }).length);
+    M('obi', 'g_A', '🏃', 'Sul campo', 'Completa la fase Accomplish con KPI e sprint settimanale scritti.', 'io.html#obiettivi', [1, 3, 10], goals.filter(function (g) { return D(g, 'A') && F(g, 'A.kpi') && F(g, 'A.sprint'); }).length);
+    M('obi', 'g_C', '🏆', 'Traguardo', 'Raggiungi un obiettivo e celebralo (fase Cheer).', 'io.html#obiettivi', [1, 3, 10], goals.filter(function (g) { return D(g, 'C'); }).length);
+    var hd = 0; goals.forEach(function (g) { var c0 = D(g, 'C'), h = g.hold || []; if (c0 && h.length) hd = Math.max(hd, Math.floor((Math.max.apply(null, h) - c0) / 864e5)); });
+    M('obi', 'g_H', '🛡️', 'Tenuta', 'Dopo il traguardo, conferma nella fase Hold che lo stai mantenendo: 30, 90, 120 giorni.', 'io.html#obiettivi', [30, 90, 120], hd, { unit: 'giorni' });
+    var hEnd = goals.map(function (g) { return D(g, 'H'); }).filter(Boolean), rel = hEnd.length ? goals.filter(function (g) { return hEnd.some(function (t) { return +g.id > t; }); }).length : 0;
+    M('obi', 'g_re', '🚀', 'Rilancio', 'Chiudi la fase Hold di un obiettivo e parti con uno nuovo.', 'io.html#obiettivi', null, rel);
+    /* --- Abitudini --- */
+    function nlog(h) { return Object.keys(h.log || {}).length; }
+    function best(h) { var ks = Object.keys(h.log || {}).sort(), b = 0, r = 0, pv = null; ks.forEach(function (d) { var t = Date.parse(d + 'T12:00:00'); r = pv != null && Math.round((t - pv) / 864e5) === 1 ? r + 1 : 1; pv = t; if (r > b) b = r; }); return b; }
+    var nw = habits.filter(function (h) { return h.type !== 'old'; }), od = habits.filter(function (h) { return h.type === 'old'; });
+    M('abi', 'h_7', '🌱', 'Germoglio', 'Segna un\'abitudine nuova per 7 giorni.', 'io.html#abitudini', null, nw.some(function (h) { return nlog(h) >= 7; }), { cnt: nw.filter(function (h) { return nlog(h) >= 7; }).length });
+    M('abi', 'h_66', '🌳', 'Radici', '66 giorni segnati su un\'abitudine: la mediana dello studio di Lally citato nel corso.', 'io.html#abitudini', null, nw.some(function (h) { return nlog(h) >= 66; }), { cnt: nw.filter(function (h) { return nlog(h) >= 66; }).length });
+    M('abi', 'h_100', '💯', 'Cento', '100 giorni segnati su un\'abitudine.', 'io.html#abitudini', null, nw.some(function (h) { return nlog(h) >= 100; }), { cnt: nw.filter(function (h) { return nlog(h) >= 100; }).length });
+    M('abi', 'h_run', '🔗', 'Catena', 'Giorni di fila sulla stessa abitudine, senza saltarne uno.', 'io.html#abitudini', [7, 30, 66], Math.max.apply(null, [0].concat(nw.map(best))), { unit: 'giorni' });
+    M('abi', 'h_old', '🔓', 'Catena spezzata', '30 giorni segnati su un\'abitudine vecchia da smontare.', 'io.html#abitudini', null, od.some(function (h) { return nlog(h) >= 30; }), { cnt: od.filter(function (h) { return nlog(h) >= 30; }).length });
+    /* --- Strumenti --- */
+    var tried = {}; Object.keys(daily).forEach(function (d) { var v = daily[d]; if (v && v.n) tried[v.n] = 1; });
+    var ph = {}, allT = [];
+    if (pk && pk.e3) pk.e3.phases.forEach(function (p) { ph[p.k] = []; (p.aspects || []).forEach(function (a) { (a.tools || []).forEach(function (t) { ph[p.k].push(t.n); allT.push(t.n); }); }); });
+    M('str', 'e3_all', '🧰', 'Cassetta E³', 'Prova in una conversazione vera gli strumenti E³ del giorno, in Home.', 'index.html', [5, 15, allT.length || 27], allT.filter(function (n) { return tried[n]; }).length);
+    [['engage', '🪝', 'Engage'], ['explain', '📢', 'Explain'], ['exchange', '🔄', 'Exchange']].forEach(function (x) { var l = ph[x[0]] || [];
+      M('str', 'e3_' + x[0], x[1], x[2] + ' completo', 'Prova tutti gli strumenti della fase ' + x[2] + ' (strumento del giorno, in Home).', 'e3.html', null, l.length && l.every(function (n) { return tried[n]; }), { prog: [l.filter(function (n) { return tried[n]; }).length, l.length] }); });
+    M('str', 'e3_plan', '📝', 'Copione', 'Scrivi un piano E³ nella sezione Prepara dell\'Algoritmo E³.', 'e3.html', [1, 10, 30], plans.length);
+    M('str', 'prep', '🧾', 'Preparato', 'Prepara un\'interazione vera in Prepara.', 'prep.html#nuova', [1, 10, 30], preps.length);
+    M('str', 'dopo', '↩️', 'Il Dopo', 'Compila «com\'è andata» dopo un\'interazione (Prepara, D-P-I, Prima di un incontro).', 'prep.html', [3, 15, 40], (c.prepafter || 0) + (c.after || 0) + inc.filter(function (x) { return x.esito; }).length);
+    M('str', 'dpi', '🔍', 'Detective', 'Fai una sessione del protocollo D-P-I.', 'protocollo.html#prima', [1, 10, 30], c.ses);
+    M('str', 'mib', '🔬', 'Osservatore', 'Registra nella Matrice un mix usato in un\'interazione vera.', 'mib.html', [1, 10, 30], mlog.length);
+    M('str', 'rings', '💍', 'RINGS', 'Prepara un feedback con il modello RINGS.', 'feedback.html', [1, 5, 15], fbs.filter(function (x) { return x.model === 'rings'; }).length);
+    M('str', 'arise', '🌅', 'ARISE', 'Prepara un feedback con il modello ARISE.', 'feedback.html', [1, 5, 15], fbs.filter(function (x) { return x.model === 'arise'; }).length);
+    var full = sl.filter(function (x) { var p = x.p || {}; return Object.keys(p).filter(function (k) { return p[k]; }).length >= 15; }).length;
+    M('str', 'sl_dec', '🔎', 'Decoder', 'Completa il profilo SLCC di una persona su tutte e 15 le preferenze.', 'slcc.html', null, full, { cnt: full });
+    M('str', 'sl_micro', '✉️', 'MICRO', 'Scrivi un messaggio con la combinazione MICRO.', 'slcc.html#combo', [1, 5, 15], slm.filter(function (x) { return x.k === 'MICRO'; }).length);
+    M('str', 'sl_macro', '📜', 'MACRO', 'Scrivi un messaggio con la combinazione MACRO.', 'slcc.html#combo', [1, 5, 15], slm.filter(function (x) { return x.k === 'MACRO'; }).length);
+    var early = inc.filter(function (x) { var e = x.e || {}; return ['E', 'A', 'R', 'L', 'Y'].every(function (k) { return (e[k] || '').trim(); }); }).length;
+    M('str', 'early', '🐦', 'EARLY', 'Compila tutte e 5 le lettere EARLY in una scheda «Prima di un incontro».', 'incontro.html', [1, 5, 15], early);
+    /* --- Su di te --- */
+    M('io', 'check', '🪞', 'Specchio', 'Fai il check-in in Io.', 'io.html#oggi', [7, 30, 100], c.check);
+    M('io', 'flow', '🌊', 'Flow', 'Porta a termine una sessione di focus con il timer.', 'io.html#focus', [5, 15, 50], foc.filter(function (x) { return x.full; }).length);
+    M('io', 'fondo', '🏊', 'Fondo', 'Completa una sessione di focus da 30 minuti.', 'io.html#focus', null, foc.some(function (x) { return x.full && x.min >= 30; }));
+    var emoAll = emo.filter(function (x) { var f = x.f || {}; return Object.keys(f).filter(function (k) { return (f[k] || '').trim(); }).length >= 7; }).length;
+    M('io', 'emo', '🧭', 'Timoniere', 'Gestisci un\'emozione scrivendo tutte e 7 le fasi.', 'io.html#emozioni', [1, 5, 15], emoAll);
+    var pr = pred.filter(function (x) { return x.kind === 'pred' && x.res; }), hit = pr.filter(function (x) { return (x.res === 'si') === (x.prob >= 50); }).length;
+    M('io', 'pred', '🔮', 'Previsore', 'Registra previsioni nella scheda Bias e segna com\'è andata.', 'io.html#bias', [3, 10, 30], pr.length);
+    M('io', 'calib', '⚖️', 'Ben calibrato', 'Almeno 10 previsioni risolte e 7 su 10 azzeccate (soglia scelta dall\'app).', 'io.html#bias', null, pr.length >= 10 && hit / pr.length >= 0.7, { prog: [pr.length >= 10 ? Math.round(100 * hit / pr.length) + '%' : pr.length + '/10'] });
+    M('io', 'week', '📅', 'Settimane', 'Fai la revisione della settimana.', 'io.html#settimana', [1, 4, 12], c.week);
+    /* --- Studio --- */
+    if (pk && pk.data) {
+      var by = {}, ar = {};
+      pk.data.mods.forEach(function (m) { (by[m.l] = by[m.l] || []).push(m.id); });
+      var ex3 = function (id) { var s = exa[id] || {}; return ['t1', 't2', 't3', 't4'].filter(function (k) { return s[k]; }).length >= 3; };
+      pk.data.levels.forEach(function (l) { var ids = by[l.k] || [], n = ids.length, st = ids.filter(function (id) { return done[id] > 0; }).length,
+        exIds = ids.filter(function (id) { return pk.ex && pk.ex[id]; }), exd = exIds.filter(ex3).length;
+        var tier = st === n && n ? (exd === exIds.length ? 2 : 1) : (st * 2 >= n && n ? 0 : -1);
+        (ar[l.p] = ar[l.p] || []).push(st === n && n > 0);
+        out.push({ g: 'stu', k: 'lv_' + l.k, e: LV_EMO[l.k] || '🎓', n: l.n, how: 'Bronzo: metà dei moduli studiati. Argento: tutti studiati. Oro: anche esercitati (almeno 3 prove su 4).', href: 'percorso.html', tlab: ['metà', 'tutti', 'esercitati'], tier: tier, got: tier >= 0, prog: [st + '/' + n + ' studiati' + (exIds.length ? ', ' + exd + '/' + exIds.length + ' esercitati' : '')] }); });
+      Object.keys(ar).forEach(function (a) { M('stu', 'ar_' + a, AR_EMO[a] || '🎓', a, 'Completa tutti i livelli dell\'area ' + a + '.', 'percorso.html', null, ar[a].every(Boolean), { prog: [ar[a].filter(Boolean).length + '/' + ar[a].length + ' livelli'] }); });
+    }
+    GYM_T.forEach(function (t) { M('stu', 'gym_' + t[0], '💯', '10/10 · ' + t[1], 'Un giro di Palestra su «' + t[1] + '» senza errori, almeno 10 domande.', 'palestra.html', null, gym.some(function (x) { return x.tp === t[0] && x.n >= 10 && x.ok === x.n; })); });
+    var r137 = {}; Object.keys(rip).forEach(function (k) { var id = k.split('@')[0]; r137[id] = (r137[id] || 0) + 1; });
+    M('stu', 'r137', '🧠', 'Memoria di ferro', 'Ripassa lo stesso modulo a 1, 3 e 7 giorni.', 'index.html', [1, 10, 30], Object.keys(r137).filter(function (id) { return r137[id] >= 3; }).length);
+    M('stu', 'kid', '🧒', 'Spiegalo a un bambino', 'In «Esercitati», fai la prova «Spiegalo» di un modulo.', 'percorso.html', [5, 25, 100], Object.keys(exa).filter(function (id) { return (exa[id] || {}).t2; }).length);
+    M('stu', 'mine', '✍️', 'Le mie espressioni', 'Aggiungi espressioni tue nel Dizionario.', 'dizionario.html#mie', [1, 10, 30], mine.length);
+    /* --- Costanza --- */
+    var ds = Object.keys(S.days).sort(), bs = 0, run = 0, prev = null;
+    ds.forEach(function (d) { var t = Date.parse(d + 'T12:00:00'); run = prev != null && Math.round((t - prev) / 864e5) === 1 ? run + 1 : 1; prev = t; if (run > bs) bs = run; });
+    M('base', 'streak', '🔥', 'Costanza', 'Usa l\'app tutti i giorni (record di giorni di fila).', 'index.html', [3, 7, 30], bs, { unit: 'giorni' });
+    M('base', 'xp', '⚡', 'Punti', 'Ogni attività vale XP.', 'index.html', [500, 2000, 5000], S.xp, { unit: 'XP' });
+    M('base', 'mod', '📖', 'Studio', 'Segna «✓ Studiato» alla fine di un modulo.', 'percorso.html', [10, 50, 150], S.mods, { unit: 'moduli' });
+    M('base', 'rip', '🔁', 'Ripasso', 'I ripassi di 1, 3 e 7 giorni, in Home.', 'index.html', [5, 25, 100], c.rip);
+    M('base', 'gym', '🏋️', 'Palestra', 'Un giro di domande in Palestra.', 'palestra.html', [5, 25, 100], gym.length);
+    M('base', 'all', '🧭', 'Esploratore', 'Usa almeno una volta Prepara, D-P-I, IBM, Feedback, Palestra, SLCC, Prima di un incontro, Io ed Esercitati.', 'strumenti.html', null,
+      preps.length && c.ses && mlog.length && fbs.length && gym.length && (sl.length || slm.length) && inc.length && c.check && Object.keys(exa).length);
+    M('base', 'backup', '💾', 'Al sicuro', 'Esporta il tuo primo backup.', 'index.html#set-bk', null, +(lsGet('ui_last_backup') || 0) > 0);
     return out;
   }
+  function medalUnits(m) { return (m.th || m.tlab) ? (m.tier + 1) : (m.got ? 1 : 0); }
+  function medalMax(m) { return m.th ? m.th.length : (m.tlab ? 3 : 1); }
   /* medaglia nuova: un avviso in basso, una volta sola */
   function medalCheck() {
     pack().then(function (pk) { if (!pk) return;
-      var all = medals(pk), seen = J(lsGet('medals_seen_v1'), null), first = !seen; seen = seen || {};
-      var nu = all.filter(function (m) { return m.got && !seen[m.k]; });
-      nu.forEach(function (m) { seen[m.k] = Date.now(); }); lsSet('medals_seen_v1', JSON.stringify(seen));
+      var all = medals(pk), seen = J(lsGet('medals_seen_v2'), null), first = !seen; seen = seen || {};
+      all.forEach(function (m) { m.sk = m.k + (m.tier != null && m.tier >= 0 ? '#' + m.tier : ''); });
+      var nu = all.filter(function (m) { return m.got && !seen[m.sk]; });
+      nu.forEach(function (m) { seen[m.sk] = Date.now(); }); lsSet('medals_seen_v2', JSON.stringify(seen));
       if (first || !nu.length) return;
       var t = document.createElement('a'); t.href = 'io.html#medaglie'; t.className = 'medal-toast'; t.setAttribute('role', 'status');
-      t.innerHTML = '<span class="mt-ic">🏅</span><span><b>' + (nu.length > 1 ? nu.length + ' medaglie nuove' : 'Medaglia sbloccata') + '</b><span>' + nu.map(function (m) { return m.n; }).join(', ').replace(/[<>&]/g, '') + '</span></span>';
+      t.innerHTML = '<span class="mt-ic">🏅</span><span><b>' + (nu.length > 1 ? nu.length + ' medaglie nuove' : 'Medaglia sbloccata') + '</b><span>' + nu.slice(0, 3).map(function (m) { return m.e + ' ' + m.n + (m.tier != null && m.tier >= 0 && (m.th || m.tlab) ? ' · ' + ['bronzo', 'argento', 'oro'][m.tier] : ''); }).join(', ').replace(/[<>&]/g, '') + (nu.length > 3 ? ' e altre ' + (nu.length - 3) : '') + '</span></span>';
       var st = document.createElement('style');
       st.textContent = '.medal-toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:50;display:flex;gap:12px;align-items:center;max-width:min(92vw,420px);padding:12px 16px;border-radius:18px;background:var(--fg);color:var(--bg);text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.25);animation:mtin .3s ease-out}.medal-toast .mt-ic{font-size:1.8rem}.medal-toast b{display:block;font-weight:900}.medal-toast span span{font-size:.88rem;font-weight:700}@keyframes mtin{from{opacity:0;transform:translate(-50%,16px)}}@media (prefers-reduced-motion:reduce){.medal-toast{animation:none}}';
       document.head.appendChild(st); document.body.appendChild(t);
@@ -357,5 +415,5 @@ var HCE = (function () {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(medalCheck, 900); }); else setTimeout(medalCheck, 900);
   if (navigator.storage && navigator.storage.persist) { navigator.storage.persist().catch(function () {}); }
 
-  return { get: get, pack: pack, ready: ready, importPack: importPack, exportBackup: exportBackup, importBackup: importBackup, save: save, pickButton: pickButton, nav: nav, stats: stats, dayKey: dayKey, lsJ: lsJ, lsPut: lsPut, USER_KEYS: USER_KEYS, medals: medals, ui: { get: uiGet, set: uiSet } };
+  return { get: get, pack: pack, ready: ready, importPack: importPack, exportBackup: exportBackup, importBackup: importBackup, save: save, pickButton: pickButton, nav: nav, stats: stats, dayKey: dayKey, lsJ: lsJ, lsPut: lsPut, USER_KEYS: USER_KEYS, medals: medals, medalGroups: MEDAL_GROUPS, medalUnits: medalUnits, medalMax: medalMax, ui: { get: uiGet, set: uiSet } };
 })();

@@ -87,6 +87,7 @@ textarea{min-height:70px;resize:vertical}
 <div class="page" id="pg"></div>
 <script>
 HCE.ready(function(PACK){
+var ST=(PACK.istair&&PACK.istair.steps)||[];
 var $=function(i){return document.getElementById(i)},E=PACK.e3,M=PACK.mib,KEY='prep_v1';
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 if(!E||!M){$('pg').innerHTML='<header><h1>Prepara</h1></header><div class="card notice"><h2>Serve il file dei contenuti aggiornato</h2><p class="muted">Importa la versione nuova di hce-contenuti.json dalla Home, in Impostazioni.</p><a class="btn pri" href="index.html#contenuti">Vai alla Home</a></div>';return}
@@ -141,6 +142,7 @@ function afterHtml(){var a=F.after||{};
   return '<div class="card" style="border:2px solid var(--line);margin-top:6px"><h3>Dopo l\'interazione</h3><div class="lbl">Obiettivo raggiunto?</div><div class="res3">'+
    [['si','Sì'],['parte','In parte'],['no','No']].map(function(x){return '<button data-res="'+x[0]+'" aria-pressed="'+(a.res===x[0])+'">'+x[1]+'</button>'}).join('')+'</div>'+
    '<div class="lbl">In che mix l\'hai trovato davvero?</div>'+chips('after.mix',a.mix)+
+   (ST.length?'<div class="lbl">Se era una proposta: fino a che gradino I-STAIR è arrivato?</div><div class="chips">'+ST.map(function(x){return '<button class="mc" data-st="'+x.k+'" aria-pressed="'+(a.st===x.k)+'" style="--mc:var(--accent)">'+esc(x.n)+'</button>'}).join('')+'</div>':'')+
    '<label class="f">Cosa ha funzionato<textarea data-a="ok">'+esc(a.ok||'')+'</textarea></label><label class="f">Cosa cambio la prossima volta<textarea data-a="next">'+esc(a.next||'')+'</textarea></label>'+
    '<div class="row"><button class="btn pri" id="save-after">Salva il Dopo</button></div><div id="msg2"></div></div>'}
 
@@ -170,6 +172,7 @@ document.addEventListener('click',function(e){var b,t=e.target;
   if(t.id==='back'){STEP=Math.max(0,STEP-1);render();return}
   if(b=t.closest('[data-mix]')){var q=b.dataset.mix.split('|'),cur=q[0].split('.');var now=q[0]==='after.mix'?(F.after||{}).mix:F[cur[0]][cur[1]];set(q[0],now===q[1]?'':q[1]);render();return}
   if(b=t.closest('[data-tool]')){var r=b.dataset.tool.split('|'),s=F.e3[r[0]]||(F.e3[r[0]]={});s.tool=s.tool===r[1]?'':r[1];if(!s.tool&&!s.text)delete F.e3[r[0]];render();var el=document.querySelector('[data-e3="'+r[0]+'"]');if(el)el.focus();return}
+  if(b=t.closest('[data-st]')){F.after=F.after||{};F.after.st=F.after.st===b.dataset.st?'':b.dataset.st;render();return}
   if(b=t.closest('[data-res]')){F.after=F.after||{};F.after.res=b.dataset.res;render();return}
   if(t.id==='save'){var a=load(),id=F.id||String(Date.now());F.id=id;var ix=a.findIndex(function(p){return p.id===id});if(ix>=0)a[ix]=F;else a.unshift(F);store(a);render();$('msg').innerHTML='<div class="msg">Scheda salvata'+(ix>=0?'':' · +20 XP')+'. Dopo l\'interazione torna qui e compila il Dopo.</div>';return}
   if(t.id==='save-after'){F.after=F.after||{};var first=!F.after.t;F.after.t=F.after.t||Date.now();var a2=load(),i2=a2.findIndex(function(p){return p.id===F.id});if(i2>=0)a2[i2]=F;store(a2);render();$('msg2').innerHTML='<div class="msg">Salvato'+(first?' · +10 XP':'')+'</div>';return}

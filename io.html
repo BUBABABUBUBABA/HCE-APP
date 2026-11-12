@@ -98,6 +98,17 @@ input[type=range]{width:100%;accent-color:var(--io)}
 .msp .c{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:1.3rem;background:var(--md3);color:var(--onp)}
 .msp.off .c{background:transparent;border:3px dashed var(--md-off);filter:grayscale(1);opacity:.75}
 .msp b{display:block;font-weight:900}.msp span span{font-size:.82rem;color:var(--muted);font-weight:700;line-height:1.35}
+.mdn{font-size:2rem;font-weight:900;line-height:1}
+.mfil{display:flex;flex-wrap:wrap;gap:8px}.mfil button{font:inherit;font-weight:800;font-size:.88rem;min-height:44px;padding:8px 12px;border-radius:99px;border:2px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.mfil button .muted{font-size:.8rem}.mfil button[aria-pressed="true"]{background:var(--io);border-color:var(--io);color:var(--onp)}.mfil button[aria-pressed="true"] .muted{color:var(--onp)}
+.mgrid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.mcard{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:12px;text-decoration:none;color:var(--fg);min-width:0}
+.mcard .c{flex:none;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:1.7rem;background:var(--mc);box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
+.mcard.off .c{background:transparent;border:3px dashed var(--md-off);box-shadow:none;filter:grayscale(1);opacity:.6}
+.mcard .mt{display:flex;flex-direction:column;gap:3px;min-width:0}.mcard b{font-weight:900;font-size:1rem}
+.mcard .gl{font-size:.82rem;font-weight:900;color:var(--io)}.mcard.off .gl{color:var(--muted)}
+.mcard .hw{font-size:.84rem;font-weight:600;color:var(--muted);line-height:1.4}
+.ths{display:flex;gap:6px;margin-top:4px}.ths i{font-style:normal;font-size:.75rem;font-weight:900;padding:2px 8px;border-radius:99px;border:2px solid var(--md-off);color:var(--muted)}.ths i.y{background:var(--mc);border-color:var(--mc);color:var(--onp)}
 </style>
 <div class="page">
 <header>
@@ -182,6 +193,11 @@ $('v-oggi').addEventListener('input',function(e){var t=e.target,k=t.dataset.ckt;
 var R=Z.reach,GOAL=null,gTimer=null;
 function goals(){return G('io_goals_v1',[])}
 function saveGoal(){var a=goals(),i=a.findIndex(function(x){return x.id===GOAL.id});GOAL.u=Date.now();if(i>=0)a[i]=GOAL;else a.unshift(GOAL);P('io_goals_v1',a)}
+function holdDays(g){var c=(g.done||{}).C,h=(g.hold||[]);if(!c||!h.length)return 0;return Math.floor((Math.max.apply(null,h)-c)/864e5)}
+function holdHtml(g){var c=g.done.C,since=Math.floor((Date.now()-c)/864e5),last=(g.hold||[]).length?Math.max.apply(null,g.hold):0,today=HCE.dayKey(Date.now())===(last?HCE.dayKey(last):'');
+  return '<div class="tool"><b>Tenuta</b><span class="tip">Sono passati '+since+' giorni dal traguardo. Ogni tanto conferma che lo stai mantenendo: a 30, 90 e 120 giorni dal traguardo sblocchi la medaglia 🛡️ Tenuta (bronzo, argento, oro). I giorni sono una scelta dell\'app: il corso non indica una durata per Hold.</span>'+
+  (last?'<span class="muted">Ultima conferma: '+new Date(last).toLocaleDateString('it-IT')+' · '+holdDays(g)+' giorni di tenuta</span>':'')+
+  '<div class="row"><button class="btn io" data-ghold="1"'+(today?' disabled':'')+'>'+(today?'✓ Confermato oggi':'Lo sto ancora mantenendo')+'</button></div></div>'}
 function renderObiettivi(){var h='';
   if(!GOAL){var a=goals();
     h+='<div class="card"><h3>REACH</h3><p>'+esc(R.intro)+'</p><div class="steps">'+R.phases.map(function(p){return '<div class="stp"><b>'+p.k+'</b><span><strong>'+esc(p.n)+'</strong> · '+esc(p.it)+'</span></div>'}).join('')+'</div><p class="note">'+esc(R.note)+'</p>'+ml(R.m)+'</div>'+
@@ -193,13 +209,14 @@ function renderObiettivi(){var h='';
   h+=R.phases.map(function(p){var dn=(g.done||{})[p.k];return '<details class="ph'+(dn?' dn':'')+'"'+(next===p?' open':'')+'><summary><span class="L">'+(dn?'✓':p.k)+'</span><span><b>'+esc(p.n)+'</b><small>'+esc(p.it)+(dn?' · fatta il '+new Date(dn).toLocaleDateString('it-IT'):'')+'</small></span><span class="chev">›</span></summary><div class="pb">'+
     '<p style="line-height:1.5;font-weight:600">'+esc(p.d)+'</p>'+
     p.tools.map(function(t){return '<div class="tool"><b>'+esc(t.n)+'</b><span class="tip">'+esc(t.d)+'</span><textarea data-gf="'+p.k+'.'+t.k+'" aria-label="'+esc(t.n)+'" placeholder="'+esc(t.p)+'">'+esc((g.f||{})[p.k+'.'+t.k]||'')+'</textarea></div>'}).join('')+
-    '<div class="row"><button class="btn'+(dn?'':' io')+'" data-gdone="'+p.k+'">'+(dn?'Riapri la fase':(p.k==='C'?'Ho celebrato · +30 XP':'Fase completata · +10 XP'))+'</button></div>'+ml(p.m)+'</div></details>'}).join('');
+    (p.k==='H'&&(g.done||{}).C?holdHtml(g):'')+'<div class="row"><button class="btn'+(dn?'':' io')+'" data-gdone="'+p.k+'">'+(dn?'Riapri la fase':(p.k==='C'?'Ho celebrato · +30 XP':'Fase completata · +10 XP'))+'</button></div>'+ml(p.m)+'</div></details>'}).join('');
   h+='<div class="row"><button class="btn" id="g-del">Elimina obiettivo</button></div><div id="g-msg"></div>';
   $('v-obiettivi').innerHTML=h}
 $('v-obiettivi').addEventListener('click',function(e){var b,t=e.target;
   if(t.id==='g-add'){var v=$('g-new').value.trim();if(!v)return;GOAL={id:newId(),t:v,f:{},done:{}};saveGoal();renderObiettivi();window.scrollTo(0,0);return}
   if(b=t.closest('[data-gopen]')){GOAL=goals().filter(function(x){return x.id===b.dataset.gopen})[0]||null;renderObiettivi();window.scrollTo(0,0);return}
   if(t.id==='g-back'){GOAL=null;renderObiettivi();return}
+  if(t.closest('[data-ghold]')){GOAL.hold=GOAL.hold||[];GOAL.hold.push(Date.now());saveGoal();renderObiettivi();return}
   if(b=t.closest('[data-gdone]')){var k=b.dataset.gdone;GOAL.done=GOAL.done||{};if(GOAL.done[k])delete GOAL.done[k];else GOAL.done[k]=Date.now();saveGoal();renderObiettivi();return}
   if(t.id==='g-del'){if(t.textContent!=='Elimina?'){t.textContent='Elimina?';return}P('io_goals_v1',goals().filter(function(x){return x.id!==GOAL.id}));GOAL=null;renderObiettivi()}});
 $('v-obiettivi').addEventListener('input',function(e){var t=e.target;if(!GOAL)return;if(t.dataset.gt)GOAL.t=t.value;else if(t.dataset.gf){GOAL.f=GOAL.f||{};GOAL.f[t.dataset.gf]=t.value}else return;clearTimeout(gTimer);gTimer=setTimeout(saveGoal,400)});
@@ -340,16 +357,23 @@ $('v-settimana').addEventListener('input',function(e){var t=e.target;if(t.datase
 $('v-settimana').addEventListener('click',function(e){if(e.target.id!=='w-save')return;var all=G('io_week_v1',{}),wk=weekKey(monday(0)),first=!all[wk];WD.t=(all[wk]&&all[wk].t)||Date.now();WD.u=Date.now();all[wk]=WD;P('io_week_v1',all);WD=null;renderSettimana();flash('w-msg',first?'Salvato · +20 XP':'Aggiornato')});
 
 /* ---------- tab ---------- */
-function renderMedaglie(){var M=HCE.medals(PACK),got=M.filter(function(m){return m.got}).length,ab={streak:'🔥',xp:'⚡',mod:'📖',rip:'↻',ex:'✎',gym:'✓',prep:'P',after:'↩',ses:'DPI',mib:'IBM',fb:'RA',slcc:'SL',inc:'1°',check:'☺',habit:'7',focus:'◎',emo:'♥'};
-  var spi={reach:'🎯',level:'🎓',perfect:'💯',all:'🧭',week:'📅',backup:'💾'};
-  var h='<div class="card"><div class="mdh"><span style="font-size:2.4rem" aria-hidden="true">🏅</span><div style="flex:1"><b class="big">'+got+'</b> <span class="muted">su '+M.length+' medaglie</span><div class="mbar" style="margin-top:8px"><i style="width:'+Math.round(100*got/M.length)+'%"></i></div></div></div>'+
-    '<p class="muted">17 famiglie con tre gradi (bronzo, argento, oro) e 6 medaglie speciali. Si sbloccano da sole mentre usi l\'app: quando ne prendi una, compare un avviso.</p></div>';
-  h+='<div class="card"><h3>Speciali</h3><div class="mspec">'+M.filter(function(m){return m.fam==='spec'}).map(function(m){return '<a class="msp '+(m.got?'on':'off')+'" href="'+m.href+'"><span class="c" aria-hidden="true">'+spi[m.k]+'</span><span><b>'+esc(m.n)+(m.got?' ✓':'')+'</b><span>'+esc(m.how)+'</span></span></a>'}).join('')+'</div></div>';
-  var fams=[];M.forEach(function(m){if(m.fam!=='spec'&&fams.indexOf(m.fam)<0)fams.push(m.fam)});
-  h+='<div class="card"><h3>Famiglie</h3>'+fams.map(function(f){var t=M.filter(function(m){return m.fam===f}),nx=t.filter(function(m){return !m.got})[0];
-    return '<div class="mfam"><div class="top"><b>'+esc(t[0].fn)+'</b><span class="muted">'+t[0].v+' '+esc(t[0].what)+'</span></div><div class="mrow">'+t.map(function(m){return '<div class="md '+(m.got?'on':'off')+'" style="--mc:var(--md'+m.tier+')"><span class="c" aria-hidden="true">'+ab[f]+'</span><small>'+['Bronzo','Argento','Oro'][m.tier]+'<br>'+m.th+'</small><span class="sr" style="position:absolute;left:-9999px">'+(m.got?'sbloccata':'da sbloccare')+'</span></div>'}).join('')+'</div>'+
-      (nx?'<div class="mnext">Ne mancano '+(nx.th-nx.v)+' per '+(['il bronzo','l\'argento','l\'oro'][nx.tier])+'. '+esc(t[0].how)+' <a href="'+t[0].href+'">Vai →</a></div>':'<div class="mnext">Famiglia completa ✓</div>')+'</div>'}).join('')+'</div>';
+var MF='ris';
+function renderMedaglie(){var M=HCE.medals(PACK),G=HCE.medalGroups,U=HCE.medalUnits,X=HCE.medalMax;
+  var got=M.reduce(function(a,m){return a+U(m)},0),max=M.reduce(function(a,m){return a+X(m)},0),TL=['Bronzo','Argento','Oro'];
+  var h='<div class="card"><div class="mdh"><span style="font-size:2.4rem" aria-hidden="true">🏅</span><div style="flex:1"><span class="mdn">'+M.filter(function(m){return m.got}).length+'</span> <span class="muted">medaglie su '+M.length+'</span><div class="mbar" style="margin-top:8px"><i style="width:'+Math.round(100*got/max)+'%"></i></div></div></div>'+
+    '<p class="muted">Contando i gradi (bronzo, argento, oro): '+got+' su '+max+'. Quelle grigie sono da prendere: in ognuna c\'è scritto come.</p>'+
+    '<div class="mfil" role="group" aria-label="Gruppi">'+G.map(function(g){var t=M.filter(function(m){return m.g===g[0]}),n=t.filter(function(m){return m.got}).length;return '<button data-mf="'+g[0]+'" aria-pressed="'+(MF===g[0])+'">'+esc(g[1])+' <span class="muted">'+n+'/'+t.length+'</span></button>'}).join('')+'</div></div>';
+  var L=M.filter(function(m){return m.g===MF});
+  h+='<div class="mgrid2">'+L.map(function(m){var tier=m.tier!=null?m.tier:(m.got?3:-1),col=m.got?(m.th&&m.th.length===1?3:(m.th||m.tlab)?tier:3):-1;
+    var gl=(m.th&&m.th.length>1)||m.tlab?(m.got?TL[m.tier]:'Da sbloccare'):(m.got?'Sbloccata':'Da sbloccare');
+    var nx='';
+    if(m.th){var ni=m.tier+1;if(ni<m.th.length)nx=(m.v||0)+' / '+m.th[ni]+(m.unit?' '+m.unit:'')+(m.th.length>1?' per '+['il bronzo','l\'argento','l\'oro'][ni]:'');else nx='Completata ✓'}
+    else if(m.prog)nx=m.prog.join(' / ');
+    if(m.cnt>1)nx='×'+m.cnt;
+    return '<a class="mcard '+(m.got?'on':'off')+'" href="'+m.href+'" style="--mc:var(--md'+(col<0?'3':col)+')"><span class="c" aria-hidden="true">'+m.e+'</span><span class="mt"><b>'+esc(m.n)+'</b><span class="gl">'+gl+(nx?' · '+esc(nx):'')+'</span><span class="hw">'+esc(m.how)+'</span>'+
+      ((m.th&&m.th.length>1)?'<span class="ths">'+m.th.map(function(t,i){return '<i class="'+(i<=m.tier?'y':'')+'" style="--mc:var(--md'+i+')">'+t+'</i>'}).join('')+'</span>':'')+'</span></a>'}).join('')+'</div>';
   $('v-medaglie').innerHTML=h}
+$('v-medaglie').addEventListener('click',function(e){var b=e.target.closest('[data-mf]');if(b){MF=b.dataset.mf;renderMedaglie()}});
 var R_={medaglie:renderMedaglie,oggi:renderOggi,obiettivi:renderObiettivi,abitudini:renderAbitudini,focus:renderFocus,emozioni:renderEmozioni,bias:renderBias,settimana:renderSettimana};
 function show(t){document.querySelectorAll('.tab').forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===t?'true':'false')});
   Object.keys(R_).forEach(function(x){$('v-'+x).hidden=x!==t});R_[t]();window.scrollTo(0,0)}
