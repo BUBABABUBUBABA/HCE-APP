@@ -246,7 +246,7 @@ function dayNum(d){return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.get
 function draw(p){
   PACK=p;var S=HCE.stats();
   $('s-streak').textContent=S.streak;$('s-fire').classList.toggle('off',!S.today);$('s-xp').textContent=S.xp;try{$('s-md').textContent=HCE.medals(p).filter(function(m){return m.got}).length}catch(x){}
-  $('welcome').hidden=!!p;$('main').hidden=!p;$('upd').hidden=!p||!!(p.e3&&p.mib&&p.istair&&p.feedback&&p.diz&&p.diz.gloss&&p.diz.chemrefs&&p.io&&p.ex&&p.lex&&p.slcc&&p.inc&&p.psv&&p.lal&&p.lib&&p.labs);if(!p)return;
+  $('welcome').hidden=!!p;$('main').hidden=!p;$('upd').hidden=!p||!!(p.e3&&p.mib&&p.istair&&p.feedback&&p.diz&&p.diz.gloss&&p.diz.chemrefs&&p.io&&p.ex&&p.lex&&p.slcc&&p.inc&&p.psv&&p.lal&&p.lib&&p.labs&&p.decode);if(!p)return;
   var D=p.data,done=S.done,today=S.todayKey,now=new Date();
   $('hello').textContent=greet()+'!';
   $('hi-s').textContent=S.goal>=S.goalMax?'Piano di oggi completato. Grande!':S.streak&&!S.today?'Serie di '+S.streak+(S.streak===1?' giorno':' giorni')+': fai qualcosa oggi per non perderla.':'Una cosa alla volta. Ecco la prossima.';
@@ -334,7 +334,7 @@ $('set-x').addEventListener('click',function(){$('impostazioni').hidden=true;win
 $('now').addEventListener('click',function(e){if(this.dataset.tod){e.preventDefault();$('tod-d').open=true;$('tod-d').scrollIntoView({block:'start',behavior:'smooth'})}});
 $('t3').addEventListener('click',function(e){e.preventDefault();$('tod-d').open=true;$('tod-d').scrollIntoView({block:'start',behavior:'smooth'})});
 uiDraw();
-$('ver').textContent='App versione 2026-11-13b-d96f89b7';
+$('ver').textContent='App versione 2026-11-13c-ee63da00';
 status();bstat();
 window.addEventListener('pageshow',function(e){if(e.persisted){status();bstat()}});
 })();
