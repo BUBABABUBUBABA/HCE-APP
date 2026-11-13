@@ -435,7 +435,7 @@ var HCE = (function () {
     labs.forEach(function (x) { if (x.kind === 'obs' || Object.keys(x.xd || {}).length) lact[x.lab] = 1; });
     M('str', 'lab_obs', '🔭', 'Osservatore', 'Registra un\'osservazione (decode) nella scheda Osserva di un laboratorio.', 'lab-comportamentale.html#osserva', [1, 10, 30, 60], lobs.length);
     M('str', 'lab_ex', '🧪', 'In laboratorio', 'Completa un esercizio di un laboratorio.', 'lab-linguistico.html', [1, 10, 25, 44], lexn);
-    M('str', 'lab_four', '🎓', 'Quattro laboratori', 'Lavora in tutti e quattro i laboratori: linguistico, comportamentale, ambientale, strategico.', 'strumenti.html', [2, 4], Object.keys(lact).length);
+    M('str', 'lab_four', '🎓', 'Cinque laboratori', 'Lavora in tutti e cinque i laboratori: linguistico, comportamentale, ambientale, strategico, emotivo.', 'strumenti.html', [2, 5], Object.keys(lact).length);
     var tr = {}; ltry.forEach(function (x) { tr[x.c] = 1; });
     M('io', 'ie_try', '🌬️', 'Ho provato', 'In Io → Emozioni segna una strategia di Instant Emotions che hai provato.', 'io.html#emozioni', [1, 10, 30], ltry.length);
     M('io', 'ie_all', '🎐', 'Dieci strategie', 'Prova tutte e 10 le strategie di Instant Emotions.', 'io.html#emozioni', [10], Object.keys(tr).length);
