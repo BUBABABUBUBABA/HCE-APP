@@ -1,7 +1,7 @@
 /* HCE app: database locale, pacchetto contenuti, backup, barra di navigazione */
 var HCE = (function () {
   var DBN = 'hce-app', DBV = 1, dbp = null;
-  var USER_KEYS = ['dpi_su_di_me_v1', 'dpi_know_v1', 'studio_hce_v1', 'e3_plans_v1', 'e3_daily_v1', 'ripasso_v1', 'mib_log_v1', 'prep_v1', 'fb_v1', 'gym_v1', 'gym_err_v1', 'diz_my_v1', 'io_check_v1', 'io_goals_v1', 'io_habits_v1', 'io_focus_v1', 'io_emo_v1', 'io_trig_v1', 'io_pred_v1', 'io_week_v1', 'ex_v1', 'slcc_v1', 'slcc_msg_v1', 'incontro_v1', 'public_v1', 'vendita_v1', 'lead_v1', 'alg_v1', 'frame_v1', 'carisma_v1', 'libri_v1'];
+  var USER_KEYS = ['dpi_su_di_me_v1', 'dpi_know_v1', 'studio_hce_v1', 'e3_plans_v1', 'e3_daily_v1', 'ripasso_v1', 'mib_log_v1', 'prep_v1', 'fb_v1', 'gym_v1', 'gym_err_v1', 'diz_my_v1', 'io_check_v1', 'io_goals_v1', 'io_habits_v1', 'io_focus_v1', 'io_emo_v1', 'io_trig_v1', 'io_pred_v1', 'io_week_v1', 'ex_v1', 'slcc_v1', 'slcc_msg_v1', 'incontro_v1', 'public_v1', 'vendita_v1', 'lead_v1', 'alg_v1', 'frame_v1', 'carisma_v1', 'libri_v1', 'lab_v1'];
 
   function open() {
     if (dbp) return dbp;
@@ -49,7 +49,7 @@ var HCE = (function () {
     var p; try { p = JSON.parse(text); } catch (e) { throw new Error('il file scelto non è leggibile'); }
     if (p && p.app === 'hce-backup') throw new Error('questo è un file di backup: importalo più sotto, in «Backup dei tuoi dati»');
     if (!p || p.app !== 'hce-contenuti' || !p.data || !p.appunti) throw new Error('questo non è il file dei contenuti HCE');
-    var pack = { version: p.version, vs: p.vs, vd: p.vd, data: p.data, areas: p.areas, sys: p.sys, toolnames: p.toolnames, unp: p.unp, books: p.books, e3: p.e3, mib: p.mib, istair: p.istair, feedback: p.feedback, diz: p.diz, io: p.io, ex: p.ex, lex: p.lex, slcc: p.slcc, inc: p.inc, psv: p.psv, lal: p.lal, lib: p.lib };
+    var pack = { version: p.version, vs: p.vs, vd: p.vd, data: p.data, areas: p.areas, sys: p.sys, toolnames: p.toolnames, unp: p.unp, books: p.books, e3: p.e3, mib: p.mib, istair: p.istair, feedback: p.feedback, diz: p.diz, io: p.io, ex: p.ex, lex: p.lex, slcc: p.slcc, inc: p.inc, psv: p.psv, lal: p.lal, lib: p.lib, labs: p.labs };
     return clear('appunti')
       .then(function () { return putAll('appunti', p.appunti); })
       .then(function () { return putAll('meta', { pack: pack, cerca: p.cerca }); })
@@ -168,7 +168,7 @@ var HCE = (function () {
       lsSet(k, JSON.stringify(x));
     });
     // scheda Io: liste unite per id (vince la versione aggiornata per ultima), oggetti uniti per chiave
-    USER_KEYS.filter(function (k) { return k.indexOf('io_') === 0 || k === 'ex_v1' || k === 'slcc_v1' || k === 'slcc_msg_v1' || k === 'incontro_v1' || k === 'public_v1' || k === 'vendita_v1' || k === 'lead_v1' || k === 'alg_v1' || k === 'frame_v1' || k === 'carisma_v1' || k === 'libri_v1'; }).forEach(function (k) {
+    USER_KEYS.filter(function (k) { return k.indexOf('io_') === 0 || k === 'ex_v1' || k === 'slcc_v1' || k === 'slcc_msg_v1' || k === 'incontro_v1' || k === 'public_v1' || k === 'vendita_v1' || k === 'lead_v1' || k === 'alg_v1' || k === 'frame_v1' || k === 'carisma_v1' || k === 'libri_v1' || k === 'lab_v1'; }).forEach(function (k) {
       var y = J(b.data[k], null); if (y == null) return;
       var x = J(lsGet(k), Array.isArray(y) ? [] : {});
       if (Array.isArray(y)) {
@@ -255,14 +255,15 @@ var HCE = (function () {
     L('carisma_v1', []).forEach(function (x) { if (x.kind === 'day') { Object.keys(x.a || {}).forEach(function (k) { add(x.a[k], 'car', 5, 'act'); }); Object.keys(x.x || {}).forEach(function (k) { add(x.x[k], 'car', 10, 'ex'); }); }
       else if (x.kind === 'self') add(+x.id, 'car', 20, 'self');
       else if (x.kind === 'act') { add(+x.id, 'car', 20, 'plan'); if (x.esito && x.et) add(x.et, 'car', 10, 'plan'); } });
+    L('lab_v1', []).forEach(function (x) { if (x.kind === 'obs') add(x.t, 'lab', 10, 'obs:' + x.lab); Object.keys(x.xd || {}).forEach(function (i) { add(x.xd[i], 'lab', 10, 'ex:' + x.lab); }); });
     L('libri_v1', []).forEach(function (x) { if (x.kind === 'try') { add(x.t, 'lib', 5, 'try:' + x.c); return; } if (x.rd) add(x.rd, 'lib', 10, 'rd:' + x.id); if (x.qz) add(x.qz, 'lib', 15, 'qz:' + x.id); Object.keys(x.xd || {}).forEach(function (i) { add(x.xd[i], 'lib', 10, 'ex:' + x.id); }); });
     preps.forEach(function (x) { add(+x.id, 'prep', 20, x.id); if (x.after && x.after.t) add(x.after.t, 'prepafter', 10, x.id); });
-    var days = {}, xp = 0, today = dayKey(Date.now()), T = { mod: 0, ses: 0, plan: 0, tool: 0, rip: 0, after: 0, mib: 0, prep: 0, prepafter: 0, fb: 0, gym: 0, io: 0, ex: 0, exp: 0, slcc: 0, inc: 0, pub: 0, ven: 0, lea: 0, alg: 0, frm: 0, car: 0, lib: 0 };
+    var days = {}, xp = 0, today = dayKey(Date.now()), T = { mod: 0, ses: 0, plan: 0, tool: 0, rip: 0, after: 0, mib: 0, prep: 0, prepafter: 0, fb: 0, gym: 0, io: 0, ex: 0, exp: 0, slcc: 0, inc: 0, pub: 0, ven: 0, lea: 0, alg: 0, frm: 0, car: 0, lib: 0, lab: 0 };
     ev.forEach(function (e) { days[e.d] = 1; xp += e.xp; if (e.d === today) T[e.type]++; });
     var streak = 0, d = new Date();
     if (!days[dayKey(d)]) d.setDate(d.getDate() - 1);
     while (days[dayKey(d)]) { streak++; d.setDate(d.getDate() - 1); }
-    var plan = [Math.min(T.mod, 2) / 2, (T.ses + T.after + T.plan + T.mib + T.prep + T.prepafter + T.fb + T.gym + T.io + T.exp + T.slcc + T.inc + T.pub + T.ven + T.lea + T.alg + T.frm + T.car + T.lib) ? 1 : 0, T.tool ? 1 : 0];
+    var plan = [Math.min(T.mod, 2) / 2, (T.ses + T.after + T.plan + T.mib + T.prep + T.prepafter + T.fb + T.gym + T.io + T.exp + T.slcc + T.inc + T.pub + T.ven + T.lea + T.alg + T.frm + T.car + T.lib + T.lab) ? 1 : 0, T.tool ? 1 : 0];
     return { xp: xp, streak: streak, today: !!days[today], todayKey: today, days: days, events: ev, T: T,
       mods: nm, sessions: ses.length, plans: plans.length, preps: preps, done: done, ses: ses, planList: plans, daily: daily, rip: rip,
       goal: plan.filter(function (x) { return x >= 1; }).length, goalMax: 3, plan: plan };
@@ -428,8 +429,13 @@ var HCE = (function () {
     M('stu', 'lib_ie', '🫀', 'Instant Emotions', 'Leggi i 10 capitoli di Instant Emotions nella sezione Libri.', 'libri.html#ie', [10], bk('ie-'));
     M('stu', 'lib_ip', '🧲', 'Instant Persuasion', 'Leggi i 10 capitoli di Instant Persuasion nella sezione Libri.', 'libri.html#ip', [10], bk('ip-'));
     var lxd = libs.reduce(function (a, x) { return a + Object.keys(x.xd || {}).length; }, 0), lbk = {}; lrd.forEach(function (x) { lbk[String(x.id).split('-')[0]] = 1; });
-    M('stu', 'lib_ex', '🧾', 'Esercizi dei libri', 'Completa un esercizio di un capitolo nella sezione Libri.', 'libri.html', [1, 10, 30, 60], lxd);
+    M('stu', 'lib_ex', '📑', 'Esercizi dei libri', 'Completa un esercizio di un capitolo nella sezione Libri.', 'libri.html', [1, 10, 30, 60], lxd);
     M('stu', 'lib_all', '🏛️', 'Biblioteca HCE', 'Leggi almeno un capitolo di ciascuno degli otto libri.', 'libri.html', [3, 8], Object.keys(lbk).length);
+    var labs = L2('lab_v1', []), lobs = labs.filter(function (x) { return x.kind === 'obs'; }), lexn = labs.reduce(function (a, x) { return a + Object.keys(x.xd || {}).length; }, 0), lact = {};
+    labs.forEach(function (x) { if (x.kind === 'obs' || Object.keys(x.xd || {}).length) lact[x.lab] = 1; });
+    M('str', 'lab_obs', '🔭', 'Osservatore', 'Registra un\'osservazione (decode) nella scheda Osserva di un laboratorio.', 'lab-comportamentale.html#osserva', [1, 10, 30, 60], lobs.length);
+    M('str', 'lab_ex', '🧪', 'In laboratorio', 'Completa un esercizio di un laboratorio.', 'lab-linguistico.html', [1, 10, 25, 44], lexn);
+    M('str', 'lab_four', '🎓', 'Quattro laboratori', 'Lavora in tutti e quattro i laboratori: linguistico, comportamentale, ambientale, strategico.', 'strumenti.html', [2, 4], Object.keys(lact).length);
     var tr = {}; ltry.forEach(function (x) { tr[x.c] = 1; });
     M('io', 'ie_try', '🌬️', 'Ho provato', 'In Io → Emozioni segna una strategia di Instant Emotions che hai provato.', 'io.html#emozioni', [1, 10, 30], ltry.length);
     M('io', 'ie_all', '🎐', 'Dieci strategie', 'Prova tutte e 10 le strategie di Instant Emotions.', 'io.html#emozioni', [10], Object.keys(tr).length);
