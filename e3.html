@@ -119,11 +119,12 @@ textarea{min-height:64px;resize:vertical}
 </style>
 <div class="page">
 <header>
-  <div class="eyebrow">Algoritmo linguistico HCE</div>
+  <div class="eyebrow">HCE · Algoritmi linguistici</div>
   <h1>E<sup>3</sup> · Engage, Explain, Exchange</h1>
   <p class="lead">Un sistema flessibile per ingaggiare, spiegare e arrivare a un sì: in telefonata, con le slide, in un'e-mail o al bar. Tocca uno strumento per vedere cosa fa e come si usa.</p>
   <div class="flow"><span class="fe">ENGAGE</span><i>→</i><span class="fx">EXPLAIN</span><i>→</i><span class="fc">EXCHANGE</span></div>
 </header>
+<nav class="pairsw" aria-label="Sezioni di E³"><a href="e3.html" aria-current="page">Algoritmo E³ · 27 strumenti</a><a href="algoritmi.html">Livello · 9 strumenti e Componi</a></nav>
 <div id="bk-tips" data-tool="e3"></div>
 <div class="card notice" id="old" hidden><h2>Serve il file dei contenuti aggiornato</h2><p class="muted">I dati dell'E³ sono nella nuova versione di <b>hce-contenuti.json</b>. Importala qui: i tuoi progressi restano.</p><button class="btn pri" id="old-imp">Importa il file</button><div id="old-msg" style="width:100%"></div></div>
 <div id="app" hidden style="display:flex;flex-direction:column;gap:16px">
@@ -277,7 +278,7 @@ var h0=(location.hash||'').slice(1);if(h0.indexOf('t=')===0)openTool(decodeURICo
  --d:#7EA2FF;--d-soft:#1D2A52;--p:#B69CFF;--p-soft:#2A2350;--i:#FF9B6A;--i-soft:#3B2318;
  --shadow:none;--lift:0 3px 0 var(--line);color-scheme:dark}
 
-html body,html body *:not(svg):not(svg *):not(code):not(pre){font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif}
+html body,html body *:not(svg):not(svg *):not(code):not(pre){font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif!important}
 html body svg text{font-family:Nunito,system-ui,sans-serif!important}
 body{background:var(--bg);color:var(--fg);padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))!important}
 h1,h2,h3{font-weight:900!important;letter-spacing:-.01em}
@@ -346,5 +347,13 @@ button:not(.st):not(.tl):not(.tick){min-width:44px}
 .mx td button{min-height:44px}
 .row.stick{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:6;background:var(--surface);padding:8px 0;border-top:2px solid var(--line2)}
 .mc,.opts button,.chips button,.ch{min-height:44px!important}
+
+/* pulsante Salva fisso: un solo colore in tutta l'app */
+.stick .btn.sl,.stick .btn.pri{background:var(--accent)!important;color:var(--accent-fg)!important;border-color:var(--accent)!important;box-shadow:0 4px 0 var(--accent-dk)}
+
+/* selettore tra due sezioni dello stesso strumento */
+.pairsw{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;background:var(--sunk);border-radius:16px;padding:4px}
+.pairsw a{display:flex;align-items:center;justify-content:center;text-align:center;min-height:46px;padding:8px 6px;border-radius:12px;font-weight:800;font-size:.86rem;line-height:1.2;color:var(--muted);text-decoration:none}
+.pairsw a[aria-current]{background:var(--surface);color:var(--fg);box-shadow:0 2px 0 var(--line)}
 </style>
 </body></html>

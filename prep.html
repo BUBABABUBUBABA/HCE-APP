@@ -83,6 +83,11 @@ textarea{min-height:70px;resize:vertical}
 .res3 button{border:2px solid var(--line);background:var(--surface);color:var(--fg);border-radius:14px;padding:10px 4px;font:inherit;font-weight:900;cursor:pointer;min-height:48px}
 .res3 button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
 .notice{text-align:center;align-items:center}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.pk{display:flex;gap:12px;align-items:flex-start;text-decoration:none;color:var(--fg);background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:12px;box-shadow:0 3px 0 var(--line);min-width:0;font:inherit;text-align:left;cursor:pointer}
+.pk .ic{flex:none;width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:var(--sunk);font-size:1.25rem}
+.pk b{display:block;font-weight:900}.pk span span{font-size:.84rem;color:var(--muted);font-weight:700;line-height:1.35}
+.pk.main{border-color:var(--accent)}
 </style>
 <div class="page" id="pg"></div>
 <div class="page" style="margin-top:16px"><div id="bk-tips" data-tool="prep"></div></div>
@@ -148,9 +153,17 @@ function afterHtml(){var a=F.after||{};
    '<div class="row"><button class="btn pri" id="save-after">Salva il Dopo</button></div><div id="msg2"></div></div>'}
 
 function list(){var a=load();
-  return '<header><div class="eyebrow">Prima di un\'interazione vera</div><h1>Prepara</h1><p class="lead">Obiettivo, mix (tuo e dell\'altro), copione E³ e, dopo, com\'è andata. In una scheda sola.</p></header>'+
-   '<button class="btn pri" id="new" style="justify-content:center;font-size:1.05rem">+ Nuova interazione</button>'+
-   (a.length?'<div class="lbl">Le tue interazioni</div>'+a.map(function(x){return '<div class="item"><div class="tx"><b>'+esc(x.who||x.sit||'Senza titolo')+'</b><span>'+(x.when?new Date(x.when+'T12:00').toLocaleDateString('it-IT')+' · ':'')+esc(x.goal||'')+'</span></div>'+
+  return '<header><div class="eyebrow">HCE · Prepara</div><h1>Prepara</h1><p class="lead">Scegli cosa stai per affrontare: ti porto alla scheda giusta. Ognuna salva le tue preparazioni e il Dopo.</p></header>'+
+   '<div class="lbl">Cosa prepari?</div><div class="pgrid">'+
+   '<button class="pk main" id="new"><span class="ic">🎯</span><span><b>Un\'interazione qualsiasi</b><span>Obiettivo, mix tuo e dell\'altro, copione E³ e, dopo, com\'è andata.</span></span></button>'+
+   [['incontro.html','🤝','Un primo incontro','EARLY, look, ambiente, cosa evitare.'],
+    ['algoritmi.html#componi','✉️','Un messaggio','Mail, telefonata o post in tre fasi E³.'],
+    ['feedback.html#prep','💬','Un feedback','Correggere con RINGS o rafforzare con ARISE.'],
+    ['public.html','🎤','Un intervento','Parlare in pubblico o a una riunione, con ABCDE.'],
+    ['vendita.html','💼','Una trattativa','I cinque criteri della vendita, con la scala I-STAIR.'],
+    ['leadership.html','🧭','Una situazione da leader','Intervengo o no, con quale obiettivo e quale influenza.'],
+    ['protocollo.html#prima','🔍','Una lettura D-P-I','Decode, Profile, Influence prima di entrare.']].map(function(o){return '<a class="pk" href="'+o[0]+'"><span class="ic">'+o[1]+'</span><span><b>'+o[2]+'</b><span>'+o[3]+'</span></span></a>'}).join('')+'</div>'+
+   (a.length?'<div class="lbl">Le tue interazioni preparate qui</div>'+a.map(function(x){return '<div class="item"><div class="tx"><b>'+esc(x.who||x.sit||'Senza titolo')+'</b><span>'+(x.when?new Date(x.when+'T12:00').toLocaleDateString('it-IT')+' · ':'')+esc(x.goal||'')+'</span></div>'+
      '<span class="badge '+(x.after?'ok':'wait')+'">'+(x.after?'Fatta':'Da fare')+'</span><button class="btn" data-open="'+x.id+'">Apri</button><button class="btn" data-del="'+x.id+'" aria-label="Elimina">✕</button></div>'}).join('')
     :'<p class="muted">Nessuna ancora. Ogni scheda salvata vale 20 XP, il Dopo altri 10.</p>');
 }
@@ -165,7 +178,7 @@ function set(path,val){var q=path.split('.');if(q[0]==='after'){F.after=F.after|
 document.addEventListener('input',function(e){var t=e.target;
   if(t.dataset.f){F[t.dataset.f]=t.value}else if(t.dataset.e3){F.e3[t.dataset.e3].text=t.value}else if(t.dataset.a){F.after=F.after||{};F.after[t.dataset.a]=t.value}});
 document.addEventListener('click',function(e){var b,t=e.target;
-  if(t.id==='new'){F=blank();STEP=0;MODE='edit';render();return}
+  if(t.closest('#new')){F=blank();STEP=0;MODE='edit';render();return}
   if(b=t.closest('[data-open]')){var x=load().filter(function(p){return p.id===b.dataset.open})[0];if(x){F=JSON.parse(JSON.stringify(x));STEP=N-1;MODE='edit';render()}return}
   if(b=t.closest('[data-del]')){if(b.textContent!=='Elimina?'){b.textContent='Elimina?';return}store(load().filter(function(p){return p.id!==b.dataset.del}));render();return}
   if(t.id==='x'){MODE='list';render();return}
@@ -213,7 +226,7 @@ render();
  --d:#7EA2FF;--d-soft:#1D2A52;--p:#B69CFF;--p-soft:#2A2350;--i:#FF9B6A;--i-soft:#3B2318;
  --shadow:none;--lift:0 3px 0 var(--line);color-scheme:dark}
 
-html body,html body *:not(svg):not(svg *):not(code):not(pre){font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif}
+html body,html body *:not(svg):not(svg *):not(code):not(pre){font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif!important}
 html body svg text{font-family:Nunito,system-ui,sans-serif!important}
 body{background:var(--bg);color:var(--fg);padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))!important}
 h1,h2,h3{font-weight:900!important;letter-spacing:-.01em}
@@ -282,5 +295,13 @@ button:not(.st):not(.tl):not(.tick){min-width:44px}
 .mx td button{min-height:44px}
 .row.stick{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:6;background:var(--surface);padding:8px 0;border-top:2px solid var(--line2)}
 .mc,.opts button,.chips button,.ch{min-height:44px!important}
+
+/* pulsante Salva fisso: un solo colore in tutta l'app */
+.stick .btn.sl,.stick .btn.pri{background:var(--accent)!important;color:var(--accent-fg)!important;border-color:var(--accent)!important;box-shadow:0 4px 0 var(--accent-dk)}
+
+/* selettore tra due sezioni dello stesso strumento */
+.pairsw{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;background:var(--sunk);border-radius:16px;padding:4px}
+.pairsw a{display:flex;align-items:center;justify-content:center;text-align:center;min-height:46px;padding:8px 6px;border-radius:12px;font-weight:800;font-size:.86rem;line-height:1.2;color:var(--muted);text-decoration:none}
+.pairsw a[aria-current]{background:var(--surface);color:var(--fg);box-shadow:0 2px 0 var(--line)}
 </style>
 </body></html>

@@ -127,11 +127,12 @@ input[type=range]{width:100%;accent-color:var(--io)}
 .dev .tm{font-size:.8rem;font-weight:900;color:var(--muted);width:42px;flex:none}.dev>i{flex:none;width:10px;height:10px}
 .dev .tx{display:flex;flex-direction:column;min-width:0}.dev .tx b{font-weight:800;line-height:1.3}.dev .tx span{font-size:.8rem;color:var(--muted);font-weight:700}
 .dmed{display:flex;flex-wrap:wrap;gap:6px}.dmed span{background:var(--io-s);color:var(--fg);border-radius:99px;padding:4px 10px;font-weight:800;font-size:.85rem}
+.subt{display:flex;gap:6px;flex-wrap:wrap;padding-top:8px}.subt button{font:inherit;font-weight:800;font-size:.86rem;min-height:40px;padding:6px 14px;border-radius:99px;border:2px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}.subt button[aria-pressed="true"]{background:var(--io);border-color:var(--io);color:var(--onp)}
 .nb{border:0}.nb summary{cursor:pointer;font-weight:800;font-size:.84rem;color:var(--muted);min-height:36px;display:flex;align-items:center}.nb textarea{margin-top:6px}
 </style>
 <div class="page">
 <header>
-  <div class="eyebrow">HCE · Improve · Inside</div>
+  <div class="eyebrow">HCE · Su di te</div>
   <h1>Io</h1>
   <p class="lead">Gli strumenti del corso usati su di te: stato, obiettivi, abitudini, focus, emozioni e bias. Tutto resta su questo dispositivo.</p>
 </header>
@@ -142,13 +143,10 @@ input[type=range]{width:100%;accent-color:var(--io)}
     <button class="tab" data-t="obiettivi" aria-selected="false">Obiettivi</button>
     <button class="tab" data-t="abitudini" aria-selected="false">Abitudini</button>
     <button class="tab" data-t="abilita" aria-selected="false">Abilità</button>
-    <button class="tab" data-t="focus" aria-selected="false">Focus</button>
     <button class="tab" data-t="emozioni" aria-selected="false">Emozioni</button>
-    <button class="tab" data-t="bias" aria-selected="false">Bias</button>
-    <button class="tab" data-t="settimana" aria-selected="false">Settimana</button>
-    <button class="tab" data-t="resoconto" aria-selected="false">Resoconto</button>
-    <button class="tab" data-t="medaglie" aria-selected="false">Medaglie</button>
-  </div></nav>
+    <button class="tab" data-t="focus" aria-selected="false">Focus</button>
+    <button class="tab" data-t="progressi" aria-selected="false">Progressi</button>
+  </div><div class="subt" id="subt" hidden></div></nav>
   <section id="v-oggi"></section>
   <section id="v-obiettivi" hidden></section>
   <section id="v-abitudini" hidden></section>
@@ -506,11 +504,16 @@ function renderMedaglie(){var M=HCE.medals(PACK),G=HCE.medalGroups,U=HCE.medalUn
   $('v-medaglie').innerHTML=h}
 $('v-medaglie').addEventListener('click',function(e){var b=e.target.closest('[data-mf]');if(b){MF=b.dataset.mf;renderMedaglie()}});
 var R_={resoconto:renderResoconto,medaglie:renderMedaglie,oggi:renderOggi,obiettivi:renderObiettivi,abitudini:renderAbitudini,abilita:renderAbilita,focus:renderFocus,emozioni:renderEmozioni,bias:renderBias,settimana:renderSettimana};
-function show(t){document.querySelectorAll('.tab').forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===t?'true':'false')});
+var GRP={emozioni:[['emozioni','Emozioni'],['bias','Bias']],progressi:[['resoconto','Resoconto'],['medaglie','Medaglie'],['settimana','Settimana']]},LASTG={};
+function tabOf(t){for(var g in GRP)if(GRP[g].some(function(x){return x[0]===t}))return g;return t}
+function show(t){if(GRP[t])t=LASTG[t]||GRP[t][0][0];var tb=tabOf(t);if(GRP[tb])LASTG[tb]=t;
+  document.querySelectorAll('.tab').forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===tb?'true':'false')});
+  var sb=$('subt');if(GRP[tb]){sb.hidden=false;sb.innerHTML=GRP[tb].map(function(x){return '<button data-sub="'+x[0]+'" aria-pressed="'+(x[0]===t)+'">'+x[1]+'</button>'}).join('')}else{sb.hidden=true;sb.innerHTML=''}
   Object.keys(R_).forEach(function(x){$('v-'+x).hidden=x!==t});R_[t]();window.scrollTo(0,0)}
 document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(b)show(b.dataset.t)});
+$('subt').addEventListener('click',function(e){var b=e.target.closest('[data-sub]');if(b)show(b.dataset.sub)});
 var h0=(location.hash||'').slice(1);
-if(RUN)show('focus');else if(R_[h0])show(h0);else renderOggi();
+if(RUN)show('focus');else if(R_[h0]||GRP[h0])show(h0);else renderOggi();
 });
 </script>
 
@@ -542,7 +545,7 @@ if(RUN)show('focus');else if(R_[h0])show(h0);else renderOggi();
  --d:#7EA2FF;--d-soft:#1D2A52;--p:#B69CFF;--p-soft:#2A2350;--i:#FF9B6A;--i-soft:#3B2318;
  --shadow:none;--lift:0 3px 0 var(--line);color-scheme:dark}
 
-html body,html body *:not(svg):not(svg *):not(code):not(pre){font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif}
+html body,html body *:not(svg):not(svg *):not(code):not(pre){font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif!important}
 html body svg text{font-family:Nunito,system-ui,sans-serif!important}
 body{background:var(--bg);color:var(--fg);padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))!important}
 h1,h2,h3{font-weight:900!important;letter-spacing:-.01em}
@@ -611,5 +614,13 @@ button:not(.st):not(.tl):not(.tick){min-width:44px}
 .mx td button{min-height:44px}
 .row.stick{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:6;background:var(--surface);padding:8px 0;border-top:2px solid var(--line2)}
 .mc,.opts button,.chips button,.ch{min-height:44px!important}
+
+/* pulsante Salva fisso: un solo colore in tutta l'app */
+.stick .btn.sl,.stick .btn.pri{background:var(--accent)!important;color:var(--accent-fg)!important;border-color:var(--accent)!important;box-shadow:0 4px 0 var(--accent-dk)}
+
+/* selettore tra due sezioni dello stesso strumento */
+.pairsw{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;background:var(--sunk);border-radius:16px;padding:4px}
+.pairsw a{display:flex;align-items:center;justify-content:center;text-align:center;min-height:46px;padding:8px 6px;border-radius:12px;font-weight:800;font-size:.86rem;line-height:1.2;color:var(--muted);text-decoration:none}
+.pairsw a[aria-current]{background:var(--surface);color:var(--fg);box-shadow:0 2px 0 var(--line)}
 </style>
 </body></html>

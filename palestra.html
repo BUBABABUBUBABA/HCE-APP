@@ -250,7 +250,7 @@ if(location.hash==='#errori'&&!$('err').hidden)start(true);
  --d:#7EA2FF;--d-soft:#1D2A52;--p:#B69CFF;--p-soft:#2A2350;--i:#FF9B6A;--i-soft:#3B2318;
  --shadow:none;--lift:0 3px 0 var(--line);color-scheme:dark}
 
-html body,html body *:not(svg):not(svg *):not(code):not(pre){font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif}
+html body,html body *:not(svg):not(svg *):not(code):not(pre){font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif!important}
 html body svg text{font-family:Nunito,system-ui,sans-serif!important}
 body{background:var(--bg);color:var(--fg);padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))!important}
 h1,h2,h3{font-weight:900!important;letter-spacing:-.01em}
@@ -319,5 +319,13 @@ button:not(.st):not(.tl):not(.tick){min-width:44px}
 .mx td button{min-height:44px}
 .row.stick{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:6;background:var(--surface);padding:8px 0;border-top:2px solid var(--line2)}
 .mc,.opts button,.chips button,.ch{min-height:44px!important}
+
+/* pulsante Salva fisso: un solo colore in tutta l'app */
+.stick .btn.sl,.stick .btn.pri{background:var(--accent)!important;color:var(--accent-fg)!important;border-color:var(--accent)!important;box-shadow:0 4px 0 var(--accent-dk)}
+
+/* selettore tra due sezioni dello stesso strumento */
+.pairsw{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;background:var(--sunk);border-radius:16px;padding:4px}
+.pairsw a{display:flex;align-items:center;justify-content:center;text-align:center;min-height:46px;padding:8px 6px;border-radius:12px;font-weight:800;font-size:.86rem;line-height:1.2;color:var(--muted);text-decoration:none}
+.pairsw a[aria-current]{background:var(--surface);color:var(--fg);box-shadow:0 2px 0 var(--line)}
 </style>
 </body></html>
