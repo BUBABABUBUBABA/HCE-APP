@@ -1,7 +1,7 @@
 /* HCE app: database locale, pacchetto contenuti, backup, barra di navigazione */
 var HCE = (function () {
   var DBN = 'hce-app', DBV = 1, dbp = null;
-  var USER_KEYS = ['dpi_su_di_me_v1', 'dpi_know_v1', 'studio_hce_v1', 'e3_plans_v1', 'e3_daily_v1', 'ripasso_v1', 'mib_log_v1', 'prep_v1', 'fb_v1', 'gym_v1', 'gym_err_v1', 'diz_my_v1', 'io_check_v1', 'io_goals_v1', 'io_habits_v1', 'io_focus_v1', 'io_emo_v1', 'io_trig_v1', 'io_pred_v1', 'io_week_v1', 'ex_v1', 'slcc_v1', 'slcc_msg_v1', 'incontro_v1', 'public_v1', 'vendita_v1', 'lead_v1', 'alg_v1', 'frame_v1', 'carisma_v1', 'libri_v1', 'lab_v1', 'decode_v1'];
+  var USER_KEYS = ['dpi_su_di_me_v1', 'dpi_know_v1', 'studio_hce_v1', 'e3_plans_v1', 'e3_daily_v1', 'ripasso_v1', 'mib_log_v1', 'prep_v1', 'fb_v1', 'gym_v1', 'gym_err_v1', 'diz_my_v1', 'io_check_v1', 'io_goals_v1', 'io_habits_v1', 'io_focus_v1', 'io_emo_v1', 'io_trig_v1', 'io_pred_v1', 'io_week_v1', 'io_skills_v1', 'ex_v1', 'slcc_v1', 'slcc_msg_v1', 'incontro_v1', 'public_v1', 'vendita_v1', 'lead_v1', 'alg_v1', 'frame_v1', 'carisma_v1', 'libri_v1', 'lab_v1', 'decode_v1'];
 
   function open() {
     if (dbp) return dbp;
@@ -239,6 +239,7 @@ var HCE = (function () {
     var ck = L('io_check_v1', {}); Object.keys(ck).forEach(function (k) { if (ck[k] && ck[k].t) add(ck[k].t, 'io', 10, 'check'); });
     L('io_goals_v1', []).forEach(function (g) { add(+g.id, 'io', 10, 'goal'); Object.keys(g.done || {}).forEach(function (p) { add(g.done[p], 'io', p === 'C' ? 30 : 10, 'reach'); }); });
     L('io_habits_v1', []).forEach(function (h) { Object.keys(h.log || {}).forEach(function (d) { add(h.log[d], 'io', 3, 'habit'); }); });
+    var skl = L('io_skills_v1', {}); Object.keys(skl).forEach(function (k) { var x = skl[k] || {}; if (x.t) add(x.t, 'io', 5, 'skill'); Object.keys(x.log || {}).forEach(function (d) { add(x.log[d], 'io', 3, 'skill'); }); });
     L('io_focus_v1', []).forEach(function (x) { add(+x.id, 'io', 10, 'focus'); });
     L('io_emo_v1', []).forEach(function (x) { add(+x.id, 'io', 15, 'emo'); });
     L('io_pred_v1', []).forEach(function (x) { add(+x.id, 'io', 5, 'pred'); if (x.rt) add(x.rt, 'io', 5, 'pred'); });
