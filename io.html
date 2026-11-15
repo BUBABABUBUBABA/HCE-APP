@@ -232,9 +232,9 @@ function renderObiettivi(){var h='';
     if(a.length)h+='<div class="card"><h3>I miei obiettivi</h3>'+a.map(function(g){var n=Object.keys(g.done||{}).length;return '<div class="item"><div class="tx"><b>'+esc(g.t)+'</b><span>'+R.phases.map(function(p){return (g.done||{})[p.k]?'✓'+p.k:p.k}).join(' · ')+'</span><div class="bar" style="margin-top:6px"><i style="width:'+(n/5*100)+'%"></i></div></div><button class="btn" data-gopen="'+g.id+'">Apri</button></div>'}).join('')+'</div>';
     $('v-obiettivi').innerHTML=h;return}
   var g=GOAL,n=Object.keys(g.done||{}).length,next=R.phases.filter(function(p){return !(g.done||{})[p.k]})[0];
-  h+='<div class="row"><button class="btn" id="g-back">← Obiettivi</button></div><div class="card"><label class="f">Obiettivo<input type="text" data-gt="t" value="'+esc(g.t)+'"></label><div class="bar"><i style="width:'+(n/5*100)+'%"></i></div><p class="muted">'+(next?'Prossima fase: '+next.n+' ('+next.it+')':'Tutte le fasi completate. Dopo Hold, si rilancia: nuovo obiettivo.')+'</p></div>';
+  h+='<div class="row"><button class="btn" id="g-back">← Obiettivi</button>'+(g.sk?'<button class="btn" id="g-sk">Abilità '+esc(g.sk)+'</button>':'')+'</div><div class="card"><label class="f">Obiettivo<input type="text" data-gt="t" value="'+esc(g.t)+'"></label><div class="bar"><i style="width:'+(n/5*100)+'%"></i></div><p class="muted">'+(next?'Prossima fase: '+next.n+' ('+next.it+')':'Tutte le fasi completate. Dopo Hold, si rilancia: nuovo obiettivo.')+'</p></div>';
   h+=R.phases.map(function(p){var dn=(g.done||{})[p.k];return '<details class="ph'+(dn?' dn':'')+'"'+(next===p?' open':'')+'><summary><span class="L">'+(dn?'✓':p.k)+'</span><span><b>'+esc(p.n)+'</b><small>'+esc(p.it)+(dn?' · fatta il '+new Date(dn).toLocaleDateString('it-IT'):'')+'</small></span><span class="chev">›</span></summary><div class="pb">'+
-    '<p style="line-height:1.5;font-weight:600">'+esc(p.d)+'</p>'+
+    '<p style="line-height:1.5;font-weight:600">'+esc(p.d)+'</p>'+(g.sk?skSpunti(g.sk,p.k):'')+
     p.tools.map(function(t){var key=p.k+'.'+t.k,old=(g.f||{})[key]||'';return '<div class="tool"><b>'+esc(t.n)+'</b><span class="tip">'+esc(t.d)+'</span>'+(t.s?HCE.sf(t.s,(g.fs||{})[key],key,'g')+noteBox('gf',key,old,t.n):'<textarea data-gf="'+key+'" aria-label="'+esc(t.n)+'" placeholder="'+esc(t.p)+'">'+esc(old)+'</textarea>')+'</div>'}).join('')+
     (p.k==='H'&&(g.done||{}).C?holdHtml(g):'')+'<div class="row"><button class="btn'+(dn?'':' io')+'" data-gdone="'+p.k+'">'+(dn?'Riapri la fase':(p.k==='C'?'Ho celebrato · +30 XP':'Fase completata · +10 XP'))+'</button></div>'+ml(p.m)+'</div></details>'}).join('');
   h+='<div class="row"><button class="btn" id="g-del">Elimina obiettivo</button></div><div id="g-msg"></div>';
@@ -243,6 +243,7 @@ $('v-obiettivi').addEventListener('click',function(e){var b,t=e.target;
   if(t.id==='g-add'){var v=$('g-new').value.trim();if(!v)return;GOAL={id:newId(),t:v,f:{},done:{}};saveGoal();renderObiettivi();window.scrollTo(0,0);return}
   if(b=t.closest('[data-gopen]')){GOAL=goals().filter(function(x){return x.id===b.dataset.gopen})[0]||null;renderObiettivi();window.scrollTo(0,0);return}
   if(t.id==='g-back'){GOAL=null;renderObiettivi();return}
+  if(t.id==='g-sk'){GOAL=null;SKF='att';show('abilita');return}
   if(t.closest('[data-ghold]')){GOAL.hold=GOAL.hold||[];GOAL.hold.push(Date.now());saveGoal();renderObiettivi();return}
   if(b=t.closest('[data-gdone]')){var k=b.dataset.gdone;GOAL.done=GOAL.done||{};if(GOAL.done[k])delete GOAL.done[k];else GOAL.done[k]=Date.now();saveGoal();renderObiettivi();return}
   if(t.id==='g-del'){if(t.textContent!=='Elimina?'){t.textContent='Elimina?';return}P('io_goals_v1',goals().filter(function(x){return x.id!==GOAL.id}));GOAL=null;renderObiettivi()}});
@@ -289,6 +290,16 @@ function skOn(){var a=skAll();return SK.filter(function(s){return a[s.k]&&a[s.k]
 function skWeek(st){var n=0;for(var o=-6;o<=0;o++)if(((st||{}).log||{})[dk(o)])n++;return n}
 function skTick(k){skPut(k,function(s){if(s.log[today])delete s.log[today];else s.log[today]=Date.now()})}
 function skRow(s){var st=skAll()[s.k]||{},on=!!(st.log||{})[today];return '<div class="item"><button class="tick" data-sktick="'+s.k+'" aria-pressed="'+on+'" aria-label="Allenata oggi">✓</button><div class="tx"><b>'+esc(s.k+' · '+s.o)+'</b><span>'+esc(s.a)+' · '+skWeek(st)+'/7 negli ultimi 7 giorni</span></div></div>'}
+function skGoal(k){return goals().filter(function(g){return g.sk===k})[0]||null}
+function skReachHtml(s){var g=skGoal(s.k);if(!g)return '<div class="tool"><b>Obiettivo REACH</b><span class="tip">Trasforma l\'abilità in un obiettivo con le cinque fasi: in ogni fase trovi gli spunti per questa abilità, mentre il perché e le parti personali le scrivi tu.</span><div class="row"><button class="btn" data-skreach="'+s.k+'">Lavorala con REACH</button></div></div>';
+  var n=Object.keys(g.done||{}).length;return '<div class="tool"><b>Obiettivo REACH</b><span class="muted">'+R.phases.map(function(p){return (g.done||{})[p.k]?'✓'+p.k:p.k}).join(' · ')+'</span><div class="bar"><i style="width:'+(n/5*100)+'%"></i></div><div class="row"><button class="btn" data-skreach="'+s.k+'">Apri l\'obiettivo REACH</button></div></div>'}
+function skSpunti(k,pk){var s=SK.filter(function(x){return x.k===k})[0],x=s&&s.x;if(!x)return '';var t={
+  R:'<b>Da dove partire:</b> '+esc(x.r)+'<br>Il perché, il sé futuro, dolore e piacere e «È davvero mio?» li scrivi solo tu: sono le parti personali.',
+  E:'<b>Causa tipica di fallimento:</b> '+esc(x.pm[0])+' → <b>prevenzione:</b> '+esc(x.pm[1])+'<br>Mappatura, trasversalità e ricompensa dipendono dalla tua vita: compilale tu.',
+  A:'<b>KPI:</b> '+esc(x.kpi)+'<br><b>KFI (spia rossa):</b> '+esc(x.kfi)+'<br><b>Il minuto:</b> '+esc(x.min)+'<br><b>Micro obiettivo per la prima settimana:</b> '+esc(x.spr)+'<br><b>Misura dell\'abilità:</b> '+esc(s.m)+(s.mine?' ⚠':''),
+  C:'<b>Traguardo intermedio da festeggiare:</b> '+esc(x.c)+'<br>Il rituale e le persone da ringraziare li scegli tu.',
+  H:'<b>Dove trasferirla:</b> '+esc(x.h)+'<br>Il diario del successo è solo tuo.'}[pk];
+  return t?'<div class="note">📎 Spunti per '+esc(s.k)+' · '+esc(s.o)+'<br>'+t+'</div>':''}
 function renderAbilita(){
   if(!SK.length){$('v-abilita').innerHTML='<div class="card notice"><h3>Serve il file dei contenuti aggiornato</h3><p class="muted">Importa la versione nuova di hce-contenuti.json dalla Home, in Impostazioni.</p><a class="btn pri" href="index.html#contenuti">Vai alla Home</a></div>';return}
   var a=skAll(),act=skOn();if(SKF==null)SKF=act.length?'att':'tutte';
@@ -298,11 +309,13 @@ function renderAbilita(){
   if(!list.length)h+='<p class="note">Nessuna abilità attiva. Apri «Tutte», scegline una e premi «Attiva».</p>';
   h+=list.map(function(s){var st=a[s.k]||{},on=!!st.on,dt=!!(st.log||{})[today],lg=st.log||{};
     return '<details class="ph'+(on?' dn':'')+'"><summary><span class="L">'+esc(s.k)+'</span><span><b>'+esc(s.o)+'</b><small>'+esc(s.i)+(on?' · attiva':'')+(st.lv?' · '+esc(st.lv):'')+(on?' · '+skWeek(st)+'/7':'')+'</small></span><span class="chev">›</span></summary><div class="pb">'+
+     (s.x?'<div class="tool"><b>Esempio 📎</b><span style="line-height:1.5">'+esc(s.x.ex)+'</span></div>':'')+
      '<div class="tool"><b>Allenamento</b><span style="line-height:1.5">'+esc(s.a)+'</span></div>'+
      '<div class="tool"><b>Misura'+(s.mine?' ⚠':'')+'</b><span style="line-height:1.5">'+esc(s.m)+'</span></div>'+
      '<div class="tool"><b>Fonte</b><span class="tip">'+esc(s.f)+'</span></div>'+
      '<div class="row"><button class="btn'+(on?'':' io')+'" data-skon="'+s.k+'">'+(on?'Disattiva':'Attiva · +5 XP')+'</button>'+(on?'<button class="btn'+(dt?'':' io')+'" data-sktick="'+s.k+'">'+(dt?'✓ Allenata oggi':'Allenata oggi · +3 XP')+'</button>':'')+'</div>'+
      (on?'<div class="week">'+[-6,-5,-4,-3,-2,-1,0].map(function(o){var k=dk(o);return '<div class="'+(lg[k]?'on':'')+'"><span>'+dShort(k)+'</span><b>'+(lg[k]?'✓':'·')+'</b></div>'}).join('')+'</div>'+(st.t?'<p class="muted">Attiva dal '+new Date(st.t).toLocaleDateString('it-IT')+' · '+(function(n){return n+(n===1?' allenamento':' allenamenti')})(Object.keys(lg).length)+' in tutto</p>':''):'')+
+     skReachHtml(s)+
      '<div class="lbl">Livello raggiunto</div><div class="chips">'+SKLV.map(function(l){return '<button class="ch" data-sklv="'+s.k+'" data-v="'+esc(l)+'" aria-pressed="'+(st.lv===l)+'">'+esc(l)+'</button>'}).join('')+'</div>'+
      noteBox('skn',s.k,st.note,s.o)+'</div></details>'}).join('');
   $('v-abilita').innerHTML=h}
@@ -310,6 +323,8 @@ $('v-abilita').addEventListener('click',function(e){var b,t=e.target;
   if(b=t.closest('[data-skf]')){SKF=b.dataset.skf;renderAbilita();return}
   if(b=t.closest('[data-skon]')){var k=b.dataset.skon;skPut(k,function(s){s.on=!s.on;if(s.on&&!s.t)s.t=Date.now()});keepOpen('v-abilita',renderAbilita);return}
   if(b=t.closest('[data-sktick]')){skTick(b.dataset.sktick);keepOpen('v-abilita',renderAbilita);return}
+  if(b=t.closest('[data-skreach]')){var k=b.dataset.skreach,sk=SK.filter(function(x){return x.k===k})[0],g=skGoal(k);
+    if(!g){g={id:newId(),t:k+' · '+sk.o,sk:k,f:{},done:{}};GOAL=g;saveGoal();skPut(k,function(s){if(!s.on){s.on=true;if(!s.t)s.t=Date.now()}})}else GOAL=g;show('obiettivi');return}
   if(b=t.closest('[data-sklv]')){var v=b.dataset.v;skPut(b.dataset.sklv,function(s){s.lv=s.lv===v?'':v});keepOpen('v-abilita',renderAbilita)}});
 $('v-abilita').addEventListener('input',function(e){var t=e.target,k=t.dataset.skn;if(!k)return;clearTimeout(skTimer);skTimer=setTimeout(function(){skPut(k,function(s){s.note=t.value})},400)});
 
